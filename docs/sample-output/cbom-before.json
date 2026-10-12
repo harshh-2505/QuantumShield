@@ -1,0 +1,1374 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:ca56d167-6387-4aee-95ba-40fabea2a140",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-10-12T13:46:00+00:00",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "name": "quantumshield",
+          "version": "0.1.0"
+        }
+      ]
+    },
+    "properties": [
+      {
+        "name": "quantumshield:tls-library",
+        "value": "OpenSSL 3.5.7 9 Jun 2026; ML-KEM available; group control"
+      }
+    ]
+  },
+  "components": [
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/algorithm/3DES",
+      "name": "3DES",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "block-cipher",
+          "parameterSetIdentifier": "3DES",
+          "executionEnvironment": "software-plain-ram",
+          "cryptoFunctions": [
+            "encrypt",
+            "decrypt"
+          ],
+          "classicalSecurityLevel": 112,
+          "nistQuantumSecurityLevel": 0
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:quantum-status",
+          "value": "insecure"
+        },
+        {
+          "name": "quantumshield:recommended-replacement",
+          "value": "AES-256-GCM"
+        }
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "legacy-configs/sshd_config",
+            "line": 6,
+            "additionalContext": "Ciphers aes128-ctr,aes256-gcm@openssh.com,3des-cbc"
+          }
+        ]
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/algorithm/AES-128-CBC",
+      "name": "AES-128-CBC",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "block-cipher",
+          "parameterSetIdentifier": "AES-128-CBC",
+          "executionEnvironment": "software-plain-ram",
+          "cryptoFunctions": [
+            "encrypt",
+            "decrypt"
+          ],
+          "classicalSecurityLevel": 128,
+          "nistQuantumSecurityLevel": 1
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:quantum-status",
+          "value": "quantum-weakened"
+        },
+        {
+          "name": "quantumshield:recommended-replacement",
+          "value": "AES-256-GCM"
+        }
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "legacy-configs/apache-ssl.conf",
+            "line": 5,
+            "additionalContext": "SSLCipherSuite HIGH:!aNULL:!MD5"
+          },
+          {
+            "location": "legacy-configs/openssl.cnf",
+            "line": 11,
+            "additionalContext": "CipherString DEFAULT:@SECLEVEL=2"
+          },
+          {
+            "location": "legacy-configs/sshd_config",
+            "line": 6,
+            "additionalContext": "Ciphers aes128-ctr,aes256-gcm@openssh.com,3des-cbc"
+          }
+        ]
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/algorithm/AES-128-GCM",
+      "name": "AES-128-GCM",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "ae",
+          "parameterSetIdentifier": "AES-128-GCM",
+          "executionEnvironment": "software-plain-ram",
+          "cryptoFunctions": [
+            "encrypt",
+            "decrypt"
+          ],
+          "classicalSecurityLevel": 128,
+          "nistQuantumSecurityLevel": 1
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:quantum-status",
+          "value": "quantum-weakened"
+        },
+        {
+          "name": "quantumshield:recommended-replacement",
+          "value": "AES-256-GCM"
+        }
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "services/orders/nginx.conf",
+            "line": 14,
+            "additionalContext": "ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384"
+          },
+          {
+            "location": "services/payments/nginx.conf",
+            "line": 14,
+            "additionalContext": "ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA"
+          },
+          {
+            "location": "services/inventory/nginx.conf",
+            "line": 14,
+            "additionalContext": "ssl_ciphers AES128-GCM-SHA256:AES256-SHA:ECDHE-RSA-AES128-GCM-SHA256:DES-CBC3-SHA:@SECLEVEL=0"
+          },
+          {
+            "location": "legacy-configs/apache-ssl.conf",
+            "line": 5,
+            "additionalContext": "SSLCipherSuite HIGH:!aNULL:!MD5"
+          },
+          {
+            "location": "legacy-configs/haproxy.cfg",
+            "line": 2,
+            "additionalContext": "ssl-default-bind-ciphers ECDHE-RSA-AES128-GCM-SHA256:AES256-SHA256"
+          },
+          {
+            "location": "legacy-configs/openssl.cnf",
+            "line": 11,
+            "additionalContext": "CipherString DEFAULT:@SECLEVEL=2"
+          }
+        ]
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/algorithm/AES-256-CBC",
+      "name": "AES-256-CBC",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "block-cipher",
+          "parameterSetIdentifier": "AES-256-CBC",
+          "executionEnvironment": "software-plain-ram",
+          "cryptoFunctions": [
+            "encrypt",
+            "decrypt"
+          ],
+          "classicalSecurityLevel": 256,
+          "nistQuantumSecurityLevel": 5
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:quantum-status",
+          "value": "quantum-resistant"
+        },
+        {
+          "name": "quantumshield:recommended-replacement",
+          "value": "AES-256-GCM (AEAD)"
+        }
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "services/payments/nginx.conf",
+            "line": 14,
+            "additionalContext": "ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA"
+          },
+          {
+            "location": "services/inventory/nginx.conf",
+            "line": 14,
+            "additionalContext": "ssl_ciphers AES128-GCM-SHA256:AES256-SHA:ECDHE-RSA-AES128-GCM-SHA256:DES-CBC3-SHA:@SECLEVEL=0"
+          },
+          {
+            "location": "legacy-configs/apache-ssl.conf",
+            "line": 5,
+            "additionalContext": "SSLCipherSuite HIGH:!aNULL:!MD5"
+          },
+          {
+            "location": "legacy-configs/haproxy.cfg",
+            "line": 2,
+            "additionalContext": "ssl-default-bind-ciphers ECDHE-RSA-AES128-GCM-SHA256:AES256-SHA256"
+          },
+          {
+            "location": "legacy-configs/openssl.cnf",
+            "line": 11,
+            "additionalContext": "CipherString DEFAULT:@SECLEVEL=2"
+          }
+        ]
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/algorithm/AES-256-GCM",
+      "name": "AES-256-GCM",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "ae",
+          "parameterSetIdentifier": "AES-256-GCM",
+          "executionEnvironment": "software-plain-ram",
+          "cryptoFunctions": [
+            "encrypt",
+            "decrypt"
+          ],
+          "classicalSecurityLevel": 256,
+          "nistQuantumSecurityLevel": 5
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:quantum-status",
+          "value": "quantum-resistant"
+        }
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "services/orders/nginx.conf",
+            "line": 14,
+            "additionalContext": "ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384"
+          },
+          {
+            "location": "legacy-configs/apache-ssl.conf",
+            "line": 5,
+            "additionalContext": "SSLCipherSuite HIGH:!aNULL:!MD5"
+          },
+          {
+            "location": "legacy-configs/openssl.cnf",
+            "line": 11,
+            "additionalContext": "CipherString DEFAULT:@SECLEVEL=2"
+          },
+          {
+            "location": "legacy-configs/sshd_config",
+            "line": 6,
+            "additionalContext": "Ciphers aes128-ctr,aes256-gcm@openssh.com,3des-cbc"
+          }
+        ]
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/algorithm/ChaCha20-Poly1305",
+      "name": "ChaCha20-Poly1305",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "ae",
+          "parameterSetIdentifier": "ChaCha20-Poly1305",
+          "executionEnvironment": "software-plain-ram",
+          "cryptoFunctions": [
+            "encrypt",
+            "decrypt"
+          ],
+          "classicalSecurityLevel": 256,
+          "nistQuantumSecurityLevel": 5
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:quantum-status",
+          "value": "quantum-resistant"
+        }
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "legacy-configs/apache-ssl.conf",
+            "line": 5,
+            "additionalContext": "SSLCipherSuite HIGH:!aNULL:!MD5"
+          },
+          {
+            "location": "legacy-configs/openssl.cnf",
+            "line": 11,
+            "additionalContext": "CipherString DEFAULT:@SECLEVEL=2"
+          }
+        ]
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/algorithm/DH-1024",
+      "name": "DH-1024",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "key-agree",
+          "parameterSetIdentifier": "DH-1024",
+          "executionEnvironment": "software-plain-ram",
+          "cryptoFunctions": [
+            "keygen"
+          ],
+          "classicalSecurityLevel": 80,
+          "nistQuantumSecurityLevel": 0
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:quantum-status",
+          "value": "insecure"
+        },
+        {
+          "name": "quantumshield:recommended-replacement",
+          "value": "X25519MLKEM768 (hybrid ML-KEM-768, FIPS 203)"
+        }
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "legacy-configs/sshd_config",
+            "line": 5,
+            "additionalContext": "KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,diffie-hellman-group14-sha1"
+          }
+        ]
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/algorithm/ECDH-P256",
+      "name": "ECDH-P256",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "key-agree",
+          "parameterSetIdentifier": "ECDH-P256",
+          "executionEnvironment": "software-plain-ram",
+          "cryptoFunctions": [
+            "keygen"
+          ],
+          "classicalSecurityLevel": 128,
+          "nistQuantumSecurityLevel": 0
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:quantum-status",
+          "value": "quantum-broken"
+        },
+        {
+          "name": "quantumshield:recommended-replacement",
+          "value": "X25519MLKEM768 (hybrid ML-KEM-768, FIPS 203)"
+        }
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "services/orders/nginx.conf",
+            "line": 13,
+            "additionalContext": "ssl_ecdh_curve X25519:prime256v1"
+          },
+          {
+            "location": "services/payments/nginx.conf",
+            "line": 13,
+            "additionalContext": "ssl_ecdh_curve prime256v1"
+          },
+          {
+            "location": "services/inventory/nginx.conf",
+            "line": 13,
+            "additionalContext": "ssl_ecdh_curve prime256v1:secp384r1"
+          },
+          {
+            "location": "legacy-configs/haproxy.cfg",
+            "line": 6,
+            "additionalContext": "curves P-256:X25519"
+          },
+          {
+            "location": "legacy-configs/openssl.cnf",
+            "line": 12,
+            "additionalContext": "Groups X25519:secp256r1:secp384r1"
+          },
+          {
+            "location": "legacy-configs/sshd_config",
+            "line": 5,
+            "additionalContext": "KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,diffie-hellman-group14-sha1"
+          }
+        ]
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/algorithm/ECDH-P384",
+      "name": "ECDH-P384",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "key-agree",
+          "parameterSetIdentifier": "ECDH-P384",
+          "executionEnvironment": "software-plain-ram",
+          "cryptoFunctions": [
+            "keygen"
+          ],
+          "classicalSecurityLevel": 192,
+          "nistQuantumSecurityLevel": 0
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:quantum-status",
+          "value": "quantum-broken"
+        },
+        {
+          "name": "quantumshield:recommended-replacement",
+          "value": "SecP384r1MLKEM1024 or X25519MLKEM768"
+        }
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "services/inventory/nginx.conf",
+            "line": 13,
+            "additionalContext": "ssl_ecdh_curve prime256v1:secp384r1"
+          },
+          {
+            "location": "legacy-configs/openssl.cnf",
+            "line": 12,
+            "additionalContext": "Groups X25519:secp256r1:secp384r1"
+          }
+        ]
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/algorithm/ECDSA",
+      "name": "ECDSA",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "signature",
+          "parameterSetIdentifier": "ECDSA",
+          "executionEnvironment": "software-plain-ram",
+          "cryptoFunctions": [
+            "sign",
+            "verify",
+            "keygen"
+          ],
+          "classicalSecurityLevel": 128,
+          "nistQuantumSecurityLevel": 0
+        },
+        "oid": "1.2.840.10045.2.1"
+      },
+      "properties": [
+        {
+          "name": "quantumshield:quantum-status",
+          "value": "quantum-broken"
+        },
+        {
+          "name": "quantumshield:recommended-replacement",
+          "value": "ML-DSA-65 (FIPS 204), or a hybrid/composite certificate during transition"
+        }
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "legacy-configs/sshd_config",
+            "line": 4,
+            "additionalContext": "HostKey /etc/ssh/ssh_host_ecdsa_key"
+          }
+        ]
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/algorithm/MD5",
+      "name": "MD5",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "hash",
+          "parameterSetIdentifier": "MD5",
+          "executionEnvironment": "software-plain-ram",
+          "cryptoFunctions": [
+            "digest"
+          ],
+          "classicalSecurityLevel": 18,
+          "nistQuantumSecurityLevel": 0
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:quantum-status",
+          "value": "insecure"
+        },
+        {
+          "name": "quantumshield:recommended-replacement",
+          "value": "SHA-256 or SHA-384"
+        }
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "legacy-configs/billing_client.py",
+            "line": 12,
+            "additionalContext": "code return hashlib.md5(data).hexdigest()"
+          }
+        ]
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/algorithm/RSA",
+      "name": "RSA",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "signature",
+          "parameterSetIdentifier": "RSA",
+          "executionEnvironment": "software-plain-ram",
+          "cryptoFunctions": [
+            "sign",
+            "verify",
+            "keygen"
+          ],
+          "classicalSecurityLevel": 112,
+          "nistQuantumSecurityLevel": 0
+        },
+        "oid": "1.2.840.113549.1.1.1"
+      },
+      "properties": [
+        {
+          "name": "quantumshield:quantum-status",
+          "value": "quantum-broken"
+        },
+        {
+          "name": "quantumshield:recommended-replacement",
+          "value": "ML-DSA-65 (FIPS 204), or a hybrid/composite certificate during transition"
+        }
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "legacy-configs/billing_client.py",
+            "line": 8,
+            "additionalContext": "code return rsa.generate_private_key(public_exponent=65537, key_size=2048)"
+          },
+          {
+            "location": "legacy-configs/sshd_config",
+            "line": 3,
+            "additionalContext": "HostKey /etc/ssh/ssh_host_rsa_key"
+          }
+        ]
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/algorithm/RSA-KEX",
+      "name": "RSA-KEX",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "pke",
+          "parameterSetIdentifier": "RSA-KEX",
+          "executionEnvironment": "software-plain-ram",
+          "cryptoFunctions": [
+            "encrypt",
+            "decrypt"
+          ],
+          "classicalSecurityLevel": 112,
+          "nistQuantumSecurityLevel": 0
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:quantum-status",
+          "value": "quantum-broken"
+        },
+        {
+          "name": "quantumshield:recommended-replacement",
+          "value": "X25519MLKEM768 (hybrid ML-KEM-768, FIPS 203) over TLS 1.3 (also restores forward secrecy)"
+        }
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "services/inventory/nginx.conf",
+            "line": 14,
+            "additionalContext": "ssl_ciphers AES128-GCM-SHA256:AES256-SHA:ECDHE-RSA-AES128-GCM-SHA256:DES-CBC3-SHA:@SECLEVEL=0"
+          },
+          {
+            "location": "legacy-configs/apache-ssl.conf",
+            "line": 5,
+            "additionalContext": "SSLCipherSuite HIGH:!aNULL:!MD5"
+          },
+          {
+            "location": "legacy-configs/haproxy.cfg",
+            "line": 2,
+            "additionalContext": "ssl-default-bind-ciphers ECDHE-RSA-AES128-GCM-SHA256:AES256-SHA256"
+          },
+          {
+            "location": "legacy-configs/openssl.cnf",
+            "line": 11,
+            "additionalContext": "CipherString DEFAULT:@SECLEVEL=2"
+          }
+        ]
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/algorithm/SHA-1",
+      "name": "SHA-1",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "hash",
+          "parameterSetIdentifier": "SHA-1",
+          "executionEnvironment": "software-plain-ram",
+          "cryptoFunctions": [
+            "digest"
+          ],
+          "classicalSecurityLevel": 63,
+          "nistQuantumSecurityLevel": 0
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:quantum-status",
+          "value": "insecure"
+        },
+        {
+          "name": "quantumshield:recommended-replacement",
+          "value": "SHA-256 or SHA-384"
+        }
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "legacy-configs/sshd_config",
+            "line": 7,
+            "additionalContext": "MACs hmac-sha2-256,hmac-sha1"
+          }
+        ]
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/algorithm/SHA-256",
+      "name": "SHA-256",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "hash",
+          "parameterSetIdentifier": "SHA-256",
+          "executionEnvironment": "software-plain-ram",
+          "cryptoFunctions": [
+            "digest"
+          ],
+          "classicalSecurityLevel": 128,
+          "nistQuantumSecurityLevel": 2
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:quantum-status",
+          "value": "quantum-resistant"
+        }
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "legacy-configs/sshd_config",
+            "line": 7,
+            "additionalContext": "MACs hmac-sha2-256,hmac-sha1"
+          }
+        ]
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/algorithm/X25519",
+      "name": "X25519",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "key-agree",
+          "parameterSetIdentifier": "X25519",
+          "executionEnvironment": "software-plain-ram",
+          "cryptoFunctions": [
+            "keygen"
+          ],
+          "classicalSecurityLevel": 128,
+          "nistQuantumSecurityLevel": 0
+        },
+        "oid": "1.3.101.110"
+      },
+      "properties": [
+        {
+          "name": "quantumshield:quantum-status",
+          "value": "quantum-broken"
+        },
+        {
+          "name": "quantumshield:recommended-replacement",
+          "value": "X25519MLKEM768 (hybrid ML-KEM-768, FIPS 203)"
+        }
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "services/orders/nginx.conf",
+            "line": 13,
+            "additionalContext": "ssl_ecdh_curve X25519:prime256v1"
+          },
+          {
+            "location": "legacy-configs/haproxy.cfg",
+            "line": 6,
+            "additionalContext": "curves P-256:X25519"
+          },
+          {
+            "location": "legacy-configs/openssl.cnf",
+            "line": 12,
+            "additionalContext": "Groups X25519:secp256r1:secp384r1"
+          },
+          {
+            "location": "legacy-configs/sshd_config",
+            "line": 5,
+            "additionalContext": "KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,diffie-hellman-group14-sha1"
+          }
+        ]
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/certificate/687c3c41bbb9873a",
+      "name": "CN=Acme Legacy CA,O=QuantumShield",
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "certificateProperties": {
+          "subjectName": "CN=Acme Legacy CA,O=QuantumShield",
+          "issuerName": "CN=Acme Legacy CA,O=QuantumShield",
+          "notValidBefore": "2026-10-12T13:45:48+00:00",
+          "notValidAfter": "2036-10-09T13:45:48+00:00",
+          "signatureAlgorithmRef": "crypto/algorithm/RSA",
+          "subjectPublicKeyRef": "crypto/algorithm/RSA",
+          "certificateFormat": "X.509",
+          "certificateExtension": "crt"
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:fingerprint-sha256",
+          "value": "687c3c41bbb9873af175006d901795d3933feb11e47ce4fb71919a8abc98db2f"
+        },
+        {
+          "name": "quantumshield:public-key",
+          "value": "RSA-2048"
+        },
+        {
+          "name": "quantumshield:source",
+          "value": "file://pki/legacy/ca.crt"
+        }
+      ]
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/certificate/68bfdce459df8021",
+      "name": "CN=orders,O=QuantumShield",
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "certificateProperties": {
+          "subjectName": "CN=orders,O=QuantumShield",
+          "issuerName": "CN=Acme Legacy CA,O=QuantumShield",
+          "notValidBefore": "2026-10-12T13:45:49+00:00",
+          "notValidAfter": "2029-01-14T13:45:49+00:00",
+          "signatureAlgorithmRef": "crypto/algorithm/RSA",
+          "subjectPublicKeyRef": "crypto/algorithm/RSA",
+          "certificateFormat": "X.509",
+          "certificateExtension": "crt"
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:fingerprint-sha256",
+          "value": "68bfdce459df802140ed882d4d28dbe8be57879a5c6794da71e77eec96f2022c"
+        },
+        {
+          "name": "quantumshield:public-key",
+          "value": "RSA-2048"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "DNS:orders"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "DNS:localhost"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "URI:spiffe://quantumshield.local/orders"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "IP:127.0.0.1"
+        },
+        {
+          "name": "quantumshield:source",
+          "value": "tls://orders:443"
+        },
+        {
+          "name": "quantumshield:source",
+          "value": "file://pki/legacy/orders.crt"
+        }
+      ]
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/certificate/9525e604be21ac95",
+      "name": "CN=inventory,O=QuantumShield",
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "certificateProperties": {
+          "subjectName": "CN=inventory,O=QuantumShield",
+          "issuerName": "CN=Acme Legacy CA,O=QuantumShield",
+          "notValidBefore": "2026-10-12T13:45:51+00:00",
+          "notValidAfter": "2029-01-14T13:45:51+00:00",
+          "signatureAlgorithmRef": "crypto/algorithm/RSA",
+          "subjectPublicKeyRef": "crypto/algorithm/RSA",
+          "certificateFormat": "X.509",
+          "certificateExtension": "crt"
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:fingerprint-sha256",
+          "value": "9525e604be21ac9511805c8a5d77a0761fe057c40bfd11da818675f870140843"
+        },
+        {
+          "name": "quantumshield:public-key",
+          "value": "RSA-2048"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "DNS:inventory"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "DNS:localhost"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "URI:spiffe://quantumshield.local/inventory"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "IP:127.0.0.1"
+        },
+        {
+          "name": "quantumshield:source",
+          "value": "tls://inventory:443"
+        },
+        {
+          "name": "quantumshield:source",
+          "value": "file://pki/legacy/inventory.crt"
+        }
+      ]
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/certificate/ea7279e7018d8155",
+      "name": "CN=payments,O=QuantumShield",
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "certificateProperties": {
+          "subjectName": "CN=payments,O=QuantumShield",
+          "issuerName": "CN=Acme Legacy CA,O=QuantumShield",
+          "notValidBefore": "2026-10-12T13:45:50+00:00",
+          "notValidAfter": "2027-10-12T13:45:50+00:00",
+          "signatureAlgorithmRef": "crypto/algorithm/RSA",
+          "subjectPublicKeyRef": "crypto/algorithm/ECDSA",
+          "certificateFormat": "X.509",
+          "certificateExtension": "crt"
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:fingerprint-sha256",
+          "value": "ea7279e7018d8155826504b19fc1a1e603354f41be32f28df8e408f6f2d9ffee"
+        },
+        {
+          "name": "quantumshield:public-key",
+          "value": "secp256r1"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "DNS:payments"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "DNS:localhost"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "URI:spiffe://quantumshield.local/payments"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "IP:127.0.0.1"
+        },
+        {
+          "name": "quantumshield:source",
+          "value": "tls://payments:443"
+        },
+        {
+          "name": "quantumshield:source",
+          "value": "file://pki/legacy/payments.crt"
+        }
+      ]
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/key/pki/legacy/ca.key#1",
+      "name": "private key (RSA-2048)",
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "private-key",
+          "algorithmRef": "crypto/algorithm/RSA"
+        }
+      },
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "pki/legacy/ca.key",
+            "line": 1
+          }
+        ]
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/key/pki/legacy/inventory.key#1",
+      "name": "private key (RSA-2048)",
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "private-key",
+          "algorithmRef": "crypto/algorithm/RSA"
+        }
+      },
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "pki/legacy/inventory.key",
+            "line": 1
+          }
+        ]
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/key/pki/legacy/orders.key#1",
+      "name": "private key (RSA-2048)",
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "private-key",
+          "algorithmRef": "crypto/algorithm/RSA"
+        }
+      },
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "pki/legacy/orders.key",
+            "line": 1
+          }
+        ]
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/key/pki/legacy/payments.key#1",
+      "name": "private key (ECDSA)",
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "private-key",
+          "algorithmRef": "crypto/algorithm/ECDSA"
+        }
+      },
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "pki/legacy/payments.key",
+            "line": 1
+          }
+        ]
+      }
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/protocol/tls/inventory:443",
+      "name": "TLS @ inventory:443",
+      "cryptoProperties": {
+        "assetType": "protocol",
+        "protocolProperties": {
+          "type": "tls",
+          "version": "1.0, 1.1, 1.2",
+          "cipherSuites": [
+            {
+              "name": "ECDHE-RSA-AES128-GCM-SHA256",
+              "algorithms": [
+                "crypto/algorithm/AES-128-GCM",
+                "crypto/algorithm/ECDH-P256",
+                "crypto/algorithm/RSA"
+              ]
+            },
+            {
+              "name": "AES128-GCM-SHA256",
+              "algorithms": [
+                "crypto/algorithm/AES-128-GCM",
+                "crypto/algorithm/RSA-KEX",
+                "crypto/algorithm/RSA"
+              ]
+            },
+            {
+              "name": "AES256-SHA",
+              "algorithms": [
+                "crypto/algorithm/AES-256-CBC",
+                "crypto/algorithm/RSA-KEX",
+                "crypto/algorithm/RSA"
+              ]
+            }
+          ]
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:negotiated-version",
+          "value": "TLSv1.2"
+        },
+        {
+          "name": "quantumshield:negotiated-group",
+          "value": "secp256r1"
+        },
+        {
+          "name": "quantumshield:negotiated-cipher",
+          "value": "ECDHE-RSA-AES128-GCM-SHA256"
+        },
+        {
+          "name": "quantumshield:pqc-groups",
+          "value": "none"
+        },
+        {
+          "name": "quantumshield:mtls-required",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/protocol/tls/orders:443",
+      "name": "TLS @ orders:443",
+      "cryptoProperties": {
+        "assetType": "protocol",
+        "protocolProperties": {
+          "type": "tls",
+          "version": "1.2, 1.3",
+          "cipherSuites": [
+            {
+              "name": "TLS_AES_256_GCM_SHA384",
+              "algorithms": [
+                "crypto/algorithm/AES-256-GCM"
+              ]
+            },
+            {
+              "name": "ECDHE-RSA-AES128-GCM-SHA256",
+              "algorithms": [
+                "crypto/algorithm/AES-128-GCM",
+                "crypto/algorithm/RSA"
+              ]
+            },
+            {
+              "name": "ECDHE-RSA-AES256-GCM-SHA384",
+              "algorithms": [
+                "crypto/algorithm/AES-256-GCM",
+                "crypto/algorithm/RSA"
+              ]
+            }
+          ]
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:negotiated-version",
+          "value": "TLSv1.3"
+        },
+        {
+          "name": "quantumshield:negotiated-group",
+          "value": "x25519"
+        },
+        {
+          "name": "quantumshield:negotiated-cipher",
+          "value": "TLS_AES_256_GCM_SHA384"
+        },
+        {
+          "name": "quantumshield:pqc-groups",
+          "value": "none"
+        },
+        {
+          "name": "quantumshield:mtls-required",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/protocol/tls/payments:443",
+      "name": "TLS @ payments:443",
+      "cryptoProperties": {
+        "assetType": "protocol",
+        "protocolProperties": {
+          "type": "tls",
+          "version": "1.2",
+          "cipherSuites": [
+            {
+              "name": "ECDHE-ECDSA-AES128-GCM-SHA256",
+              "algorithms": [
+                "crypto/algorithm/AES-128-GCM",
+                "crypto/algorithm/ECDH-P256",
+                "crypto/algorithm/ECDSA"
+              ]
+            },
+            {
+              "name": "ECDHE-ECDSA-AES256-SHA",
+              "algorithms": [
+                "crypto/algorithm/AES-256-CBC",
+                "crypto/algorithm/ECDH-P256",
+                "crypto/algorithm/ECDSA"
+              ]
+            }
+          ]
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:negotiated-version",
+          "value": "TLSv1.2"
+        },
+        {
+          "name": "quantumshield:negotiated-group",
+          "value": "secp256r1"
+        },
+        {
+          "name": "quantumshield:negotiated-cipher",
+          "value": "ECDHE-ECDSA-AES128-GCM-SHA256"
+        },
+        {
+          "name": "quantumshield:pqc-groups",
+          "value": "none"
+        },
+        {
+          "name": "quantumshield:mtls-required",
+          "value": "false"
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "bom-ref": "service/orders",
+      "name": "orders",
+      "endpoints": [
+        "tls://orders:443"
+      ]
+    },
+    {
+      "bom-ref": "service/payments",
+      "name": "payments",
+      "endpoints": [
+        "tls://payments:443"
+      ]
+    },
+    {
+      "bom-ref": "service/inventory",
+      "name": "inventory",
+      "endpoints": [
+        "tls://inventory:443"
+      ]
+    },
+    {
+      "bom-ref": "service/reports.internal",
+      "name": "reports.internal",
+      "endpoints": []
+    },
+    {
+      "bom-ref": "service/legacy-configs",
+      "name": "legacy-configs",
+      "endpoints": []
+    },
+    {
+      "bom-ref": "service/legacy-pki",
+      "name": "legacy-pki",
+      "endpoints": []
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "crypto/algorithm/RSA",
+      "dependsOn": [
+        "crypto/algorithm/SHA-256"
+      ]
+    },
+    {
+      "ref": "crypto/certificate/687c3c41bbb9873a",
+      "dependsOn": [
+        "crypto/algorithm/RSA"
+      ]
+    },
+    {
+      "ref": "crypto/certificate/68bfdce459df8021",
+      "dependsOn": [
+        "crypto/algorithm/RSA"
+      ]
+    },
+    {
+      "ref": "crypto/certificate/9525e604be21ac95",
+      "dependsOn": [
+        "crypto/algorithm/RSA"
+      ]
+    },
+    {
+      "ref": "crypto/certificate/ea7279e7018d8155",
+      "dependsOn": [
+        "crypto/algorithm/ECDSA",
+        "crypto/algorithm/RSA"
+      ]
+    },
+    {
+      "ref": "crypto/protocol/tls/inventory:443",
+      "dependsOn": [
+        "crypto/algorithm/AES-128-GCM",
+        "crypto/algorithm/AES-256-CBC",
+        "crypto/algorithm/ECDH-P256",
+        "crypto/algorithm/RSA",
+        "crypto/algorithm/RSA-KEX",
+        "crypto/certificate/9525e604be21ac95"
+      ]
+    },
+    {
+      "ref": "crypto/protocol/tls/orders:443",
+      "dependsOn": [
+        "crypto/algorithm/AES-128-GCM",
+        "crypto/algorithm/AES-256-GCM",
+        "crypto/algorithm/ECDH-P256",
+        "crypto/algorithm/RSA",
+        "crypto/algorithm/X25519",
+        "crypto/certificate/68bfdce459df8021"
+      ]
+    },
+    {
+      "ref": "crypto/protocol/tls/payments:443",
+      "dependsOn": [
+        "crypto/algorithm/AES-128-GCM",
+        "crypto/algorithm/AES-256-CBC",
+        "crypto/algorithm/ECDH-P256",
+        "crypto/algorithm/ECDSA",
+        "crypto/certificate/ea7279e7018d8155"
+      ]
+    },
+    {
+      "ref": "service/inventory",
+      "dependsOn": [
+        "crypto/algorithm/AES-128-GCM",
+        "crypto/algorithm/AES-256-CBC",
+        "crypto/algorithm/ECDH-P256",
+        "crypto/algorithm/ECDH-P384",
+        "crypto/algorithm/RSA-KEX",
+        "crypto/protocol/tls/inventory:443"
+      ]
+    },
+    {
+      "ref": "service/legacy-configs",
+      "dependsOn": [
+        "crypto/algorithm/3DES",
+        "crypto/algorithm/AES-128-CBC",
+        "crypto/algorithm/AES-128-GCM",
+        "crypto/algorithm/AES-256-CBC",
+        "crypto/algorithm/AES-256-GCM",
+        "crypto/algorithm/ChaCha20-Poly1305",
+        "crypto/algorithm/DH-1024",
+        "crypto/algorithm/ECDH-P256",
+        "crypto/algorithm/ECDH-P384",
+        "crypto/algorithm/ECDSA",
+        "crypto/algorithm/MD5",
+        "crypto/algorithm/RSA",
+        "crypto/algorithm/RSA-KEX",
+        "crypto/algorithm/SHA-1",
+        "crypto/algorithm/SHA-256",
+        "crypto/algorithm/X25519"
+      ]
+    },
+    {
+      "ref": "service/legacy-pki",
+      "dependsOn": [
+        "crypto/certificate/687c3c41bbb9873a",
+        "crypto/certificate/68bfdce459df8021",
+        "crypto/certificate/9525e604be21ac95",
+        "crypto/certificate/ea7279e7018d8155",
+        "crypto/key/pki/legacy/ca.key#1",
+        "crypto/key/pki/legacy/inventory.key#1",
+        "crypto/key/pki/legacy/orders.key#1",
+        "crypto/key/pki/legacy/payments.key#1"
+      ]
+    },
+    {
+      "ref": "service/orders",
+      "dependsOn": [
+        "crypto/algorithm/AES-128-GCM",
+        "crypto/algorithm/AES-256-GCM",
+        "crypto/algorithm/ECDH-P256",
+        "crypto/algorithm/X25519",
+        "crypto/protocol/tls/orders:443"
+      ]
+    },
+    {
+      "ref": "service/payments",
+      "dependsOn": [
+        "crypto/algorithm/AES-128-GCM",
+        "crypto/algorithm/AES-256-CBC",
+        "crypto/algorithm/ECDH-P256",
+        "crypto/protocol/tls/payments:443"
+      ]
+    },
+    {
+      "ref": "service/reports.internal",
+      "dependsOn": [
+        "crypto/algorithm/AES-128-CBC",
+        "crypto/algorithm/AES-128-GCM",
+        "crypto/algorithm/AES-256-CBC",
+        "crypto/algorithm/AES-256-GCM",
+        "crypto/algorithm/ChaCha20-Poly1305",
+        "crypto/algorithm/RSA-KEX"
+      ]
+    }
+  ]
+}

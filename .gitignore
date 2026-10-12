@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+.pytest_cache/
+qs-out/
+qs-migration/
+demo/pki/
+demo/runtime/
+demo/out/
+demo/local/pki/
+demo/local/out/

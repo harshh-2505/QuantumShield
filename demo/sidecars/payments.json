@@ -1,0 +1,43 @@
+{
+  "proxies": [
+    {
+      "name": "payments-ingress",
+      "mode": "ingress",
+      "listen": "0.0.0.0:8443",
+      "upstream": "127.0.0.1:443",
+      "upstream_tls": true,
+      "policy": "strict",
+      "require_client_cert": true,
+      "cert": "/pki/pqc/payments.crt",
+      "key": "/pki/pqc/payments.key",
+      "ca": "/pki/pqc/ca.crt",
+      "allowed_ids": ["spiffe://quantumshield.local/orders", "spiffe://quantumshield.local/scanner"]
+    },
+    {
+      "name": "bench-classical",
+      "mode": "ingress",
+      "listen": "0.0.0.0:7443",
+      "upstream": "127.0.0.1:443",
+      "upstream_tls": true,
+      "policy": "classical",
+      "groups": "X25519",
+      "require_client_cert": true,
+      "cert": "/pki/bench-ecdsa/payments.crt",
+      "key": "/pki/bench-ecdsa/payments.key",
+      "ca": "/pki/bench-ecdsa/ca.crt"
+    },
+    {
+      "name": "bench-hybrid-kem",
+      "mode": "ingress",
+      "listen": "0.0.0.0:7444",
+      "upstream": "127.0.0.1:443",
+      "upstream_tls": true,
+      "policy": "strict",
+      "groups": "X25519MLKEM768",
+      "require_client_cert": true,
+      "cert": "/pki/bench-ecdsa/payments.crt",
+      "key": "/pki/bench-ecdsa/payments.key",
+      "ca": "/pki/bench-ecdsa/ca.crt"
+    }
+  ]
+}

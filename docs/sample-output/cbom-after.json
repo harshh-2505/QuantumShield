@@ -1,0 +1,654 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:9740e1c7-0953-4892-90e5-a563aeff6d08",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-10-12T13:46:42+00:00",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "name": "quantumshield",
+          "version": "0.1.0"
+        }
+      ]
+    },
+    "properties": [
+      {
+        "name": "quantumshield:tls-library",
+        "value": "OpenSSL 3.5.7 9 Jun 2026; ML-KEM available; group control"
+      }
+    ]
+  },
+  "components": [
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/algorithm/AES-256-GCM",
+      "name": "AES-256-GCM",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "ae",
+          "parameterSetIdentifier": "AES-256-GCM",
+          "executionEnvironment": "software-plain-ram",
+          "cryptoFunctions": [
+            "encrypt",
+            "decrypt"
+          ],
+          "classicalSecurityLevel": 256,
+          "nistQuantumSecurityLevel": 5
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:quantum-status",
+          "value": "quantum-resistant"
+        }
+      ]
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/algorithm/ECDH-P256",
+      "name": "ECDH-P256",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "key-agree",
+          "parameterSetIdentifier": "ECDH-P256",
+          "executionEnvironment": "software-plain-ram",
+          "cryptoFunctions": [
+            "keygen"
+          ],
+          "classicalSecurityLevel": 128,
+          "nistQuantumSecurityLevel": 0
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:quantum-status",
+          "value": "quantum-broken"
+        },
+        {
+          "name": "quantumshield:recommended-replacement",
+          "value": "X25519MLKEM768 (hybrid ML-KEM-768, FIPS 203)"
+        }
+      ]
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/algorithm/ECDH-P384",
+      "name": "ECDH-P384",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "key-agree",
+          "parameterSetIdentifier": "ECDH-P384",
+          "executionEnvironment": "software-plain-ram",
+          "cryptoFunctions": [
+            "keygen"
+          ],
+          "classicalSecurityLevel": 192,
+          "nistQuantumSecurityLevel": 0
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:quantum-status",
+          "value": "quantum-broken"
+        },
+        {
+          "name": "quantumshield:recommended-replacement",
+          "value": "SecP384r1MLKEM1024 or X25519MLKEM768"
+        }
+      ]
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/algorithm/ML-DSA-65",
+      "name": "ML-DSA-65",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "signature",
+          "parameterSetIdentifier": "ML-DSA-65",
+          "executionEnvironment": "software-plain-ram",
+          "cryptoFunctions": [
+            "sign",
+            "verify",
+            "keygen"
+          ],
+          "classicalSecurityLevel": 192,
+          "nistQuantumSecurityLevel": 3
+        },
+        "oid": "2.16.840.1.101.3.4.3.18"
+      },
+      "properties": [
+        {
+          "name": "quantumshield:quantum-status",
+          "value": "quantum-resistant"
+        }
+      ]
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/algorithm/SecP256r1MLKEM768",
+      "name": "SecP256r1MLKEM768",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "combiner",
+          "parameterSetIdentifier": "SecP256r1MLKEM768",
+          "executionEnvironment": "software-plain-ram",
+          "cryptoFunctions": [
+            "encapsulate",
+            "decapsulate",
+            "keygen"
+          ],
+          "classicalSecurityLevel": 128,
+          "nistQuantumSecurityLevel": 3
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:quantum-status",
+          "value": "hybrid"
+        }
+      ]
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/algorithm/SecP384r1MLKEM1024",
+      "name": "SecP384r1MLKEM1024",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "combiner",
+          "parameterSetIdentifier": "SecP384r1MLKEM1024",
+          "executionEnvironment": "software-plain-ram",
+          "cryptoFunctions": [
+            "encapsulate",
+            "decapsulate",
+            "keygen"
+          ],
+          "classicalSecurityLevel": 192,
+          "nistQuantumSecurityLevel": 5
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:quantum-status",
+          "value": "hybrid"
+        }
+      ]
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/algorithm/X25519",
+      "name": "X25519",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "key-agree",
+          "parameterSetIdentifier": "X25519",
+          "executionEnvironment": "software-plain-ram",
+          "cryptoFunctions": [
+            "keygen"
+          ],
+          "classicalSecurityLevel": 128,
+          "nistQuantumSecurityLevel": 0
+        },
+        "oid": "1.3.101.110"
+      },
+      "properties": [
+        {
+          "name": "quantumshield:quantum-status",
+          "value": "quantum-broken"
+        },
+        {
+          "name": "quantumshield:recommended-replacement",
+          "value": "X25519MLKEM768 (hybrid ML-KEM-768, FIPS 203)"
+        }
+      ]
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/algorithm/X25519MLKEM768",
+      "name": "X25519MLKEM768",
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "combiner",
+          "parameterSetIdentifier": "X25519MLKEM768",
+          "executionEnvironment": "software-plain-ram",
+          "cryptoFunctions": [
+            "encapsulate",
+            "decapsulate",
+            "keygen"
+          ],
+          "classicalSecurityLevel": 128,
+          "nistQuantumSecurityLevel": 3
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:quantum-status",
+          "value": "hybrid"
+        }
+      ]
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/certificate/973e8804dc4f3005",
+      "name": "CN=orders,O=QuantumShield",
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "certificateProperties": {
+          "subjectName": "CN=orders,O=QuantumShield",
+          "issuerName": "CN=QuantumShield Root CA,O=QuantumShield",
+          "notValidBefore": "2026-10-12T13:46:08+00:00",
+          "notValidAfter": "2026-11-11T13:46:08+00:00",
+          "signatureAlgorithmRef": "crypto/algorithm/ML-DSA-65",
+          "subjectPublicKeyRef": "crypto/algorithm/ML-DSA-65",
+          "certificateFormat": "X.509",
+          "certificateExtension": "crt"
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:fingerprint-sha256",
+          "value": "973e8804dc4f3005b1c3606d467f1342c5d000cc02da4a34253f9f68ec72b231"
+        },
+        {
+          "name": "quantumshield:public-key",
+          "value": "ML-DSA-65"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "DNS:orders"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "DNS:localhost"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "URI:spiffe://quantumshield.local/orders"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "IP:127.0.0.1"
+        },
+        {
+          "name": "quantumshield:source",
+          "value": "tls://orders:8443"
+        }
+      ]
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/certificate/a7607576c60e670b",
+      "name": "CN=inventory,O=QuantumShield",
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "certificateProperties": {
+          "subjectName": "CN=inventory,O=QuantumShield",
+          "issuerName": "CN=QuantumShield Root CA,O=QuantumShield",
+          "notValidBefore": "2026-10-12T13:46:08+00:00",
+          "notValidAfter": "2026-11-11T13:46:08+00:00",
+          "signatureAlgorithmRef": "crypto/algorithm/ML-DSA-65",
+          "subjectPublicKeyRef": "crypto/algorithm/ML-DSA-65",
+          "certificateFormat": "X.509",
+          "certificateExtension": "crt"
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:fingerprint-sha256",
+          "value": "a7607576c60e670bf58cc69985ab7f0231216b3de250411abf9480970b8c2d11"
+        },
+        {
+          "name": "quantumshield:public-key",
+          "value": "ML-DSA-65"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "DNS:inventory"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "DNS:localhost"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "URI:spiffe://quantumshield.local/inventory"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "IP:127.0.0.1"
+        },
+        {
+          "name": "quantumshield:source",
+          "value": "tls://inventory:8443"
+        }
+      ]
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/certificate/ae3e7795f5f9f39b",
+      "name": "CN=QuantumShield Root CA,O=QuantumShield",
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "certificateProperties": {
+          "subjectName": "CN=QuantumShield Root CA,O=QuantumShield",
+          "issuerName": "CN=QuantumShield Root CA,O=QuantumShield",
+          "notValidBefore": "2026-10-12T13:46:07+00:00",
+          "notValidAfter": "2036-10-09T13:46:07+00:00",
+          "signatureAlgorithmRef": "crypto/algorithm/ML-DSA-65",
+          "subjectPublicKeyRef": "crypto/algorithm/ML-DSA-65",
+          "certificateFormat": "X.509",
+          "certificateExtension": "crt"
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:fingerprint-sha256",
+          "value": "ae3e7795f5f9f39baf8f6b8d4c5bc17c7c2476e2384e321c3b33a8725b1109ec"
+        },
+        {
+          "name": "quantumshield:public-key",
+          "value": "ML-DSA-65"
+        },
+        {
+          "name": "quantumshield:source",
+          "value": "tls://inventory:8443"
+        },
+        {
+          "name": "quantumshield:source",
+          "value": "tls://payments:8443"
+        },
+        {
+          "name": "quantumshield:source",
+          "value": "tls://orders:8443"
+        }
+      ]
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/certificate/b69b177182e34e74",
+      "name": "CN=payments,O=QuantumShield",
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "certificateProperties": {
+          "subjectName": "CN=payments,O=QuantumShield",
+          "issuerName": "CN=QuantumShield Root CA,O=QuantumShield",
+          "notValidBefore": "2026-10-12T13:46:38+00:00",
+          "notValidAfter": "2026-11-11T13:46:38+00:00",
+          "signatureAlgorithmRef": "crypto/algorithm/ML-DSA-65",
+          "subjectPublicKeyRef": "crypto/algorithm/ML-DSA-65",
+          "certificateFormat": "X.509",
+          "certificateExtension": "crt"
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:fingerprint-sha256",
+          "value": "b69b177182e34e74e2beb43cd4ce39c6ff6afff4838ece3c23c8b88f95c34c33"
+        },
+        {
+          "name": "quantumshield:public-key",
+          "value": "ML-DSA-65"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "DNS:payments"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "DNS:localhost"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "URI:spiffe://quantumshield.local/payments"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "IP:127.0.0.1"
+        },
+        {
+          "name": "quantumshield:source",
+          "value": "tls://payments:8443"
+        }
+      ]
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/protocol/tls/inventory:8443",
+      "name": "TLS @ inventory:8443",
+      "cryptoProperties": {
+        "assetType": "protocol",
+        "protocolProperties": {
+          "type": "tls",
+          "version": "1.3",
+          "cipherSuites": [
+            {
+              "name": "TLS_AES_256_GCM_SHA384",
+              "algorithms": [
+                "crypto/algorithm/AES-256-GCM"
+              ]
+            }
+          ]
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:negotiated-version",
+          "value": "TLSv1.3"
+        },
+        {
+          "name": "quantumshield:negotiated-group",
+          "value": "X25519MLKEM768"
+        },
+        {
+          "name": "quantumshield:negotiated-cipher",
+          "value": "TLS_AES_256_GCM_SHA384"
+        },
+        {
+          "name": "quantumshield:pqc-groups",
+          "value": "X25519MLKEM768, SecP256r1MLKEM768, SecP384r1MLKEM1024"
+        },
+        {
+          "name": "quantumshield:mtls-required",
+          "value": "true"
+        }
+      ]
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/protocol/tls/orders:8443",
+      "name": "TLS @ orders:8443",
+      "cryptoProperties": {
+        "assetType": "protocol",
+        "protocolProperties": {
+          "type": "tls",
+          "version": "1.3",
+          "cipherSuites": [
+            {
+              "name": "TLS_AES_256_GCM_SHA384",
+              "algorithms": [
+                "crypto/algorithm/AES-256-GCM"
+              ]
+            }
+          ]
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:negotiated-version",
+          "value": "TLSv1.3"
+        },
+        {
+          "name": "quantumshield:negotiated-group",
+          "value": "X25519MLKEM768"
+        },
+        {
+          "name": "quantumshield:negotiated-cipher",
+          "value": "TLS_AES_256_GCM_SHA384"
+        },
+        {
+          "name": "quantumshield:pqc-groups",
+          "value": "X25519MLKEM768, SecP256r1MLKEM768, SecP384r1MLKEM1024"
+        },
+        {
+          "name": "quantumshield:mtls-required",
+          "value": "false"
+        }
+      ]
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/protocol/tls/payments:8443",
+      "name": "TLS @ payments:8443",
+      "cryptoProperties": {
+        "assetType": "protocol",
+        "protocolProperties": {
+          "type": "tls",
+          "version": "1.3",
+          "cipherSuites": [
+            {
+              "name": "TLS_AES_256_GCM_SHA384",
+              "algorithms": [
+                "crypto/algorithm/AES-256-GCM"
+              ]
+            }
+          ]
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:negotiated-version",
+          "value": "TLSv1.3"
+        },
+        {
+          "name": "quantumshield:negotiated-group",
+          "value": "X25519MLKEM768"
+        },
+        {
+          "name": "quantumshield:negotiated-cipher",
+          "value": "TLS_AES_256_GCM_SHA384"
+        },
+        {
+          "name": "quantumshield:pqc-groups",
+          "value": "X25519MLKEM768, SecP256r1MLKEM768, SecP384r1MLKEM1024"
+        },
+        {
+          "name": "quantumshield:mtls-required",
+          "value": "true"
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "bom-ref": "service/orders",
+      "name": "orders",
+      "endpoints": [
+        "tls://orders:8443"
+      ]
+    },
+    {
+      "bom-ref": "service/payments",
+      "name": "payments",
+      "endpoints": [
+        "tls://payments:8443"
+      ]
+    },
+    {
+      "bom-ref": "service/inventory",
+      "name": "inventory",
+      "endpoints": [
+        "tls://inventory:8443"
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "crypto/certificate/973e8804dc4f3005",
+      "dependsOn": [
+        "crypto/algorithm/ML-DSA-65"
+      ]
+    },
+    {
+      "ref": "crypto/certificate/a7607576c60e670b",
+      "dependsOn": [
+        "crypto/algorithm/ML-DSA-65"
+      ]
+    },
+    {
+      "ref": "crypto/certificate/ae3e7795f5f9f39b",
+      "dependsOn": [
+        "crypto/algorithm/ML-DSA-65"
+      ]
+    },
+    {
+      "ref": "crypto/certificate/b69b177182e34e74",
+      "dependsOn": [
+        "crypto/algorithm/ML-DSA-65"
+      ]
+    },
+    {
+      "ref": "crypto/protocol/tls/inventory:8443",
+      "dependsOn": [
+        "crypto/algorithm/AES-256-GCM",
+        "crypto/algorithm/SecP256r1MLKEM768",
+        "crypto/algorithm/SecP384r1MLKEM1024",
+        "crypto/algorithm/X25519MLKEM768",
+        "crypto/certificate/a7607576c60e670b",
+        "crypto/certificate/ae3e7795f5f9f39b"
+      ]
+    },
+    {
+      "ref": "crypto/protocol/tls/orders:8443",
+      "dependsOn": [
+        "crypto/algorithm/AES-256-GCM",
+        "crypto/algorithm/ECDH-P256",
+        "crypto/algorithm/ECDH-P384",
+        "crypto/algorithm/SecP256r1MLKEM768",
+        "crypto/algorithm/SecP384r1MLKEM1024",
+        "crypto/algorithm/X25519",
+        "crypto/algorithm/X25519MLKEM768",
+        "crypto/certificate/973e8804dc4f3005",
+        "crypto/certificate/ae3e7795f5f9f39b"
+      ]
+    },
+    {
+      "ref": "crypto/protocol/tls/payments:8443",
+      "dependsOn": [
+        "crypto/algorithm/AES-256-GCM",
+        "crypto/algorithm/SecP256r1MLKEM768",
+        "crypto/algorithm/SecP384r1MLKEM1024",
+        "crypto/algorithm/X25519MLKEM768",
+        "crypto/certificate/ae3e7795f5f9f39b",
+        "crypto/certificate/b69b177182e34e74"
+      ]
+    },
+    {
+      "ref": "service/inventory",
+      "dependsOn": [
+        "crypto/protocol/tls/inventory:8443"
+      ]
+    },
+    {
+      "ref": "service/orders",
+      "dependsOn": [
+        "crypto/protocol/tls/orders:8443"
+      ]
+    },
+    {
+      "ref": "service/payments",
+      "dependsOn": [
+        "crypto/protocol/tls/payments:8443"
+      ]
+    }
+  ]
+}

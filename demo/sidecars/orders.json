@@ -1,0 +1,40 @@
+{
+  "proxies": [
+    {
+      "name": "orders-ingress",
+      "mode": "ingress",
+      "listen": "0.0.0.0:8443",
+      "upstream": "127.0.0.1:443",
+      "upstream_tls": true,
+      "policy": "prefer",
+      "require_client_cert": false,
+      "cert": "/pki/pqc/orders.crt",
+      "key": "/pki/pqc/orders.key",
+      "ca": "/pki/pqc/ca.crt"
+    },
+    {
+      "name": "orders-to-payments",
+      "mode": "egress",
+      "listen": "127.0.0.1:9001",
+      "upstream": "payments:8443",
+      "server_name": "payments",
+      "policy": "strict",
+      "cert": "/pki/pqc/orders.crt",
+      "key": "/pki/pqc/orders.key",
+      "ca": "/pki/pqc/ca.crt",
+      "allowed_ids": ["spiffe://quantumshield.local/payments"]
+    },
+    {
+      "name": "orders-to-inventory",
+      "mode": "egress",
+      "listen": "127.0.0.1:9002",
+      "upstream": "inventory:8443",
+      "server_name": "inventory",
+      "policy": "strict",
+      "cert": "/pki/pqc/orders.crt",
+      "key": "/pki/pqc/orders.key",
+      "ca": "/pki/pqc/ca.crt",
+      "allowed_ids": ["spiffe://quantumshield.local/inventory"]
+    }
+  ]
+}

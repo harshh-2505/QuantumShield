@@ -1,0 +1,72 @@
+# QuantumShield demo: three nginx services on classical TLS, then hybrid
+# post-quantum sidecars.  Driven by ./run-demo.sh; see README.md.
+name: qs-demo
+
+x-service: &service
+  image: nginx:1.29-trixie          # links OpenSSL 3.5, but configured classically
+  networks: [mesh]
+  healthcheck:
+    test: ["CMD-SHELL", "nginx -t -q || exit 1"]
+    interval: 5s
+
+x-sidecar: &sidecar
+  image: quantumshield:latest
+  profiles: [pqc]
+  volumes:
+    - ./pki:/pki:ro
+    - ./sidecars:/sidecars:ro
+  restart: unless-stopped
+
+services:
+  orders:
+    <<: *service
+    volumes:
+      - ./services/orders/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./runtime/orders:/etc/nginx/runtime:ro
+      - ./pki/legacy:/etc/nginx/pki:ro
+    ports:
+      - "9443:443"     # classical TLS (before migration)
+      - "10443:8443"   # QuantumShield hybrid PQC (after migration)
+    depends_on: [payments, inventory]
+
+  payments:
+    <<: *service
+    volumes:
+      - ./services/payments/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./runtime/payments:/etc/nginx/runtime:ro
+      - ./pki/legacy:/etc/nginx/pki:ro
+
+  inventory:
+    <<: *service
+    volumes:
+      - ./services/inventory/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./runtime/inventory:/etc/nginx/runtime:ro
+      - ./pki/legacy:/etc/nginx/pki:ro
+
+  # Sidecars share each service's network namespace (like a pod), so the
+  # proxy reaches the service on loopback and owns the service's :8443.
+  orders-pqc:
+    <<: *sidecar
+    network_mode: "service:orders"
+    command: ["proxy", "--config", "/sidecars/orders.json", "--admin", "0.0.0.0:9900"]
+  payments-pqc:
+    <<: *sidecar
+    network_mode: "service:payments"
+    command: ["proxy", "--config", "/sidecars/payments.json", "--admin", "0.0.0.0:9900"]
+  inventory-pqc:
+    <<: *sidecar
+    network_mode: "service:inventory"
+    command: ["proxy", "--config", "/sidecars/inventory.json", "--admin", "0.0.0.0:9900"]
+
+  # QuantumShield CLI (scanner, migration planner, benchmarks).
+  qs:
+    image: quantumshield:latest
+    profiles: [tools]
+    networks: [mesh]
+    working_dir: /demo
+    volumes:
+      - ./:/demo
+      - ./pki:/pki
+
+networks:
+  mesh: {}

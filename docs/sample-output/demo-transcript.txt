@@ -1,0 +1,215 @@
+== 0. Build QuantumShield and start three classical services ==
+WARNING: current commit information was not captured by the build: failed to read current commit information with git rev-parse --is-inside-work-tree
+Classical PKI: RSA-2048 CA; orders RSA-2048 (825 days), payments ECDSA P-256, inventory RSA-2048 (825 days)
+  * TLSv1.3 TLS_AES_256_GCM_SHA384  group=x25519  server-sig=rsa_pss_rsae_sha256
+  * server cert: CN=orders,O=QuantumShield  key=RSA-2048  ids=DNS:orders,DNS:localhost,URI:spiffe://quantumshield.local/orders,IP:127.0.0.1
+  * HTTP/1.1 200 OK
+  {"service":"payments","status":"authorised","token":"tok_4f9a","amount":129.99}
+
+== 1-3. Scan certificates, TLS endpoints and configuration files ==
+TLS ENDPOINTS
+service    endpoint       TLS          key exchange                PQC groups  cert key   mTLS
+---------  -------------  -----------  --------------------------  ----------  ---------  ----
+orders     orders:443     1.2,1.3      x25519 (quantum-broken)     none        RSA-2048   no  
+payments   payments:443   1.2          secp256r1 (quantum-broken)  none        secp256r1  no  
+inventory  inventory:443  1.0,1.1,1.2  secp256r1 (quantum-broken)  none        RSA-2048   no  
+
+CONFIG FILES  apache: 1, haproxy: 1, nginx: 3, openssl: 1, pem: 8, source: 1, sshd: 1
+
+CERTIFICATES
+subject                            key        signature    expires   
+---------------------------------  ---------  -----------  ----------
+CN=inventory,O=QuantumShield       RSA-2048   RSA/SHA-256  2029-01-14
+CN=orders,O=QuantumShield          RSA-2048   RSA/SHA-256  2029-01-14
+CN=payments,O=QuantumShield        secp256r1  RSA/SHA-256  2027-10-12
+CN=Acme Legacy CA,O=QuantumShield  RSA-2048   RSA/SHA-256  2036-10-09
+
+MIGRATION READINESS
+service           status   risk  findings                               
+----------------  -------  ----  ---------------------------------------
+inventory         MIGRATE  212   critical:2 high:6 info:1 low:2 medium:1
+legacy-configs    MIGRATE  200   critical:2 high:5 low:2 medium:2       
+payments          MIGRATE  82    high:4 info:1 low:1                    
+reports.internal  MIGRATE  60    critical:1 high:1 info:1               
+orders            MIGRATE  40    high:2 info:1                          
+legacy-pki        REVIEW   34    low:5 medium:3                         
+
+FINDINGS  critical: 5, high: 18, medium: 6, low: 10, info: 4
+
+Wrote out/before/inventory.json, cbom.json (CycloneDX 1.6), findings.json, report.md, dashboard.html
+
+== 2. Cryptographic inventory (CycloneDX 1.6 CBOM) ==
+  components: 16 algorithm, 4 certificate, 3 protocol, 4 related-crypto-material
+  3DES                   insecure
+  AES-128-CBC            quantum-weakened
+  AES-128-GCM            quantum-weakened
+  AES-256-CBC            quantum-resistant
+  AES-256-GCM            quantum-resistant
+  ChaCha20-Poly1305      quantum-resistant
+  DH-1024                insecure
+  ECDH-P256              quantum-broken
+  ECDH-P384              quantum-broken
+  ECDSA                  quantum-broken
+  MD5                    insecure
+  RSA                    quantum-broken
+  RSA-KEX                quantum-broken
+  SHA-1                  insecure
+  SHA-256                quantum-resistant
+  X25519                 quantum-broken
+
+== 3. Services requiring migration, and the plan ==
+inventory: vulnerable (risk 212)
+  [critical] phase 1: Remove static-RSA key-exchange cipher suites
+  [    high] phase 1: Offer hybrid ML-KEM key exchange (X25519MLKEM768) first
+  [    high] phase 1: Enable TLS 1.3 (required for hybrid ML-KEM)
+  [    high] phase 2: Disable TLS 1.0 / 1.1
+  [    info] phase 2: Front the service with a QuantumShield hybrid-PQC mTLS proxy
+  [  medium] phase 3: Re-issue certificates with ML-DSA-65 (or composite) keys
+  [     low] phase 3: Move to short-lived, centrally issued certificates
+  [     low] phase 4: Prefer 256-bit symmetric ciphers
+legacy-configs: vulnerable (risk 200)
+  [critical] phase 1: Remove static-RSA key-exchange cipher suites
+  [    high] phase 1: Offer hybrid ML-KEM key exchange (X25519MLKEM768) first
+  [    high] phase 1: Use mlkem768x25519-sha256 / sntrup761x25519 SSH key exchange
+  [    high] phase 2: Remove insecure ciphers
+  [  medium] phase 3: Route hard-coded crypto through a configurable (agile) layer
+  [     low] phase 4: Plan SSH host-key migration
+payments: vulnerable (risk 82)
+  [    high] phase 1: Offer hybrid ML-KEM key exchange (X25519MLKEM768) first
+  [    high] phase 1: Enable TLS 1.3 (required for hybrid ML-KEM)
+  [    info] phase 2: Front the service with a QuantumShield hybrid-PQC mTLS proxy
+  [  medium] phase 3: Re-issue certificates with ML-DSA-65 (or composite) keys
+  [     low] phase 4: Prefer 256-bit symmetric ciphers
+reports.internal: vulnerable (risk 60)
+  [critical] phase 1: Remove static-RSA key-exchange cipher suites
+  [    high] phase 2: Disable TLS 1.0 / 1.1
+orders: vulnerable (risk 40)
+  [    high] phase 1: Offer hybrid ML-KEM key exchange (X25519MLKEM768) first
+  [    info] phase 2: Front the service with a QuantumShield hybrid-PQC mTLS proxy
+  [  medium] phase 3: Re-issue certificates with ML-DSA-65 (or composite) keys
+  [     low] phase 3: Move to short-lived, centrally issued certificates
+legacy-pki: review (risk 34)
+  [  medium] phase 3: Re-issue certificates with ML-DSA-65 (or composite) keys
+  [     low] phase 3: Move to short-lived, centrally issued certificates
+
+7 config patch(es), 3 sidecar proxy definition(s). Plan: out/migration/plan.md
+Baseline: live connections to the classical services
+### Live connections (TCP + TLS)
+
+| Path | Group | Connect ms (p50) | p95 | TLS ms | Client CPU ms | Proxy CPU ms/conn | Total bytes | Errors |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| orders nginx (classical) | x25519 | 2.270 | 2.800 | 1.787 | 1.091 | - | 3,112 | 0 |
+| payments nginx (classical) | secp256r1 | 2.202 | 2.806 | 1.710 | 1.259 | - | 2,912 | 0 |
+
+
+== 4. Deploy hybrid post-quantum sidecars (no change to the services' code) ==
+Post-quantum PKI: ML-DSA-65 CA and 30-day workload certificates with SPIFFE IDs
+orders: pki/pqc/orders.crt (mldsa65, 30 days, spiffe://quantumshield.local/orders)
+payments: pki/pqc/payments.crt (mldsa65, 30 days, spiffe://quantumshield.local/payments)
+inventory: pki/pqc/inventory.crt (mldsa65, 30 days, spiffe://quantumshield.local/inventory)
+scanner: pki/pqc/scanner.crt (mldsa65, 30 days, spiffe://quantumshield.local/scanner)
+Benchmark-only ECDSA PKI (classical baseline through the same proxy)
+Moving each service's legacy TLS listener to loopback and routing its outbound calls via the sidecar
+Client -> orders (hybrid, edge) -> payments and inventory (hybrid mTLS, ML-DSA identities)
+  * TLSv1.3 TLS_AES_256_GCM_SHA384  group=X25519MLKEM768  server-sig=mldsa65
+  * server cert: CN=orders,O=QuantumShield  key=ML-DSA-65  ids=DNS:orders,DNS:localhost,URI:spiffe://quantumshield.local/orders,IP:127.0.0.1
+  * HTTP/1.1 200 OK
+  {"service":"payments","status":"authorised","token":"tok_4f9a","amount":129.99}
+  * TLSv1.3 TLS_AES_256_GCM_SHA384  group=X25519MLKEM768  server-sig=mldsa65
+  * server cert: CN=orders,O=QuantumShield  key=ML-DSA-65  ids=DNS:orders,DNS:localhost,URI:spiffe://quantumshield.local/orders,IP:127.0.0.1
+  * HTTP/1.1 200 OK
+  {"service":"inventory","sku":"QS-42","on_hand":118}
+payments sidecar log (the orders -> payments hop):
+  {"event": "handshake", "proxy": "payments-ingress", "peer": "('172.18.0.2', 60824)", "version": "TLSv1.3", "cipher": "TLS_AES_256_GCM_SHA384", "group": "X25519MLKEM768", "server_sigalg": "mldsa65", "peer_ids": ["spiffe://quantumshield.local/orders"], "ms": 7.105}
+Legacy port is no longer reachable from the network:
+  * connection failed: [Errno 111] Connection refused
+  
+
+== 5. Compare connection time, CPU use and message size ==
+### Handshake cost (in-process, TLS 1.3, mutual TLS, n=200)
+
+| Scenario | Group | Certs | Wall ms (p50) | Client CPU ms | Server CPU ms | Client→Server B | Server→Client B | Total B | vs. baseline |
+|---|---|---|---:|---:|---:|---:|---:|---:|---:|
+| ECDHE P-256 + RSA-2048 (legacy) | secp256r1 | rsa2048 | 2.161 | 1.108 | 1.007 | 2,431 | 2,483 | 4,914 | 1.00x bytes |
+| X25519 + ECDSA P-256 | x25519 | ecdsa-p256 | 1.634 | 0.824 | 0.756 | 1,158 | 1,483 | 2,641 | 0.54x bytes |
+| X25519MLKEM768 + ECDSA P-256 | X25519MLKEM768 | ecdsa-p256 | 1.821 | 0.957 | 0.827 | 2,334 | 2,570 | 4,904 | 1.00x bytes |
+| X25519MLKEM768 + ML-DSA-65 | X25519MLKEM768 | mldsa65 | 5.146 | 2.391 | 2.172 | 15,856 | 16,049 | 31,905 | 6.49x bytes |
+| ML-KEM-768 + ML-DSA-65 (pure PQC) | MLKEM768 | mldsa65 | 4.619 | 2.222 | 2.008 | 15,824 | 16,017 | 31,841 | 6.48x bytes |
+| SecP384r1MLKEM1024 + ML-DSA-87 (CNSA 2.0 level) | SecP384r1MLKEM1024 | mldsa87 | 7.699 | 3.878 | 3.474 | 21,558 | 21,828 | 43,386 | 8.83x bytes |
+
+### Live connections (TCP + TLS)
+
+| Path | Group | Connect ms (p50) | p95 | TLS ms | Client CPU ms | Proxy CPU ms/conn | Total bytes | Errors |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| orders nginx (classical) | x25519 | 2.270 | 2.800 | 1.787 | 1.091 | - | 3,112 | 0 |
+| payments nginx (classical) | secp256r1 | 2.202 | 2.806 | 1.710 | 1.259 | - | 2,912 | 0 |
+| proxy classical: X25519 + ECDSA | x25519 | 3.921 | 5.274 | 3.358 | 1.366 | 3.697 | 2,697 | 0 |
+| proxy hybrid: X25519MLKEM768 + ECDSA | X25519MLKEM768 | 4.274 | 6.769 | 3.690 | 1.563 | 3.870 | 4,734 | 0 |
+| proxy hybrid: X25519MLKEM768 + ML-DSA-65 | X25519MLKEM768 | 7.002 | 11.818 | 6.446 | 3.016 | 5.690 | 26,649 | 0 |
+
+
+== 6. Zero-trust controls ==
+a) A classical-only client is refused by the strict payments sidecar:
+  * connection failed: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1144)
+  
+b) A valid certificate with an identity that is not allowed:
+  * TLSv1.3 TLS_AES_256_GCM_SHA384  group=X25519MLKEM768  server-sig=mldsa65
+  * server cert: CN=payments,O=QuantumShield  key=ML-DSA-65  ids=DNS:payments,DNS:localhost,URI:spiffe://quantumshield.local/payments,IP:127.0.0.1
+  * server closed the connection after the handshake (rejected by its policy)
+  
+c) Key rotation: re-issue payments' certificate; the sidecar reloads it without a restart:
+  payments: pki/pqc/payments.crt (mldsa65, 30 days, spiffe://quantumshield.local/payments)
+  * TLSv1.3 TLS_AES_256_GCM_SHA384  group=X25519MLKEM768  server-sig=mldsa65
+  * server cert: CN=orders,O=QuantumShield  key=ML-DSA-65  ids=DNS:orders,DNS:localhost,URI:spiffe://quantumshield.local/orders,IP:127.0.0.1
+  * HTTP/1.1 200 OK
+  {"service":"payments","status":"authorised","token":"tok_4f9a","amount":129.99}
+  {"event": "context-reloaded", "proxy": "payments-ingress", "cert": "/pki/pqc/payments.crt"}
+
+== 7. Re-scan after migration ==
+TLS ENDPOINTS
+service    endpoint        TLS  key exchange             PQC groups                                             cert key   mTLS
+---------  --------------  ---  -----------------------  -----------------------------------------------------  ---------  ----
+orders     orders:8443     1.3  X25519MLKEM768 (hybrid)  X25519MLKEM768, SecP256r1MLKEM768, SecP384r1MLKEM1024  ML-DSA-65  no  
+payments   payments:8443   1.3  X25519MLKEM768 (hybrid)  X25519MLKEM768, SecP256r1MLKEM768, SecP384r1MLKEM1024  ML-DSA-65  yes 
+inventory  inventory:8443  1.3  X25519MLKEM768 (hybrid)  X25519MLKEM768, SecP256r1MLKEM768, SecP384r1MLKEM1024  ML-DSA-65  yes 
+
+CERTIFICATES
+subject                                   key        signature  expires   
+----------------------------------------  ---------  ---------  ----------
+CN=inventory,O=QuantumShield              ML-DSA-65  ML-DSA-65  2026-11-11
+CN=QuantumShield Root CA,O=QuantumShield  ML-DSA-65  ML-DSA-65  2036-10-09
+CN=payments,O=QuantumShield               ML-DSA-65  ML-DSA-65  2026-11-11
+CN=orders,O=QuantumShield                 ML-DSA-65  ML-DSA-65  2026-11-11
+
+MIGRATION READINESS
+service    status  risk  findings
+---------  ------  ----  --------
+orders     SAFE    0     info:1  
+payments   SAFE    0             
+inventory  SAFE    0             
+
+FINDINGS  info: 1
+
+Wrote out/after/inventory.json, cbom.json (CycloneDX 1.6), findings.json, report.md, dashboard.html
+service    before      after         risk before  risk after  kex before  kex after     
+---------  ----------  ------------  -----------  ----------  ----------  --------------
+orders     vulnerable  quantum-safe  40           0           x25519      X25519MLKEM768
+payments   vulnerable  quantum-safe  82           0           secp256r1   X25519MLKEM768
+inventory  vulnerable  quantum-safe  212          0           secp256r1   X25519MLKEM768
+d) Revocation: revoke the scanner's certificate; its next connection is refused:
+  revoked serial 393b3c76a5464f71f3f515c48a99728fef093c4b; proxies pick this up on the next connection
+  * TLSv1.3 TLS_AES_256_GCM_SHA384  group=X25519MLKEM768  server-sig=mldsa65
+  * server cert: CN=payments,O=QuantumShield  key=ML-DSA-65  ids=DNS:payments,DNS:localhost,URI:spiffe://quantumshield.local/payments,IP:127.0.0.1
+  * server closed the connection after the handshake (rejected by its policy)
+  
+  {"event": "rejected", "proxy": "payments-ingress", "peer": "('172.18.0.5', 33940)", "reason": "identity ['spiffe://quantumshield.local/intruder'] not in allow-list"}
+  {"event": "rejected", "proxy": "payments-ingress", "peer": "('172.18.0.5', 46894)", "reason": "certificate serial 393b3c76a5464f71f3f515c48a99728fef093c4b is revoked"}
+dashboard written to out/dashboard.html
+
+== Done ==
+  Inventory + CBOM:  demo/out/before/{inventory,cbom}.json, report.md
+  Migration plan:    demo/out/migration/plan.md (patched configs in patched/)
+  Benchmarks:        demo/out/bench.md
+  Dashboard:         demo/out/dashboard.html
+  Try it:            curl -k https://localhost:9443/... is gone; the PQC edge is https://localhost:10443
+  Stop:              ./run-demo.sh down
