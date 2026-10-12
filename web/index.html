@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>QuantumShield</title>
+<meta name="description" content="Find the cryptography a quantum computer will break, inventory it as a CycloneDX CBOM, and move services to hybrid X25519MLKEM768 + ML-DSA mTLS without touching their code.">
+<meta name="theme-color" content="#090d16">
+<meta property="og:title" content="QuantumShield">
+<meta property="og:description" content="Post-quantum migration toolkit: CBOM scanner, analyzer, migration planner and hybrid ML-KEM mTLS sidecar.">
+<meta property="og:image" content="/assets/og.png">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/assets/fonts/unbounded-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/tokens.css">
+<link rel="stylesheet" href="/assets/site.css">
+<script src="/assets/theme.js"></script>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="QuantumShield home">
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <g fill="currentColor" opacity=".55">
+          <circle cx="5" cy="9" r="1.7"/><circle cx="15" cy="7" r="1.7"/><circle cx="25" cy="5" r="1.7"/>
+          <circle cx="7" cy="19" r="1.7"/><circle cx="27" cy="15" r="1.7"/>
+          <circle cx="9" cy="29" r="1.7"/><circle cx="19" cy="27" r="1.7"/><circle cx="29" cy="25" r="1.7"/>
+        </g>
+        <circle cx="17" cy="17" r="2.2" fill="var(--gold)"/>
+        <circle cx="17" cy="17" r="6" fill="none" stroke="var(--gold)" stroke-width="1.4"/>
+      </svg>
+      QuantumShield
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#threat">Threat</a>
+      <a href="#pipeline">Pipeline</a>
+      <a href="#demo">Demo</a>
+      <a href="#bench">Benchmarks</a>
+      <a href="#analyzer">Analyzer</a>
+      <a href="/dashboard">Dashboard</a>
+    </nav>
+    <div class="top-actions">
+      <button class="icon-btn" id="theme" type="button" aria-label="Switch colour theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg>
+      </button>
+      <a class="icon-btn" href="https://github.com/harshh-2505/quantumshield" aria-label="Source code on GitHub">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></svg>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+<!-- ================================================================ hero -->
+<section class="hero" aria-labelledby="hero-title">
+  <canvas id="lattice" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <p class="eyebrow">Post-quantum migration toolkit · OpenSSL 3.5 · FIPS 203 / 204</p>
+    <h1 id="hero-title">Recorded today. Decrypted <span class="strike">later</span> <span class="never">never.</span></h1>
+    <p class="lede">QuantumShield finds the cryptography a quantum computer will break in your
+      <strong>certificates, TLS endpoints and config files</strong>, records it as a
+      <strong>CycloneDX CBOM</strong>, and puts <strong>hybrid X25519MLKEM768 + ML-DSA mTLS</strong>
+      sidecars in front of services you can't rewrite.</p>
+    <div class="cta">
+      <a class="btn btn-gold" href="/dashboard">Open the demo dashboard
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+      <a class="btn btn-line" href="#analyzer">Analyze a config</a>
+      <a class="btn btn-text" href="https://github.com/harshh-2505/quantumshield">Source on GitHub ↗</a>
+    </div>
+    <div class="readout" id="readout" aria-label="Results from the demo run"></div>
+    <p class="hero-caption"><span>Move the pointer over the lattice. The gold point is a noisy target and the ring is its closest lattice point: easy to find in 2 dimensions. ML-KEM-768 hides it in 768.</span></p>
+  </div>
+</section>
+
+<!-- ================================================================ threat -->
+<section class="block" id="threat" aria-labelledby="threat-title">
+  <div class="wrap split">
+    <div class="prose">
+      <p class="eyebrow">The threat</p>
+      <h2 class="h-section" id="threat-title" style="color:var(--ink)">Harvest now, decrypt later</h2>
+      <p>Traffic protected by RSA or elliptic-curve key exchange can be <strong>recorded today and
+        decrypted once a quantum computer can run Shor's algorithm</strong>. Nobody has to break in
+        later: the ciphertext is already in someone's archive.</p>
+      <p>That makes <strong>key exchange the urgent part</strong>. A signature only has to hold up
+        while it is being verified, but recorded ciphertext has to stay secret for as long as the
+        data matters. QuantumShield ranks findings that way, and migrates key exchange first.</p>
+      <p>Michele Mosca's rule of thumb: if the years your data must stay secret (<b>x</b>) plus the
+        years your migration takes (<b>y</b>) exceed the years until a cryptographically relevant
+        quantum computer (<b>z</b>), you are already late. Try your own numbers.</p>
+    </div>
+    <div class="panel mosca" id="mosca">
+      <div class="mosca-top">
+        <h3>Mosca's inequality</h3>
+        <span class="formula" id="mosca-formula" aria-live="polite"></span>
+      </div>
+      <div class="sliders">
+        <div class="slider">
+          <label for="mx"><i>x</i>Your data must stay secret for</label>
+          <output for="mx" id="mx-out"></output>
+          <input type="range" id="mx" min="1" max="30" value="10">
+        </div>
+        <div class="slider">
+          <label for="my"><i>y</i>Your migration will take</label>
+          <output for="my" id="my-out"></output>
+          <input type="range" id="my" min="1" max="15" value="4">
+        </div>
+        <div class="slider">
+          <label for="mz"><i>z</i>A quantum computer arrives in</label>
+          <output for="mz" id="mz-out"></output>
+          <input type="range" id="mz" min="2" max="30" value="10">
+        </div>
+      </div>
+      <svg class="timeline" id="mosca-chart" viewBox="0 0 640 150" preserveAspectRatio="xMinYMin meet" role="img" aria-label="Timeline of migration, secrecy window and quantum computer arrival"></svg>
+      <div class="verdict" id="mosca-verdict"><span class="dot"></span><p></p></div>
+      <div class="milestones">
+        <div><b>Aug 2024</b><span>NIST publishes FIPS 203 (ML-KEM), 204 (ML-DSA) and 205 (SLH-DSA).</span></div>
+        <div><b>2030</b><span>NIST IR 8547: 112-bit RSA and elliptic-curve algorithms deprecated.</span></div>
+        <div><b>2035</b><span>All quantum-vulnerable public-key algorithms disallowed.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ pipeline -->
+<section class="block" id="pipeline" aria-labelledby="pipeline-title">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">How it works</p>
+      <h2 class="h-section" id="pipeline-title">From unknown crypto to a measured migration</h2>
+      <p class="lede">One command-line tool, five stages. Every cryptographic operation goes through
+        OpenSSL 3.5; QuantumShield never implements ML-KEM or ML-DSA itself.</p>
+    </div>
+    <ol class="pipeline" style="list-style:none;margin:0;padding:0">
+      <li class="step">
+        <span class="n">01</span>
+        <h3>Scan</h3>
+        <p>Probes TLS 1.0 to 1.3, every key-exchange group, cipher suites and mTLS. Parses nginx, Apache, HAProxy, Envoy, OpenSSL, SSH, PEM files and source code.</p>
+        <code>qs scan -e pay=payments:443 -c ./etc/nginx</code>
+      </li>
+      <li class="step">
+        <span class="n">02</span>
+        <h3>Inventory</h3>
+        <p>Writes a CycloneDX 1.6 cryptographic bill of materials: algorithms, certificates, protocols and keys, checked against the official schema.</p>
+        <span class="out">→ cbom.json · inventory.json</span>
+      </li>
+      <li class="step">
+        <span class="n">03</span>
+        <h3>Analyze</h3>
+        <p>About 30 rules assign a quantum status to every algorithm (broken, weakened, resistant, hybrid) and a risk score to every service, key exchange first.</p>
+        <span class="out">→ findings · report.md</span>
+      </li>
+      <li class="step">
+        <span class="n">04</span>
+        <h3>Migrate</h3>
+        <p>A phased plan with patched configs for nginx, Apache, HAProxy, OpenSSL and SSH, or a hybrid mTLS sidecar for services you can't change.</p>
+        <code>qs migrate inventory.json -o plan/</code>
+      </li>
+      <li class="step">
+        <span class="n">05</span>
+        <h3>Measure</h3>
+        <p>Handshake time, CPU and bytes, classical against hybrid, in-process and over the network. Then a re-scan proves the result.</p>
+        <code>qs bench net -t pay=payments:8443</code>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ================================================================ demo -->
+<section class="block" id="demo" aria-labelledby="demo-title">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">The demo, run end to end</p>
+      <h2 class="h-section" id="demo-title">Three services, migrated without touching their code</h2>
+      <p class="lede">orders, payments and inventory start on ordinary nginx TLS with RSA and ECDSA
+        certificates. QuantumShield scans them, plans the migration and attaches a sidecar to each
+        one. The numbers below come from that run.</p>
+    </div>
+    <div class="demo-bar">
+      <div class="seg" role="group" aria-label="Show results">
+        <button type="button" id="show-before" aria-pressed="false">Before</button>
+        <button type="button" id="show-after" aria-pressed="true">After migration</button>
+      </div>
+      <span class="small mono" id="demo-meta"></span>
+    </div>
+    <div class="svc-grid" id="services"></div>
+
+    <div class="panel arch" role="img" aria-label="Architecture: each service gets a QuantumShield sidecar in its network namespace; services talk over hybrid ML-KEM mTLS">
+      <svg viewBox="0 0 1100 400" aria-hidden="true">
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0L10 5L0 10z" class="ah"/>
+          </marker>
+        </defs>
+        <!-- client -->
+        <rect x="20" y="150" width="130" height="76" rx="12" class="box"/>
+        <text x="85" y="183" text-anchor="middle" class="t1">client</text>
+        <text x="85" y="204" text-anchor="middle" class="t3">curl · scanner</text>
+        <path d="M150 188 H262" class="flow" marker-end="url(#ah)"/>
+        <text x="206" y="176" text-anchor="middle" class="t4">X25519MLKEM768</text>
+        <text x="206" y="210" text-anchor="middle" class="t3">TLS 1.3</text>
+
+        <!-- orders pod -->
+        <rect x="265" y="50" width="360" height="300" rx="18" class="pod"/>
+        <text x="287" y="82" class="t1">orders</text>
+        <text x="603" y="82" text-anchor="end" class="t3">one network namespace</text>
+        <rect x="285" y="104" width="320" height="104" rx="12" class="sc"/>
+        <text x="303" y="132" class="t2">QuantumShield sidecar</text>
+        <text x="303" y="156" class="t3">ingress :8443  policy prefer</text>
+        <text x="303" y="178" class="t3">egress  :9001 → payments</text>
+        <text x="303" y="198" class="t3">egress  :9002 → inventory</text>
+        <path d="M445 208 V252" class="loop"/>
+        <text x="455" y="236" class="t3">loopback</text>
+        <rect x="285" y="252" width="320" height="76" rx="12" class="box"/>
+        <text x="303" y="282" class="t2">nginx · 127.0.0.1:443</text>
+        <text x="303" y="306" class="t3">RSA-2048 certificate, unchanged</text>
+
+        <!-- links -->
+        <path d="M605 136 C 680 136, 680 92, 752 92" class="flow pq" marker-end="url(#ah)"/>
+        <path d="M605 176 C 680 176, 680 282, 752 282" class="flow pq" marker-end="url(#ah)"/>
+        <text x="690" y="158" text-anchor="middle" class="t4">hybrid mTLS</text>
+        <text x="690" y="176" text-anchor="middle" class="t3">ML-DSA-65 IDs</text>
+
+        <!-- payments pod -->
+        <rect x="755" y="20" width="325" height="170" rx="18" class="pod"/>
+        <text x="775" y="50" class="t1">payments</text>
+        <rect x="773" y="64" width="289" height="62" rx="10" class="sc"/>
+        <text x="789" y="90" class="t2">sidecar :8443  strict</text>
+        <text x="789" y="112" class="t3">allow: spiffe://…/orders</text>
+        <rect x="773" y="138" width="289" height="38" rx="10" class="box"/>
+        <text x="789" y="162" class="t3">nginx · 127.0.0.1:443 · ECDSA P-256</text>
+
+        <!-- inventory pod -->
+        <rect x="755" y="210" width="325" height="170" rx="18" class="pod"/>
+        <text x="775" y="240" class="t1">inventory</text>
+        <rect x="773" y="254" width="289" height="62" rx="10" class="sc"/>
+        <text x="789" y="280" class="t2">sidecar :8443  strict</text>
+        <text x="789" y="302" class="t3">allow: spiffe://…/orders</text>
+        <rect x="773" y="328" width="289" height="38" rx="10" class="box"/>
+        <text x="789" y="352" class="t3">nginx · 127.0.0.1:443 · RSA-2048</text>
+      </svg>
+      <p class="arch-hint">Scroll sideways to see the whole diagram.</p>
+    </div>
+
+    <div class="head" style="margin:56px 0 0">
+      <h3 class="h-section" style="font-size:clamp(1.3rem,2.4vw,1.7rem)">Zero-trust checks from the same run</h3>
+    </div>
+    <div class="zt" id="zt"></div>
+  </div>
+</section>
+
+<!-- ================================================================ bench -->
+<section class="block" id="bench" aria-labelledby="bench-title">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Benchmarks</p>
+      <h2 class="h-section" id="bench-title">What post-quantum actually costs</h2>
+      <p class="lede" id="bench-lede"></p>
+    </div>
+    <div class="takeaway" id="takeaway"></div>
+    <div class="bench-grid">
+      <div class="panel chart">
+        <h3>Handshake time and CPU</h3>
+        <p class="sub">Full mutual-TLS handshake in one process, median of <span id="iters"></span> runs.</p>
+        <svg id="ch-time" role="img" aria-label="Handshake time by scenario"></svg>
+        <div class="legend"><span style="--c:var(--gold)">wall time</span><span style="--c:var(--info)">CPU, client + server</span></div>
+      </div>
+      <div class="panel chart">
+        <h3>Bytes on the wire per handshake</h3>
+        <p class="sub">Certificates dominate: ML-DSA keys and signatures are large.</p>
+        <svg id="ch-bytes" role="img" aria-label="Bytes per handshake by scenario"></svg>
+        <div class="legend"><span style="--c:var(--gold)">client → server</span><span style="--c:color-mix(in srgb, var(--gold) 45%, var(--bg-3))">server → client</span></div>
+      </div>
+      <div class="panel chart">
+        <h3>Over the network, through the sidecar</h3>
+        <p class="sub">TCP + TLS connect time between containers, median and p95.</p>
+        <svg id="ch-net" role="img" aria-label="Connect time by network path"></svg>
+        <div class="legend"><span style="--c:var(--safe)">median</span><span style="--c:color-mix(in srgb, var(--safe) 35%, var(--bg-3))">p95</span></div>
+      </div>
+      <div class="panel budget" id="budget">
+        <h3 style="font:600 1rem var(--body)">The byte budget, from the standards</h3>
+        <p class="sub small" style="margin-top:-6px">Sizes from FIPS 203 and FIPS 204, on a logarithmic scale.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ analyzer -->
+<section class="block" id="analyzer" aria-labelledby="an-title">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Try it</p>
+      <h2 class="h-section" id="an-title">Paste a config. See what a quantum computer breaks.</h2>
+      <p class="lede">The same rules as the command-line analyzer, running in your browser. Nothing is
+        uploaded. Works with nginx, Apache, HAProxy, Envoy, OpenSSL and SSH configs, PEM
+        certificates, and Python, Go, Java or JavaScript source.</p>
+    </div>
+    <div class="an">
+      <div class="panel an-in">
+        <div class="tabs" role="tablist" aria-label="Sample files" id="an-tabs"></div>
+        <div class="an-file">
+          <label class="label" for="an-name">File name</label>
+          <input id="an-name" spellcheck="false" autocomplete="off">
+        </div>
+        <div class="editor">
+          <div class="gutter" id="an-gutter" aria-hidden="true"></div>
+          <textarea id="an-text" spellcheck="false" autocomplete="off" aria-label="File contents"></textarea>
+        </div>
+        <div class="an-foot">
+          <span class="small">Edit the text, paste your own, or drop a file here.</span>
+          <button class="btn btn-line" type="button" id="an-cbom">Download CBOM</button>
+        </div>
+      </div>
+      <div class="panel an-out" id="an-out" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ dashboard + quickstart -->
+<section class="block" id="dashboard" aria-labelledby="dash-title">
+  <div class="wrap dash-band">
+    <div class="prose">
+      <p class="eyebrow">Dashboard</p>
+      <h2 class="h-section" id="dash-title" style="color:var(--ink)">Every certificate, endpoint and finding, before and after</h2>
+      <p><code>qs dashboard</code> renders a single self-contained HTML file from the inventories,
+        benchmarks and plan. This one comes from the demo run.</p>
+      <p><a class="btn btn-gold" href="/dashboard" style="margin-top:8px">Open the dashboard</a></p>
+    </div>
+    <a class="shot" href="/dashboard" aria-label="Open the dashboard">
+      <img src="/assets/dashboard-preview.webp" alt="QuantumShield dashboard showing migration readiness before and after" width="1400" height="900" loading="lazy">
+    </a>
+  </div>
+</section>
+
+<section class="block" id="start" aria-labelledby="start-title">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Quickstart</p>
+      <h2 class="h-section" id="start-title">Run the whole demo in one command</h2>
+      <p class="lede">Needs Docker. Builds the image (Python 3.15 on Debian trixie with OpenSSL 3.5),
+        starts the three services, and runs every stage above in about a minute and a half.</p>
+    </div>
+    <div class="qs-grid">
+      <div>
+        <h3>The full demo</h3>
+        <div class="code"><button class="copy" type="button">Copy</button><pre><span class="p">$ </span>git clone https://github.com/harshh-2505/quantumshield
+<span class="p">$ </span>cd quantumshield/demo
+<span class="p">$ </span>./run-demo.sh        <span class="c"># scan, CBOM, plan, sidecars, benchmarks</span>
+<span class="p">$ </span>open out/dashboard.html
+<span class="p">$ </span>./run-demo.sh down   <span class="c"># clean up</span></pre></div>
+      </div>
+      <div>
+        <h3>On your own systems</h3>
+        <div class="code"><button class="copy" type="button">Copy</button><pre><span class="p">$ </span>qs scan -e api=api.example.com:443 -c /etc/nginx -o out
+<span class="p">$ </span>qs migrate out/inventory.json -o out/plan
+<span class="p">$ </span>qs pki init --alg mldsa65 &amp;&amp; qs pki issue api
+<span class="p">$ </span>qs proxy --mode ingress --listen 0.0.0.0:8443 \
+    --upstream 127.0.0.1:8080 --cert pki/api.crt \
+    --key pki/api.key --ca pki/ca.crt --pq-auth</pre></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>QuantumShield · Apache-2.0 · cryptography by OpenSSL 3.5, none hand-written</span>
+    <nav aria-label="Footer">
+      <a href="https://github.com/harshh-2505/quantumshield">GitHub</a>
+      <a href="https://csrc.nist.gov/pubs/fips/203/final">FIPS 203</a>
+      <a href="https://csrc.nist.gov/pubs/fips/204/final">FIPS 204</a>
+      <a href="https://csrc.nist.gov/pubs/ir/8547/ipd">NIST IR 8547</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="/assets/demo-data.js"></script>
+<script src="/assets/analyzer.js"></script>
+<script src="/assets/site.js"></script>
+</body>
+</html>

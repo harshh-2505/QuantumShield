@@ -1,6 +1,6 @@
 # QuantumShield migration plan
 
-Generated 2026-10-12T13:46:00+00:00
+Generated 2026-10-12T16:02:13+00:00
 
 ## inventory  (vulnerable, risk score 212)
 
@@ -27,9 +27,9 @@ Generated 2026-10-12T13:46:00+00:00
 **Phase 3: post-quantum authentication and agility**
 
 - [medium] Re-issue certificates with ML-DSA-65 (or composite) keys
-  - cert:9525e604be21ac95 (CN=inventory,O=QuantumShield): RSA-2048 public key, signed with RSA/SHA-256
+  - cert:31e523e607ed6c61 (CN=inventory,O=QuantumShield): RSA-2048 public key, signed with RSA/SHA-256
 - [low] Move to short-lived, centrally issued certificates
-  - cert:9525e604be21ac95 (CN=inventory,O=QuantumShield): Valid for 825 days
+  - cert:31e523e607ed6c61 (CN=inventory,O=QuantumShield): Valid for 825 days
 
 **Phase 4: clean-up**
 
@@ -85,7 +85,7 @@ Generated 2026-10-12T13:46:00+00:00
 **Phase 3: post-quantum authentication and agility**
 
 - [medium] Re-issue certificates with ML-DSA-65 (or composite) keys
-  - cert:ea7279e7018d8155 (CN=payments,O=QuantumShield): secp256r1 public key, signed with RSA/SHA-256
+  - cert:db8ce0cf4f4c293b (CN=payments,O=QuantumShield): secp256r1 public key, signed with RSA/SHA-256
 
 **Phase 4: clean-up**
 
@@ -120,21 +120,21 @@ Generated 2026-10-12T13:46:00+00:00
 **Phase 3: post-quantum authentication and agility**
 
 - [medium] Re-issue certificates with ML-DSA-65 (or composite) keys
-  - cert:68bfdce459df8021 (CN=orders,O=QuantumShield): RSA-2048 public key, signed with RSA/SHA-256
+  - cert:5d3a1bf4064a786b (CN=orders,O=QuantumShield): RSA-2048 public key, signed with RSA/SHA-256
 - [low] Move to short-lived, centrally issued certificates
-  - cert:68bfdce459df8021 (CN=orders,O=QuantumShield): Valid for 825 days
+  - cert:5d3a1bf4064a786b (CN=orders,O=QuantumShield): Valid for 825 days
 
 ## legacy-pki  (review, risk score 34)
 
 **Phase 3: post-quantum authentication and agility**
 
 - [medium] Re-issue certificates with ML-DSA-65 (or composite) keys
-  - cert:9525e604be21ac95 (CN=inventory,O=QuantumShield): RSA-2048 public key, signed with RSA/SHA-256
-  - cert:687c3c41bbb9873a (CN=Acme Legacy CA,O=QuantumShield): RSA-2048 public key, signed with RSA/SHA-256
-  - cert:68bfdce459df8021 (CN=orders,O=QuantumShield): RSA-2048 public key, signed with RSA/SHA-256
+  - cert:31e523e607ed6c61 (CN=inventory,O=QuantumShield): RSA-2048 public key, signed with RSA/SHA-256
+  - cert:a6e27d189bdb9916 (CN=Acme Legacy CA,O=QuantumShield): RSA-2048 public key, signed with RSA/SHA-256
+  - cert:5d3a1bf4064a786b (CN=orders,O=QuantumShield): RSA-2048 public key, signed with RSA/SHA-256
 - [low] Move to short-lived, centrally issued certificates
-  - cert:9525e604be21ac95 (CN=inventory,O=QuantumShield): Valid for 825 days
-  - cert:68bfdce459df8021 (CN=orders,O=QuantumShield): Valid for 825 days
+  - cert:31e523e607ed6c61 (CN=inventory,O=QuantumShield): Valid for 825 days
+  - cert:5d3a1bf4064a786b (CN=orders,O=QuantumShield): Valid for 825 days
 
 ## Config patches
 

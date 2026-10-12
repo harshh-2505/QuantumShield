@@ -117,19 +117,28 @@ def cmd_pki(a) -> int:
 def cmd_proxy(a) -> int:
     from . import proxy
     proxy.setup_logging(a.log_level)
-    if a.config:
-        cfgs = proxy.load_configs(a.config)
-    else:
-        if not (a.mode and a.listen and a.upstream):
-            print("pass --config, or --mode/--listen/--upstream", file=sys.stderr)
-            return 2
-        cfgs = [proxy.ProxyConfig(
-            name=a.name or f"{a.mode}-{a.listen}", mode=a.mode, listen=a.listen,
-            upstream=a.upstream, policy=a.policy, cert=a.cert, key=a.key, ca=a.ca,
-            require_client_cert=not a.no_client_auth, allowed_ids=a.allow_id or [],
-            server_name=a.server_name, upstream_tls=a.upstream_tls, groups=a.groups)]
     try:
+        if a.config:
+            cfgs = proxy.load_configs(a.config)
+        else:
+            if not (a.mode and a.listen and a.upstream):
+                print("pass --config, or --mode/--listen/--upstream", file=sys.stderr)
+                return 2
+            cfgs = [proxy.ProxyConfig(
+                name=a.name or f"{a.mode}-{a.listen}".replace("/", "_"), mode=a.mode,
+                listen=a.listen, upstream=a.upstream, policy=a.policy, cert=a.cert, key=a.key,
+                ca=a.ca, require_client_cert=not a.no_client_auth, allowed_ids=a.allow_id or [],
+                server_name=a.server_name, upstream_tls=a.upstream_tls,
+                upstream_ca=a.upstream_ca, groups=a.groups,
+                sigalgs=tlsutil.PQ_SIGALGS if a.pq_auth else a.sigalgs,
+                max_connections=a.max_connections, idle_timeout=a.idle_timeout,
+                insecure_skip_verify=a.insecure_skip_verify)]
+        for c in cfgs:
+            c.validate()
         asyncio.run(proxy.run(cfgs, a.admin))
+    except proxy.ConfigError as e:
+        print(f"configuration error: {e}", file=sys.stderr)
+        return 2
     except KeyboardInterrupt:
         pass
     return 0
@@ -192,12 +201,25 @@ def cmd_dashboard(a) -> int:
                           bench=bench_data, plan=plan)
     print(f"dashboard written to {out}")
     if a.serve:
-        import functools
         import http.server
-        handler = functools.partial(http.server.SimpleHTTPRequestHandler,
-                                    directory=str(out.parent))
-        print(f"serving on http://0.0.0.0:{a.serve}/{out.name}")
-        http.server.ThreadingHTTPServer(("0.0.0.0", a.serve), handler).serve_forever()
+        body = out.read_bytes()
+
+        class OneFile(http.server.BaseHTTPRequestHandler):
+            """Serves the dashboard and nothing else (never the rest of the directory)."""
+
+            def do_GET(self):
+                if self.path.split("?")[0] not in ("/", f"/{out.name}"):
+                    self.send_error(404)
+                    return
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
+                self.send_header("X-Content-Type-Options", "nosniff")
+                self.end_headers()
+                self.wfile.write(body)
+
+        print(f"serving on http://{a.bind}:{a.serve}/")
+        http.server.ThreadingHTTPServer((a.bind, a.serve), OneFile).serve_forever()
     return 0
 
 
@@ -323,6 +345,14 @@ def build_parser() -> argparse.ArgumentParser:
     x.add_argument("--no-client-auth", action="store_true")
     x.add_argument("--allow-id", action="append", help="allowed peer SPIFFE ID (repeatable)")
     x.add_argument("--server-name"), x.add_argument("--upstream-tls", action="store_true")
+    x.add_argument("--upstream-ca", help="verify a legacy-TLS upstream with this CA")
+    x.add_argument("--sigalgs", help="allowed signature algorithms, e.g. mldsa65:mldsa87")
+    x.add_argument("--pq-auth", action="store_true",
+                   help="accept only ML-DSA signatures (post-quantum authentication)")
+    x.add_argument("--max-connections", type=int, default=1024)
+    x.add_argument("--idle-timeout", type=float, default=300.0)
+    x.add_argument("--insecure-skip-verify", action="store_true",
+                   help="egress: do not verify the remote (lab use only)")
     x.add_argument("--admin", help="host:port for /stats and /healthz")
     x.add_argument("--log-level", default="INFO")
     x.set_defaults(func=cmd_proxy)
@@ -349,6 +379,7 @@ def build_parser() -> argparse.ArgumentParser:
     d.add_argument("--bench"), d.add_argument("--plan")
     d.add_argument("-o", "--output", default="dashboard.html")
     d.add_argument("--serve", type=int, help="also serve it on this port")
+    d.add_argument("--bind", default="127.0.0.1", help="address for --serve (default loopback)")
     d.set_defaults(func=cmd_dashboard)
 
     g = sub.add_parser("get", help="HTTPS GET showing the negotiated (PQC) key exchange")

@@ -11,7 +11,11 @@
       "cert": "/pki/pqc/inventory.crt",
       "key": "/pki/pqc/inventory.key",
       "ca": "/pki/pqc/ca.crt",
-      "allowed_ids": ["spiffe://quantumshield.local/orders", "spiffe://quantumshield.local/scanner"]
+      "allowed_ids": [
+        "spiffe://quantumshield.local/orders",
+        "spiffe://quantumshield.local/scanner"
+      ],
+      "sigalgs": "mldsa65:mldsa87"
     }
   ]
 }

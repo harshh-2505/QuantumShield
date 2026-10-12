@@ -1,0 +1,1129 @@
+{
+  "generated_at": "2026-10-12T16:02:13+00:00",
+  "endpoints": [
+    {
+      "target": "orders:443",
+      "name": "orders",
+      "reachable": true,
+      "error": null,
+      "protocols": {
+        "TLSv1.0": false,
+        "TLSv1.1": false,
+        "TLSv1.2": true,
+        "TLSv1.3": true
+      },
+      "negotiated_version": "TLSv1.3",
+      "negotiated_cipher": "TLS_AES_256_GCM_SHA384",
+      "negotiated_group": "x25519",
+      "negotiated_sigalg": "rsa_pss_rsae_sha256",
+      "handshake_ms": 3.21,
+      "groups_supported": [
+        "X25519",
+        "secp256r1"
+      ],
+      "groups_probed": true,
+      "tls12_ciphers": [
+        "ECDHE-RSA-AES128-GCM-SHA256",
+        "ECDHE-RSA-AES256-GCM-SHA384"
+      ],
+      "certificate_chain": [
+        "5d3a1bf4064a786b4f52a6d9cf76d5b58a40fafe38d882b3b1b58d1792ec55b2"
+      ],
+      "peer_requires_client_cert": false
+    },
+    {
+      "target": "payments:443",
+      "name": "payments",
+      "reachable": true,
+      "error": null,
+      "protocols": {
+        "TLSv1.0": false,
+        "TLSv1.1": false,
+        "TLSv1.2": true,
+        "TLSv1.3": false
+      },
+      "negotiated_version": "TLSv1.2",
+      "negotiated_cipher": "ECDHE-ECDSA-AES128-GCM-SHA256",
+      "negotiated_group": "secp256r1",
+      "negotiated_sigalg": "ecdsa_secp256r1_sha256",
+      "handshake_ms": 5.9,
+      "groups_supported": [],
+      "groups_probed": false,
+      "tls12_ciphers": [
+        "ECDHE-ECDSA-AES128-GCM-SHA256",
+        "ECDHE-ECDSA-AES256-SHA"
+      ],
+      "certificate_chain": [
+        "db8ce0cf4f4c293bffb0e591e37b2d0c921a149437393e230c56ea71b999026d"
+      ],
+      "peer_requires_client_cert": false
+    },
+    {
+      "target": "inventory:443",
+      "name": "inventory",
+      "reachable": true,
+      "error": null,
+      "protocols": {
+        "TLSv1.0": true,
+        "TLSv1.1": true,
+        "TLSv1.2": true,
+        "TLSv1.3": false
+      },
+      "negotiated_version": "TLSv1.2",
+      "negotiated_cipher": "ECDHE-RSA-AES128-GCM-SHA256",
+      "negotiated_group": "secp256r1",
+      "negotiated_sigalg": "rsa_pss_rsae_sha256",
+      "handshake_ms": 5.73,
+      "groups_supported": [],
+      "groups_probed": false,
+      "tls12_ciphers": [
+        "ECDHE-RSA-AES128-GCM-SHA256",
+        "AES128-GCM-SHA256",
+        "AES256-SHA"
+      ],
+      "certificate_chain": [
+        "31e523e607ed6c610e7379e4ea7556d5541c85c623ccfa27ab46d81909b1aef9"
+      ],
+      "peer_requires_client_cert": false
+    }
+  ],
+  "configs": [
+    {
+      "path": "services/orders/nginx.conf",
+      "kind": "nginx",
+      "service": "orders",
+      "items": [
+        {
+          "directive": "ssl_certificate",
+          "value": "/etc/nginx/pki/orders.crt",
+          "line": 10,
+          "category": "certificate",
+          "algorithms": []
+        },
+        {
+          "directive": "ssl_protocols",
+          "value": "TLSv1.2 TLSv1.3",
+          "line": 12,
+          "category": "tls-protocol",
+          "algorithms": [
+            "TLSv1.2",
+            "TLSv1.3"
+          ]
+        },
+        {
+          "directive": "ssl_ecdh_curve",
+          "value": "X25519:prime256v1",
+          "line": 13,
+          "category": "tls-kex",
+          "algorithms": [
+            "X25519",
+            "ECDH-P256"
+          ]
+        },
+        {
+          "directive": "ssl_ciphers",
+          "value": "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384",
+          "line": 14,
+          "category": "tls-cipher",
+          "algorithms": [
+            "AES-128-GCM",
+            "AES-256-GCM"
+          ]
+        }
+      ],
+      "certificates": [],
+      "error": null
+    },
+    {
+      "path": "services/payments/nginx.conf",
+      "kind": "nginx",
+      "service": "payments",
+      "items": [
+        {
+          "directive": "ssl_certificate",
+          "value": "/etc/nginx/pki/payments.crt",
+          "line": 10,
+          "category": "certificate",
+          "algorithms": []
+        },
+        {
+          "directive": "ssl_protocols",
+          "value": "TLSv1.2",
+          "line": 12,
+          "category": "tls-protocol",
+          "algorithms": [
+            "TLSv1.2"
+          ]
+        },
+        {
+          "directive": "ssl_ecdh_curve",
+          "value": "prime256v1",
+          "line": 13,
+          "category": "tls-kex",
+          "algorithms": [
+            "ECDH-P256"
+          ]
+        },
+        {
+          "directive": "ssl_ciphers",
+          "value": "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA",
+          "line": 14,
+          "category": "tls-cipher",
+          "algorithms": [
+            "AES-128-GCM",
+            "AES-256-CBC"
+          ]
+        }
+      ],
+      "certificates": [],
+      "error": null
+    },
+    {
+      "path": "services/inventory/nginx.conf",
+      "kind": "nginx",
+      "service": "inventory",
+      "items": [
+        {
+          "directive": "ssl_certificate",
+          "value": "/etc/nginx/pki/inventory.crt",
+          "line": 10,
+          "category": "certificate",
+          "algorithms": []
+        },
+        {
+          "directive": "ssl_protocols",
+          "value": "TLSv1 TLSv1.1 TLSv1.2",
+          "line": 12,
+          "category": "tls-protocol",
+          "algorithms": [
+            "TLSv1",
+            "TLSv1.1",
+            "TLSv1.2"
+          ]
+        },
+        {
+          "directive": "ssl_ecdh_curve",
+          "value": "prime256v1:secp384r1",
+          "line": 13,
+          "category": "tls-kex",
+          "algorithms": [
+            "ECDH-P256",
+            "ECDH-P384"
+          ]
+        },
+        {
+          "directive": "ssl_ciphers",
+          "value": "AES128-GCM-SHA256:AES256-SHA:ECDHE-RSA-AES128-GCM-SHA256:DES-CBC3-SHA:@SECLEVEL=0",
+          "line": 14,
+          "category": "tls-cipher",
+          "algorithms": [
+            "RSA-KEX",
+            "AES-128-GCM",
+            "AES-256-CBC"
+          ]
+        }
+      ],
+      "certificates": [],
+      "error": null
+    },
+    {
+      "path": "legacy-configs/apache-ssl.conf",
+      "kind": "apache",
+      "service": "reports.internal",
+      "items": [
+        {
+          "directive": "SSLProtocol",
+          "value": "all -SSLv3",
+          "line": 4,
+          "category": "tls-protocol",
+          "algorithms": [
+            "all",
+            "-SSLv3"
+          ]
+        },
+        {
+          "directive": "SSLCipherSuite",
+          "value": "HIGH:!aNULL:!MD5",
+          "line": 5,
+          "category": "tls-cipher",
+          "algorithms": [
+            "AES-256-GCM",
+            "ChaCha20-Poly1305",
+            "AES-256-CBC",
+            "AES-128-GCM",
+            "AES-128-CBC",
+            "RSA-KEX"
+          ]
+        },
+        {
+          "directive": "SSLCertificateFile",
+          "value": "/etc/ssl/reports.crt",
+          "line": 6,
+          "category": "certificate",
+          "algorithms": []
+        }
+      ],
+      "certificates": [],
+      "error": null
+    },
+    {
+      "path": "legacy-configs/billing_client.py",
+      "kind": "source",
+      "service": "legacy-configs",
+      "items": [
+        {
+          "directive": "code",
+          "value": "return rsa.generate_private_key(public_exponent=65537, key_size=2048)",
+          "line": 8,
+          "category": "code-asymmetric",
+          "algorithms": [
+            "RSA"
+          ]
+        },
+        {
+          "directive": "code",
+          "value": "return hashlib.md5(data).hexdigest()",
+          "line": 12,
+          "category": "code-hash",
+          "algorithms": [
+            "MD5"
+          ]
+        }
+      ],
+      "certificates": [],
+      "error": null
+    },
+    {
+      "path": "legacy-configs/haproxy.cfg",
+      "kind": "haproxy",
+      "service": "legacy-configs",
+      "items": [
+        {
+          "directive": "ssl-default-bind-ciphers",
+          "value": "ECDHE-RSA-AES128-GCM-SHA256:AES256-SHA256",
+          "line": 2,
+          "category": "tls-cipher",
+          "algorithms": [
+            "AES-128-GCM",
+            "RSA-KEX",
+            "AES-256-CBC"
+          ]
+        },
+        {
+          "directive": "ssl-default-bind-options",
+          "value": "ssl-min-ver TLSv1.1",
+          "line": 3,
+          "category": "tls-protocol",
+          "algorithms": [
+            "ssl-min-ver"
+          ]
+        },
+        {
+          "directive": "curves",
+          "value": "P-256:X25519",
+          "line": 6,
+          "category": "tls-kex",
+          "algorithms": [
+            "ECDH-P256",
+            "X25519"
+          ]
+        },
+        {
+          "directive": "crt",
+          "value": "/etc/haproxy/certs/edge.pem",
+          "line": 6,
+          "category": "certificate",
+          "algorithms": []
+        }
+      ],
+      "certificates": [],
+      "error": null
+    },
+    {
+      "path": "legacy-configs/openssl.cnf",
+      "kind": "openssl",
+      "service": "legacy-configs",
+      "items": [
+        {
+          "directive": "MinProtocol",
+          "value": "TLSv1.2",
+          "line": 10,
+          "category": "tls-protocol",
+          "algorithms": [
+            "TLSv1.2"
+          ]
+        },
+        {
+          "directive": "CipherString",
+          "value": "DEFAULT:@SECLEVEL=2",
+          "line": 11,
+          "category": "tls-cipher",
+          "algorithms": [
+            "AES-256-GCM",
+            "ChaCha20-Poly1305",
+            "AES-128-GCM",
+            "AES-256-CBC",
+            "AES-128-CBC",
+            "RSA-KEX"
+          ]
+        },
+        {
+          "directive": "Groups",
+          "value": "X25519:secp256r1:secp384r1",
+          "line": 12,
+          "category": "tls-kex",
+          "algorithms": [
+            "X25519",
+            "ECDH-P256",
+            "ECDH-P384"
+          ]
+        }
+      ],
+      "certificates": [],
+      "error": null
+    },
+    {
+      "path": "legacy-configs/sshd_config",
+      "kind": "sshd",
+      "service": "legacy-configs",
+      "items": [
+        {
+          "directive": "HostKey",
+          "value": "/etc/ssh/ssh_host_rsa_key",
+          "line": 3,
+          "category": "ssh-hostkey",
+          "algorithms": [
+            "RSA"
+          ]
+        },
+        {
+          "directive": "HostKey",
+          "value": "/etc/ssh/ssh_host_ecdsa_key",
+          "line": 4,
+          "category": "ssh-hostkey",
+          "algorithms": [
+            "ECDSA"
+          ]
+        },
+        {
+          "directive": "KexAlgorithms",
+          "value": "curve25519-sha256,ecdh-sha2-nistp256,diffie-hellman-group14-sha1",
+          "line": 5,
+          "category": "ssh-kex",
+          "algorithms": [
+            "X25519",
+            "ECDH-P256",
+            "DH-1024"
+          ]
+        },
+        {
+          "directive": "Ciphers",
+          "value": "aes128-ctr,aes256-gcm@openssh.com,3des-cbc",
+          "line": 6,
+          "category": "ssh-cipher",
+          "algorithms": [
+            "AES-128-CBC",
+            "AES-256-GCM",
+            "3DES"
+          ]
+        },
+        {
+          "directive": "MACs",
+          "value": "hmac-sha2-256,hmac-sha1",
+          "line": 7,
+          "category": "ssh-mac",
+          "algorithms": [
+            "SHA-256",
+            "SHA-1"
+          ]
+        }
+      ],
+      "certificates": [],
+      "error": null
+    },
+    {
+      "path": "pki/legacy/ca.crt",
+      "kind": "pem",
+      "service": "legacy-pki",
+      "items": [],
+      "certificates": [
+        "a6e27d189bdb99166f10cd10ad982c338f130ec8026765e3708547b91bd1482b"
+      ],
+      "error": null
+    },
+    {
+      "path": "pki/legacy/ca.key",
+      "kind": "pem",
+      "service": "legacy-pki",
+      "items": [
+        {
+          "directive": "private-key",
+          "value": "RSA-2048",
+          "line": 1,
+          "category": "private-key",
+          "algorithms": [
+            "RSA"
+          ]
+        }
+      ],
+      "certificates": [],
+      "error": null
+    },
+    {
+      "path": "pki/legacy/inventory.crt",
+      "kind": "pem",
+      "service": "legacy-pki",
+      "items": [],
+      "certificates": [
+        "31e523e607ed6c610e7379e4ea7556d5541c85c623ccfa27ab46d81909b1aef9"
+      ],
+      "error": null
+    },
+    {
+      "path": "pki/legacy/inventory.key",
+      "kind": "pem",
+      "service": "legacy-pki",
+      "items": [
+        {
+          "directive": "private-key",
+          "value": "RSA-2048",
+          "line": 1,
+          "category": "private-key",
+          "algorithms": [
+            "RSA"
+          ]
+        }
+      ],
+      "certificates": [],
+      "error": null
+    },
+    {
+      "path": "pki/legacy/orders.crt",
+      "kind": "pem",
+      "service": "legacy-pki",
+      "items": [],
+      "certificates": [
+        "5d3a1bf4064a786b4f52a6d9cf76d5b58a40fafe38d882b3b1b58d1792ec55b2"
+      ],
+      "error": null
+    },
+    {
+      "path": "pki/legacy/orders.key",
+      "kind": "pem",
+      "service": "legacy-pki",
+      "items": [
+        {
+          "directive": "private-key",
+          "value": "RSA-2048",
+          "line": 1,
+          "category": "private-key",
+          "algorithms": [
+            "RSA"
+          ]
+        }
+      ],
+      "certificates": [],
+      "error": null
+    },
+    {
+      "path": "pki/legacy/payments.crt",
+      "kind": "pem",
+      "service": "legacy-pki",
+      "items": [],
+      "certificates": [
+        "db8ce0cf4f4c293bffb0e591e37b2d0c921a149437393e230c56ea71b999026d"
+      ],
+      "error": null
+    },
+    {
+      "path": "pki/legacy/payments.key",
+      "kind": "pem",
+      "service": "legacy-pki",
+      "items": [
+        {
+          "directive": "private-key",
+          "value": "ECDSA",
+          "line": 1,
+          "category": "private-key",
+          "algorithms": [
+            "ECDSA"
+          ]
+        }
+      ],
+      "certificates": [],
+      "error": null
+    }
+  ],
+  "certificates": {
+    "5d3a1bf4064a786b4f52a6d9cf76d5b58a40fafe38d882b3b1b58d1792ec55b2": {
+      "fingerprint_sha256": "5d3a1bf4064a786b4f52a6d9cf76d5b58a40fafe38d882b3b1b58d1792ec55b2",
+      "subject": "CN=orders,O=QuantumShield",
+      "issuer": "CN=Acme Legacy CA,O=QuantumShield",
+      "serial": "1c8387192cdfd4e5f8656c316a9099164a146932",
+      "not_before": "2026-10-12T16:02:00+00:00",
+      "not_after": "2029-01-14T16:02:00+00:00",
+      "public_key_algorithm": "RSA",
+      "public_key_size": 2048,
+      "public_key_detail": "RSA-2048",
+      "signature_algorithm": "RSA",
+      "signature_hash": "SHA-256",
+      "subject_alt_names": [
+        "DNS:orders",
+        "DNS:localhost",
+        "URI:spiffe://quantumshield.local/orders",
+        "IP:127.0.0.1"
+      ],
+      "self_signed": false,
+      "is_ca": false,
+      "sources": [
+        "tls://orders:443",
+        "file://pki/legacy/orders.crt"
+      ]
+    },
+    "db8ce0cf4f4c293bffb0e591e37b2d0c921a149437393e230c56ea71b999026d": {
+      "fingerprint_sha256": "db8ce0cf4f4c293bffb0e591e37b2d0c921a149437393e230c56ea71b999026d",
+      "subject": "CN=payments,O=QuantumShield",
+      "issuer": "CN=Acme Legacy CA,O=QuantumShield",
+      "serial": "1c8387192cdfd4e5f8656c316a9099164a146933",
+      "not_before": "2026-10-12T16:02:01+00:00",
+      "not_after": "2027-10-12T16:02:01+00:00",
+      "public_key_algorithm": "ECDSA",
+      "public_key_size": 256,
+      "public_key_detail": "secp256r1",
+      "signature_algorithm": "RSA",
+      "signature_hash": "SHA-256",
+      "subject_alt_names": [
+        "DNS:payments",
+        "DNS:localhost",
+        "URI:spiffe://quantumshield.local/payments",
+        "IP:127.0.0.1"
+      ],
+      "self_signed": false,
+      "is_ca": false,
+      "sources": [
+        "tls://payments:443",
+        "file://pki/legacy/payments.crt"
+      ]
+    },
+    "31e523e607ed6c610e7379e4ea7556d5541c85c623ccfa27ab46d81909b1aef9": {
+      "fingerprint_sha256": "31e523e607ed6c610e7379e4ea7556d5541c85c623ccfa27ab46d81909b1aef9",
+      "subject": "CN=inventory,O=QuantumShield",
+      "issuer": "CN=Acme Legacy CA,O=QuantumShield",
+      "serial": "1c8387192cdfd4e5f8656c316a9099164a146934",
+      "not_before": "2026-10-12T16:02:02+00:00",
+      "not_after": "2029-01-14T16:02:02+00:00",
+      "public_key_algorithm": "RSA",
+      "public_key_size": 2048,
+      "public_key_detail": "RSA-2048",
+      "signature_algorithm": "RSA",
+      "signature_hash": "SHA-256",
+      "subject_alt_names": [
+        "DNS:inventory",
+        "DNS:localhost",
+        "URI:spiffe://quantumshield.local/inventory",
+        "IP:127.0.0.1"
+      ],
+      "self_signed": false,
+      "is_ca": false,
+      "sources": [
+        "tls://inventory:443",
+        "file://pki/legacy/inventory.crt"
+      ]
+    },
+    "a6e27d189bdb99166f10cd10ad982c338f130ec8026765e3708547b91bd1482b": {
+      "fingerprint_sha256": "a6e27d189bdb99166f10cd10ad982c338f130ec8026765e3708547b91bd1482b",
+      "subject": "CN=Acme Legacy CA,O=QuantumShield",
+      "issuer": "CN=Acme Legacy CA,O=QuantumShield",
+      "serial": "12cf715578b99e0aa55d9196abc507e031534023",
+      "not_before": "2026-10-12T16:01:59+00:00",
+      "not_after": "2036-10-09T16:01:59+00:00",
+      "public_key_algorithm": "RSA",
+      "public_key_size": 2048,
+      "public_key_detail": "RSA-2048",
+      "signature_algorithm": "RSA",
+      "signature_hash": "SHA-256",
+      "subject_alt_names": [],
+      "self_signed": true,
+      "is_ca": true,
+      "sources": [
+        "file://pki/legacy/ca.crt"
+      ]
+    }
+  },
+  "findings": [
+    {
+      "rule_id": "QS-CFG-CIPH-003",
+      "title": "Static RSA key-exchange suites allowed",
+      "severity": "critical",
+      "asset": "services/inventory/nginx.conf:14",
+      "service": "inventory",
+      "evidence": "ssl_ciphers AES128-GCM-SHA256:AES256-SHA:ECDHE-RSA-AES128-GCM-SHA256:DES-CBC3-SHA:@SECLEVEL=0",
+      "recommendation": "Restrict to ECDHE suites, e.g. ECDHE+AESGCM:ECDHE+CHACHA20.",
+      "hndl": true,
+      "migration": "remove-rsa-kex"
+    },
+    {
+      "rule_id": "QS-TLS-KEX-003",
+      "title": "Static RSA key exchange accepted (no forward secrecy)",
+      "severity": "critical",
+      "asset": "inventory:443",
+      "service": "inventory",
+      "evidence": "Accepts AES128-GCM-SHA256, AES256-SHA",
+      "recommendation": "Remove kRSA suites. Anyone who records traffic and later obtains or breaks the RSA key decrypts every session.",
+      "hndl": true,
+      "migration": "remove-rsa-kex"
+    },
+    {
+      "rule_id": "QS-CFG-CIPH-003",
+      "title": "Static RSA key-exchange suites allowed",
+      "severity": "critical",
+      "asset": "legacy-configs/haproxy.cfg:2",
+      "service": "legacy-configs",
+      "evidence": "ssl-default-bind-ciphers ECDHE-RSA-AES128-GCM-SHA256:AES256-SHA256",
+      "recommendation": "Restrict to ECDHE suites, e.g. ECDHE+AESGCM:ECDHE+CHACHA20.",
+      "hndl": true,
+      "migration": "remove-rsa-kex"
+    },
+    {
+      "rule_id": "QS-CFG-CIPH-003",
+      "title": "Static RSA key-exchange suites allowed",
+      "severity": "critical",
+      "asset": "legacy-configs/openssl.cnf:11",
+      "service": "legacy-configs",
+      "evidence": "CipherString DEFAULT:@SECLEVEL=2",
+      "recommendation": "Restrict to ECDHE suites, e.g. ECDHE+AESGCM:ECDHE+CHACHA20.",
+      "hndl": true,
+      "migration": "remove-rsa-kex"
+    },
+    {
+      "rule_id": "QS-CFG-CIPH-003",
+      "title": "Static RSA key-exchange suites allowed",
+      "severity": "critical",
+      "asset": "legacy-configs/apache-ssl.conf:5",
+      "service": "reports.internal",
+      "evidence": "SSLCipherSuite HIGH:!aNULL:!MD5",
+      "recommendation": "Restrict to ECDHE suites, e.g. ECDHE+AESGCM:ECDHE+CHACHA20.",
+      "hndl": true,
+      "migration": "remove-rsa-kex"
+    },
+    {
+      "rule_id": "QS-CFG-KEX-001",
+      "title": "Only classical key-exchange groups configured",
+      "severity": "high",
+      "asset": "services/inventory/nginx.conf:13",
+      "service": "inventory",
+      "evidence": "ssl_ecdh_curve prime256v1:secp384r1",
+      "recommendation": "Add X25519MLKEM768 first, keeping X25519 for older clients.",
+      "hndl": true,
+      "migration": "set-hybrid-groups"
+    },
+    {
+      "rule_id": "QS-CFG-PROTO-001",
+      "title": "TLS 1.3 not enabled",
+      "severity": "high",
+      "asset": "services/inventory/nginx.conf:12",
+      "service": "inventory",
+      "evidence": "ssl_protocols TLSv1 TLSv1.1 TLSv1.2",
+      "recommendation": "Enable TLSv1.3; hybrid ML-KEM requires it.",
+      "hndl": true,
+      "migration": "enable-tls13"
+    },
+    {
+      "rule_id": "QS-CFG-PROTO-002",
+      "title": "Legacy TLS versions enabled",
+      "severity": "high",
+      "asset": "services/inventory/nginx.conf:12",
+      "service": "inventory",
+      "evidence": "ssl_protocols TLSv1 TLSv1.1 TLSv1.2",
+      "recommendation": "Allow only TLS 1.2 and 1.3.",
+      "hndl": false,
+      "migration": "disable-legacy-tls"
+    },
+    {
+      "rule_id": "QS-TLS-KEX-001",
+      "title": "Key exchange is not quantum-safe (harvest-now-decrypt-later)",
+      "severity": "high",
+      "asset": "inventory:443",
+      "service": "inventory",
+      "evidence": "Negotiated secp256r1; no hybrid ML-KEM group accepted",
+      "recommendation": "Enable X25519MLKEM768 (OpenSSL 3.5+, BoringSSL, Go 1.24+) or front the service with the QuantumShield hybrid proxy.",
+      "hndl": true,
+      "migration": "set-hybrid-groups"
+    },
+    {
+      "rule_id": "QS-TLS-PROTO-001",
+      "title": "TLS 1.3 not supported",
+      "severity": "high",
+      "asset": "inventory:443",
+      "service": "inventory",
+      "evidence": "Highest protocol: TLSv1.2",
+      "recommendation": "Hybrid ML-KEM key exchange is only defined for TLS 1.3. Upgrade the TLS stack or deploy the QuantumShield proxy.",
+      "hndl": true,
+      "migration": "enable-tls13"
+    },
+    {
+      "rule_id": "QS-TLS-PROTO-002",
+      "title": "Legacy TLS versions accepted",
+      "severity": "high",
+      "asset": "inventory:443",
+      "service": "inventory",
+      "evidence": "TLSv1.0, TLSv1.1",
+      "recommendation": "Disable TLS 1.0 and 1.1.",
+      "hndl": false,
+      "migration": "disable-legacy-tls"
+    },
+    {
+      "rule_id": "QS-CFG-KEX-001",
+      "title": "Only classical key-exchange groups configured",
+      "severity": "high",
+      "asset": "legacy-configs/haproxy.cfg:6",
+      "service": "legacy-configs",
+      "evidence": "curves P-256:X25519",
+      "recommendation": "Add X25519MLKEM768 first, keeping X25519 for older clients.",
+      "hndl": true,
+      "migration": "set-hybrid-groups"
+    },
+    {
+      "rule_id": "QS-CFG-KEX-001",
+      "title": "Only classical key-exchange groups configured",
+      "severity": "high",
+      "asset": "legacy-configs/openssl.cnf:12",
+      "service": "legacy-configs",
+      "evidence": "Groups X25519:secp256r1:secp384r1",
+      "recommendation": "Add X25519MLKEM768 first, keeping X25519 for older clients.",
+      "hndl": true,
+      "migration": "set-hybrid-groups"
+    },
+    {
+      "rule_id": "QS-SSH-CIPH-001",
+      "title": "SSH allows insecure ciphers",
+      "severity": "high",
+      "asset": "legacy-configs/sshd_config:6",
+      "service": "legacy-configs",
+      "evidence": "Ciphers aes128-ctr,aes256-gcm@openssh.com,3des-cbc",
+      "recommendation": "Use chacha20-poly1305 and aes256-gcm.",
+      "hndl": false,
+      "migration": "remove-weak-ciphers"
+    },
+    {
+      "rule_id": "QS-SSH-KEX-001",
+      "title": "SSH key exchange is not quantum-safe",
+      "severity": "high",
+      "asset": "legacy-configs/sshd_config:5",
+      "service": "legacy-configs",
+      "evidence": "KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,diffie-hellman-group14-sha1",
+      "recommendation": "Put mlkem768x25519-sha256 (OpenSSH 9.9+) and sntrup761x25519-sha512 first.",
+      "hndl": true,
+      "migration": "ssh-hybrid-kex"
+    },
+    {
+      "rule_id": "QS-SSH-KEX-002",
+      "title": "SSH allows broken key exchange",
+      "severity": "high",
+      "asset": "legacy-configs/sshd_config:5",
+      "service": "legacy-configs",
+      "evidence": "KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,diffie-hellman-group14-sha1",
+      "recommendation": "Remove SHA-1 / 1024-bit Diffie-Hellman groups.",
+      "hndl": false,
+      "migration": "ssh-hybrid-kex"
+    },
+    {
+      "rule_id": "QS-CFG-KEX-001",
+      "title": "Only classical key-exchange groups configured",
+      "severity": "high",
+      "asset": "services/orders/nginx.conf:13",
+      "service": "orders",
+      "evidence": "ssl_ecdh_curve X25519:prime256v1",
+      "recommendation": "Add X25519MLKEM768 first, keeping X25519 for older clients.",
+      "hndl": true,
+      "migration": "set-hybrid-groups"
+    },
+    {
+      "rule_id": "QS-TLS-KEX-001",
+      "title": "Key exchange is not quantum-safe (harvest-now-decrypt-later)",
+      "severity": "high",
+      "asset": "orders:443",
+      "service": "orders",
+      "evidence": "Negotiated x25519; no hybrid ML-KEM group accepted",
+      "recommendation": "Enable X25519MLKEM768 (OpenSSL 3.5+, BoringSSL, Go 1.24+) or front the service with the QuantumShield hybrid proxy.",
+      "hndl": true,
+      "migration": "set-hybrid-groups"
+    },
+    {
+      "rule_id": "QS-CFG-KEX-001",
+      "title": "Only classical key-exchange groups configured",
+      "severity": "high",
+      "asset": "services/payments/nginx.conf:13",
+      "service": "payments",
+      "evidence": "ssl_ecdh_curve prime256v1",
+      "recommendation": "Add X25519MLKEM768 first, keeping X25519 for older clients.",
+      "hndl": true,
+      "migration": "set-hybrid-groups"
+    },
+    {
+      "rule_id": "QS-CFG-PROTO-001",
+      "title": "TLS 1.3 not enabled",
+      "severity": "high",
+      "asset": "services/payments/nginx.conf:12",
+      "service": "payments",
+      "evidence": "ssl_protocols TLSv1.2",
+      "recommendation": "Enable TLSv1.3; hybrid ML-KEM requires it.",
+      "hndl": true,
+      "migration": "enable-tls13"
+    },
+    {
+      "rule_id": "QS-TLS-KEX-001",
+      "title": "Key exchange is not quantum-safe (harvest-now-decrypt-later)",
+      "severity": "high",
+      "asset": "payments:443",
+      "service": "payments",
+      "evidence": "Negotiated secp256r1; no hybrid ML-KEM group accepted",
+      "recommendation": "Enable X25519MLKEM768 (OpenSSL 3.5+, BoringSSL, Go 1.24+) or front the service with the QuantumShield hybrid proxy.",
+      "hndl": true,
+      "migration": "set-hybrid-groups"
+    },
+    {
+      "rule_id": "QS-TLS-PROTO-001",
+      "title": "TLS 1.3 not supported",
+      "severity": "high",
+      "asset": "payments:443",
+      "service": "payments",
+      "evidence": "Highest protocol: TLSv1.2",
+      "recommendation": "Hybrid ML-KEM key exchange is only defined for TLS 1.3. Upgrade the TLS stack or deploy the QuantumShield proxy.",
+      "hndl": true,
+      "migration": "enable-tls13"
+    },
+    {
+      "rule_id": "QS-CFG-PROTO-002",
+      "title": "Legacy TLS versions enabled",
+      "severity": "high",
+      "asset": "legacy-configs/apache-ssl.conf:4",
+      "service": "reports.internal",
+      "evidence": "SSLProtocol all -SSLv3",
+      "recommendation": "Allow only TLS 1.2 and 1.3.",
+      "hndl": false,
+      "migration": "disable-legacy-tls"
+    },
+    {
+      "rule_id": "QS-CERT-SIG-001",
+      "title": "Certificate key is quantum-vulnerable",
+      "severity": "medium",
+      "asset": "cert:31e523e607ed6c61 (CN=inventory,O=QuantumShield)",
+      "service": "inventory, legacy-pki",
+      "evidence": "RSA-2048 public key, signed with RSA/SHA-256",
+      "recommendation": "Plan re-issuance with ML-DSA-65 (or a composite ML-DSA + ECDSA certificate). Authentication is not exposed to harvest-now-decrypt-later, so this follows key exchange in priority.",
+      "hndl": false,
+      "migration": "reissue-mldsa"
+    },
+    {
+      "rule_id": "QS-CODE-001",
+      "title": "Hard-coded quantum-vulnerable algorithm in source",
+      "severity": "medium",
+      "asset": "legacy-configs/billing_client.py:8",
+      "service": "legacy-configs",
+      "evidence": "code return rsa.generate_private_key(public_exponent=65537, key_size=2048)",
+      "recommendation": "Route RSA through a crypto-agility layer (config-selected algorithm) so it can be swapped for ML-KEM / ML-DSA.",
+      "hndl": false,
+      "migration": "refactor-code"
+    },
+    {
+      "rule_id": "QS-CODE-002",
+      "title": "Broken hash function used in source",
+      "severity": "medium",
+      "asset": "legacy-configs/billing_client.py:12",
+      "service": "legacy-configs",
+      "evidence": "code return hashlib.md5(data).hexdigest()",
+      "recommendation": "Use SHA-256 or stronger (fine for non-security checksums, but verify).",
+      "hndl": false,
+      "migration": "refactor-code"
+    },
+    {
+      "rule_id": "QS-CERT-SIG-001",
+      "title": "Certificate key is quantum-vulnerable",
+      "severity": "medium",
+      "asset": "cert:a6e27d189bdb9916 (CN=Acme Legacy CA,O=QuantumShield)",
+      "service": "legacy-pki",
+      "evidence": "RSA-2048 public key, signed with RSA/SHA-256",
+      "recommendation": "Plan re-issuance with ML-DSA-65 (or a composite ML-DSA + ECDSA certificate). Authentication is not exposed to harvest-now-decrypt-later, so this follows key exchange in priority.",
+      "hndl": false,
+      "migration": "reissue-mldsa"
+    },
+    {
+      "rule_id": "QS-CERT-SIG-001",
+      "title": "Certificate key is quantum-vulnerable",
+      "severity": "medium",
+      "asset": "cert:5d3a1bf4064a786b (CN=orders,O=QuantumShield)",
+      "service": "legacy-pki, orders",
+      "evidence": "RSA-2048 public key, signed with RSA/SHA-256",
+      "recommendation": "Plan re-issuance with ML-DSA-65 (or a composite ML-DSA + ECDSA certificate). Authentication is not exposed to harvest-now-decrypt-later, so this follows key exchange in priority.",
+      "hndl": false,
+      "migration": "reissue-mldsa"
+    },
+    {
+      "rule_id": "QS-CERT-SIG-001",
+      "title": "Certificate key is quantum-vulnerable",
+      "severity": "medium",
+      "asset": "cert:db8ce0cf4f4c293b (CN=payments,O=QuantumShield)",
+      "service": "legacy-pki, payments",
+      "evidence": "secp256r1 public key, signed with RSA/SHA-256",
+      "recommendation": "Plan re-issuance with ML-DSA-65 (or a composite ML-DSA + ECDSA certificate). Authentication is not exposed to harvest-now-decrypt-later, so this follows key exchange in priority.",
+      "hndl": false,
+      "migration": "reissue-mldsa"
+    },
+    {
+      "rule_id": "QS-TLS-CIPH-002",
+      "title": "128-bit symmetric cipher preferred",
+      "severity": "low",
+      "asset": "inventory:443",
+      "service": "inventory",
+      "evidence": "Negotiated ECDHE-RSA-AES128-GCM-SHA256 (Grover's algorithm halves its strength)",
+      "recommendation": "Prefer AES-256-GCM or ChaCha20-Poly1305 for long-lived secrets.",
+      "hndl": false,
+      "migration": "prefer-aes256"
+    },
+    {
+      "rule_id": "QS-CERT-ROT-001",
+      "title": "Long-lived certificate",
+      "severity": "low",
+      "asset": "cert:31e523e607ed6c61 (CN=inventory,O=QuantumShield)",
+      "service": "inventory, legacy-pki",
+      "evidence": "Valid for 825 days",
+      "recommendation": "Use short-lived workload certificates so rotation and algorithm changes are routine.",
+      "hndl": false,
+      "migration": "rotate-cert"
+    },
+    {
+      "rule_id": "QS-SSH-HK-001",
+      "title": "SSH host key is quantum-vulnerable",
+      "severity": "low",
+      "asset": "legacy-configs/sshd_config:3",
+      "service": "legacy-configs",
+      "evidence": "HostKey /etc/ssh/ssh_host_rsa_key",
+      "recommendation": "Track OpenSSH's ML-DSA host-key support; keep keys rotatable.",
+      "hndl": false,
+      "migration": "ssh-hostkey"
+    },
+    {
+      "rule_id": "QS-SSH-HK-001",
+      "title": "SSH host key is quantum-vulnerable",
+      "severity": "low",
+      "asset": "legacy-configs/sshd_config:4",
+      "service": "legacy-configs",
+      "evidence": "HostKey /etc/ssh/ssh_host_ecdsa_key",
+      "recommendation": "Track OpenSSH's ML-DSA host-key support; keep keys rotatable.",
+      "hndl": false,
+      "migration": "ssh-hostkey"
+    },
+    {
+      "rule_id": "QS-KEY-001",
+      "title": "Quantum-vulnerable private key on disk",
+      "severity": "low",
+      "asset": "pki/legacy/ca.key:1",
+      "service": "legacy-pki",
+      "evidence": "private-key RSA-2048",
+      "recommendation": "Replace with ML-DSA keys when the certificate is re-issued; keep keys out of source trees.",
+      "hndl": false,
+      "migration": "reissue-mldsa"
+    },
+    {
+      "rule_id": "QS-KEY-001",
+      "title": "Quantum-vulnerable private key on disk",
+      "severity": "low",
+      "asset": "pki/legacy/inventory.key:1",
+      "service": "legacy-pki",
+      "evidence": "private-key RSA-2048",
+      "recommendation": "Replace with ML-DSA keys when the certificate is re-issued; keep keys out of source trees.",
+      "hndl": false,
+      "migration": "reissue-mldsa"
+    },
+    {
+      "rule_id": "QS-KEY-001",
+      "title": "Quantum-vulnerable private key on disk",
+      "severity": "low",
+      "asset": "pki/legacy/orders.key:1",
+      "service": "legacy-pki",
+      "evidence": "private-key RSA-2048",
+      "recommendation": "Replace with ML-DSA keys when the certificate is re-issued; keep keys out of source trees.",
+      "hndl": false,
+      "migration": "reissue-mldsa"
+    },
+    {
+      "rule_id": "QS-KEY-001",
+      "title": "Quantum-vulnerable private key on disk",
+      "severity": "low",
+      "asset": "pki/legacy/payments.key:1",
+      "service": "legacy-pki",
+      "evidence": "private-key ECDSA",
+      "recommendation": "Replace with ML-DSA keys when the certificate is re-issued; keep keys out of source trees.",
+      "hndl": false,
+      "migration": "reissue-mldsa"
+    },
+    {
+      "rule_id": "QS-CERT-ROT-001",
+      "title": "Long-lived certificate",
+      "severity": "low",
+      "asset": "cert:5d3a1bf4064a786b (CN=orders,O=QuantumShield)",
+      "service": "legacy-pki, orders",
+      "evidence": "Valid for 825 days",
+      "recommendation": "Use short-lived workload certificates so rotation and algorithm changes are routine.",
+      "hndl": false,
+      "migration": "rotate-cert"
+    },
+    {
+      "rule_id": "QS-TLS-CIPH-002",
+      "title": "128-bit symmetric cipher preferred",
+      "severity": "low",
+      "asset": "payments:443",
+      "service": "payments",
+      "evidence": "Negotiated ECDHE-ECDSA-AES128-GCM-SHA256 (Grover's algorithm halves its strength)",
+      "recommendation": "Prefer AES-256-GCM or ChaCha20-Poly1305 for long-lived secrets.",
+      "hndl": false,
+      "migration": "prefer-aes256"
+    },
+    {
+      "rule_id": "QS-ZT-001",
+      "title": "No workload identity required (no mutual TLS)",
+      "severity": "info",
+      "asset": "inventory:443",
+      "service": "inventory",
+      "evidence": "The endpoint accepts anonymous clients",
+      "recommendation": "For service-to-service traffic, require mTLS with short-lived workload certificates (the QuantumShield proxy does this).",
+      "hndl": false,
+      "migration": "deploy-pqc-proxy"
+    },
+    {
+      "rule_id": "QS-ZT-001",
+      "title": "No workload identity required (no mutual TLS)",
+      "severity": "info",
+      "asset": "orders:443",
+      "service": "orders",
+      "evidence": "The endpoint accepts anonymous clients",
+      "recommendation": "For service-to-service traffic, require mTLS with short-lived workload certificates (the QuantumShield proxy does this).",
+      "hndl": false,
+      "migration": "deploy-pqc-proxy"
+    },
+    {
+      "rule_id": "QS-ZT-001",
+      "title": "No workload identity required (no mutual TLS)",
+      "severity": "info",
+      "asset": "payments:443",
+      "service": "payments",
+      "evidence": "The endpoint accepts anonymous clients",
+      "recommendation": "For service-to-service traffic, require mTLS with short-lived workload certificates (the QuantumShield proxy does this).",
+      "hndl": false,
+      "migration": "deploy-pqc-proxy"
+    },
+    {
+      "rule_id": "QS-CFG-KEX-000",
+      "title": "Key-exchange groups left to library defaults",
+      "severity": "info",
+      "asset": "legacy-configs/apache-ssl.conf",
+      "service": "reports.internal",
+      "evidence": "No ssl_ecdh_curve / Groups directive",
+      "recommendation": "Defaults are hybrid only with OpenSSL 3.5+. Pin X25519MLKEM768:X25519 explicitly.",
+      "hndl": false,
+      "migration": "set-hybrid-groups"
+    }
+  ],
+  "tls_library": "OpenSSL 3.5.7 9 Jun 2026; ML-KEM available; group control"
+}

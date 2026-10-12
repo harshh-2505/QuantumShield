@@ -12,6 +12,10 @@ x-service: &service
 x-sidecar: &sidecar
   image: quantumshield:latest
   profiles: [pqc]
+  user: "10001:10001"               # unprivileged; only reads its own keys
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
   volumes:
     - ./pki:/pki:ro
     - ./sidecars:/sidecars:ro
@@ -62,6 +66,7 @@ services:
   qs:
     image: quantumshield:latest
     profiles: [tools]
+    user: "0:0"                     # writes PKI and reports into the bind mount
     networks: [mesh]
     working_dir: /demo
     volumes:

@@ -38,6 +38,22 @@ def set_groups(ctx: ssl.SSLContext, groups: str) -> bool:
     return False
 
 
+def set_sigalgs(ctx: ssl.SSLContext, sigalgs: str) -> bool:
+    """Restrict signature algorithms for both server and client authentication.
+
+    With "mldsa65:mldsa87" a peer holding only an RSA/ECDSA certificate cannot
+    authenticate at all, so authentication is post-quantum end to end.
+    """
+    if not (hasattr(ctx, "set_server_sigalgs") and hasattr(ctx, "set_client_sigalgs")):
+        return False
+    ctx.set_server_sigalgs(sigalgs)
+    ctx.set_client_sigalgs(sigalgs)
+    return True
+
+
+PQ_SIGALGS = "mldsa65:mldsa87:mldsa44"
+
+
 def negotiated_group(sock) -> str | None:
     fn = getattr(sock, "group", None)
     try:

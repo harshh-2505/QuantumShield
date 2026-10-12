@@ -163,7 +163,11 @@ def gen_key(alg: str, path: Path) -> None:
         raise ValueError(f"unknown key algorithm {alg!r}; choose from {', '.join(KEY_ALGS)}")
     if alg.startswith("mldsa") and openssl_version() < (3, 5):
         raise RuntimeError("ML-DSA keys need OpenSSL 3.5 or newer")
-    _run(["genpkey", *KEY_ALGS[alg], "-out", str(path)])
+    old = os.umask(0o077)   # the key is never readable by others, even briefly
+    try:
+        _run(["genpkey", *KEY_ALGS[alg], "-out", str(path)])
+    finally:
+        os.umask(old)
     path.chmod(0o600)
 
 
@@ -188,13 +192,25 @@ def issue(pki_dir: Path, name: str, alg: str = "mldsa65", dns: list[str] | None 
     Short lifetimes make key rotation routine: re-run `issue` and the proxy
     picks up the new files without a restart.
     """
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,62}", name):
+        raise ValueError(f"invalid workload name {name!r}: use letters, digits, . _ -")
+    if not re.fullmatch(r"[A-Za-z0-9.-]{1,253}", trust_domain):
+        raise ValueError(f"invalid trust domain {trust_domain!r}")
+    for d in dns or []:
+        if not re.fullmatch(r"[A-Za-z0-9*._-]{1,253}", d):
+            raise ValueError(f"invalid DNS name {d!r}")
+    if not 1 <= days <= 825:
+        raise ValueError("certificate lifetime must be 1-825 days")
     out_dir = out_dir or pki_dir
     out_dir.mkdir(parents=True, exist_ok=True)
     key, crt = out_dir / f"{name}.key", out_dir / f"{name}.crt"
     sans = [f"DNS:{d}" for d in (dns or [name, "localhost"])]
     sans.append(f"URI:spiffe://{trust_domain}/{name}")
     sans.append("IP:127.0.0.1")
-    gen_key(alg, key)
+    # Build the new key and certificate next to the old ones, then swap them in, so a
+    # proxy hot-reloading during rotation never sees a truncated file.
+    new_key, new_crt = out_dir / f".{name}.key.new", out_dir / f".{name}.crt.new"
+    gen_key(alg, new_key)
     with tempfile.TemporaryDirectory() as td:
         csr = Path(td) / "req.csr"
         ext = Path(td) / "ext.cnf"
@@ -203,20 +219,29 @@ def issue(pki_dir: Path, name: str, alg: str = "mldsa65", dns: list[str] | None 
             "keyUsage=critical,digitalSignature\n"
             "extendedKeyUsage=serverAuth,clientAuth\n"
             f"subjectAltName={','.join(sans)}\n")
-        _run(["req", "-new", "-key", str(key), "-out", str(csr),
+        _run(["req", "-new", "-key", str(new_key), "-out", str(csr),
               "-subj", f"/O=QuantumShield/CN={name}"])
         _run(["x509", "-req", "-in", str(csr), "-CA", str(pki_dir / "ca.crt"),
-              "-CAkey", str(pki_dir / "ca.key"), "-CAcreateserial", "-out", str(crt),
+              "-CAkey", str(pki_dir / "ca.key"), "-CAcreateserial", "-out", str(new_crt),
               "-days", str(days), "-extfile", str(ext)])
+    os.replace(new_key, key)
+    os.replace(new_crt, crt)
     return crt, key
 
 
 def revoke(pki_dir: Path, cert_path: Path) -> str:
-    """Add a certificate's serial to the CA's revocation list (read by the proxy)."""
+    """Add a certificate's serial to the CA's revocation list (read by the proxy).
+
+    The list is replaced atomically so a proxy never reads a half-written file.
+    """
     info = parse_pem_bundle(cert_path.read_bytes())[0]
+    if info.issuer != parse_pem_bundle((pki_dir / "ca.crt").read_bytes())[0].subject:
+        raise ValueError(f"{cert_path} was not issued by the CA in {pki_dir}")
     rl = pki_dir / "revoked.json"
     revoked = json.loads(rl.read_text()) if rl.exists() else []
     if info.serial not in revoked:
         revoked.append(info.serial)
-    rl.write_text(json.dumps(revoked, indent=2) + "\n")
+    tmp = rl.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(revoked, indent=2) + "\n")
+    os.replace(tmp, rl)
     return info.serial

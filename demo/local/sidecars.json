@@ -1,24 +1,78 @@
 {
   "proxies": [
-    {"name": "orders-ingress", "mode": "ingress", "listen": "127.0.0.1:10441",
-     "upstream": "127.0.0.1:9441", "upstream_tls": true, "policy": "prefer",
-     "require_client_cert": false,
-     "cert": "pki/pqc/orders.crt", "key": "pki/pqc/orders.key", "ca": "pki/pqc/ca.crt"},
-    {"name": "payments-ingress", "mode": "ingress", "listen": "127.0.0.1:10442",
-     "upstream": "127.0.0.1:9442", "upstream_tls": true, "policy": "strict",
-     "cert": "pki/pqc/payments.crt", "key": "pki/pqc/payments.key", "ca": "pki/pqc/ca.crt",
-     "allowed_ids": ["spiffe://quantumshield.local/orders", "spiffe://quantumshield.local/scanner"]},
-    {"name": "inventory-ingress", "mode": "ingress", "listen": "127.0.0.1:10443",
-     "upstream": "127.0.0.1:9443", "upstream_tls": true, "policy": "strict",
-     "cert": "pki/pqc/inventory.crt", "key": "pki/pqc/inventory.key", "ca": "pki/pqc/ca.crt",
-     "allowed_ids": ["spiffe://quantumshield.local/orders", "spiffe://quantumshield.local/scanner"]},
-    {"name": "orders-to-payments", "mode": "egress", "listen": "127.0.0.1:9001",
-     "upstream": "127.0.0.1:10442", "server_name": "payments", "policy": "strict",
-     "cert": "pki/pqc/orders.crt", "key": "pki/pqc/orders.key", "ca": "pki/pqc/ca.crt",
-     "allowed_ids": ["spiffe://quantumshield.local/payments"]},
-    {"name": "orders-to-inventory", "mode": "egress", "listen": "127.0.0.1:9002",
-     "upstream": "127.0.0.1:10443", "server_name": "inventory", "policy": "strict",
-     "cert": "pki/pqc/orders.crt", "key": "pki/pqc/orders.key", "ca": "pki/pqc/ca.crt",
-     "allowed_ids": ["spiffe://quantumshield.local/inventory"]}
+    {
+      "name": "orders-ingress",
+      "mode": "ingress",
+      "listen": "127.0.0.1:10441",
+      "upstream": "127.0.0.1:9441",
+      "upstream_tls": true,
+      "policy": "prefer",
+      "require_client_cert": false,
+      "cert": "pki/pqc/orders.crt",
+      "key": "pki/pqc/orders.key",
+      "ca": "pki/pqc/ca.crt"
+    },
+    {
+      "name": "payments-ingress",
+      "mode": "ingress",
+      "listen": "127.0.0.1:10442",
+      "upstream": "127.0.0.1:9442",
+      "upstream_tls": true,
+      "policy": "strict",
+      "cert": "pki/pqc/payments.crt",
+      "key": "pki/pqc/payments.key",
+      "ca": "pki/pqc/ca.crt",
+      "allowed_ids": [
+        "spiffe://quantumshield.local/orders",
+        "spiffe://quantumshield.local/scanner"
+      ],
+      "sigalgs": "mldsa65:mldsa87"
+    },
+    {
+      "name": "inventory-ingress",
+      "mode": "ingress",
+      "listen": "127.0.0.1:10443",
+      "upstream": "127.0.0.1:9443",
+      "upstream_tls": true,
+      "policy": "strict",
+      "cert": "pki/pqc/inventory.crt",
+      "key": "pki/pqc/inventory.key",
+      "ca": "pki/pqc/ca.crt",
+      "allowed_ids": [
+        "spiffe://quantumshield.local/orders",
+        "spiffe://quantumshield.local/scanner"
+      ],
+      "sigalgs": "mldsa65:mldsa87"
+    },
+    {
+      "name": "orders-to-payments",
+      "mode": "egress",
+      "listen": "127.0.0.1:9001",
+      "upstream": "127.0.0.1:10442",
+      "server_name": "payments",
+      "policy": "strict",
+      "cert": "pki/pqc/orders.crt",
+      "key": "pki/pqc/orders.key",
+      "ca": "pki/pqc/ca.crt",
+      "allowed_ids": [
+        "spiffe://quantumshield.local/payments"
+      ],
+      "sigalgs": "mldsa65:mldsa87"
+    },
+    {
+      "name": "orders-to-inventory",
+      "mode": "egress",
+      "listen": "127.0.0.1:9002",
+      "upstream": "127.0.0.1:10443",
+      "server_name": "inventory",
+      "policy": "strict",
+      "cert": "pki/pqc/orders.crt",
+      "key": "pki/pqc/orders.key",
+      "ca": "pki/pqc/ca.crt",
+      "allowed_ids": [
+        "spiffe://quantumshield.local/inventory"
+      ],
+      "sigalgs": "mldsa65:mldsa87"
+    }
   ]
 }

@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>QuantumShield demo dashboard</title>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/tokens.css">
+<style>
+/* Instrument read-out over a lattice. Colours mirror web/assets/tokens.css. */
+:root {
+  --bg: #090d16; --bg-2: #0f1522; --bg-3: #161e2f; --line: #222b3e;
+  --ink: #e9edf5; --dim: #8c95ab; --faint: #5a6378;
+  --gold: #e6c27a; --gold-ink: #1a1408;
+  --safe: #5fd8bc; --warn: #ffa04d; --bad: #ff5c72; --info: #92a4ff;
+  --display: "Unbounded", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f3f5f9; --bg-2: #ffffff; --bg-3: #eaeef5; --line: #d8dee9;
+    --ink: #0d1321; --dim: #556079; --faint: #8790a5; --gold: #8f6413; --gold-ink: #ffffff;
+    --safe: #0b8a6c; --warn: #c25e0a; --bad: #d02d48; --info: #3f55d4; color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f3f5f9; --bg-2: #ffffff; --bg-3: #eaeef5; --line: #d8dee9;
+  --ink: #0d1321; --dim: #556079; --faint: #8790a5; --gold: #8f6413; --gold-ink: #ffffff;
+  --safe: #0b8a6c; --warn: #c25e0a; --bad: #d02d48; --info: #3f55d4; color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 15px/1.55 var(--body); -webkit-font-smoothing: antialiased; }
+body::before {   /* faint lattice ground */
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .5;
+  background-image: radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--dim) 28%, transparent) 1px, transparent 1.6px);
+  background-size: 34px 30px; transform: skewX(-18deg) scale(1.4);
+  mask-image: linear-gradient(180deg, #000 0, transparent 520px); -webkit-mask-image: linear-gradient(180deg, #000 0, transparent 520px);
+}
+main { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; padding: 0 24px 72px; }
+@media (max-width: 560px) { main { padding-inline: 16px; } }
+a { color: var(--gold); }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 4px; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+p { margin: 0; }
+.mono, code { font-family: var(--mono); font-size: .86em; }
+
+header.bar { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; padding: 22px 0 18px; border-bottom: 1px solid var(--line); }
+.mark { display: flex; align-items: center; gap: 12px; }
+.mark svg { width: 30px; height: 30px; flex: none; color: var(--dim); }
+.mark h1 { font: 500 1.15rem/1.2 var(--display); letter-spacing: -.01em; }
+.mark p { font: 400 .76rem/1.4 var(--mono); color: var(--dim); margin-top: 3px; }
+.bar .right { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+.back { font: 500 .78rem var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--dim); text-decoration: none; padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px; }
+.back:hover { color: var(--ink); border-color: var(--faint); }
+.tbtn { display: inline-grid; place-items: center; width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--line); background: transparent; color: var(--dim); cursor: pointer; }
+.tbtn:hover { color: var(--ink); }
+.tbtn svg { width: 18px; height: 18px; }
+
+.readout { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 26px; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: var(--bg-2); }
+.readout > div { padding: 18px 20px; border-left: 1px solid var(--line); min-width: 0; }
+.readout > div:first-child { border-left: 0; }
+.readout .k { font: 500 .7rem/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--faint); }
+.readout .v { display: flex; align-items: baseline; gap: 10px; margin-top: 10px; font: 500 1.9rem/1 var(--display); letter-spacing: -.03em; font-variant-numeric: tabular-nums; flex-wrap: wrap; }
+.readout .v .was { color: var(--dim); font-size: .62em; }
+.readout .v .arr { color: var(--faint); font: 400 .9rem var(--mono); }
+.readout .s { font-size: .8rem; color: var(--dim); margin-top: 8px; }
+@media (max-width: 860px) { .readout { grid-template-columns: repeat(2, minmax(0, 1fr)); } .readout > div:nth-child(3) { border-left: 0; } .readout > div:nth-child(n+3) { border-top: 1px solid var(--line); } }
+
+section { margin-top: 44px; }
+.sh { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; margin-bottom: 14px; }
+.sh h2 { font: 500 1.2rem/1.25 var(--display); letter-spacing: -.01em; }
+.sh p { font-size: .86rem; color: var(--dim); }
+.card { background: var(--bg-2); border: 1px solid var(--line); border-radius: 16px; }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .86rem; }
+th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 500 .68rem/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--faint); white-space: nowrap; }
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr:hover td { background: color-mix(in srgb, var(--bg-3) 60%, transparent); }
+td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+td code { color: var(--ink); }
+.muted { color: var(--dim); }
+
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 999px; font: 500 .7rem/1.3 var(--mono); letter-spacing: .03em; white-space: nowrap;
+  color: var(--c, var(--dim)); background: color-mix(in srgb, var(--c, var(--dim)) 13%, transparent); border: 1px solid color-mix(in srgb, var(--c, var(--dim)) 35%, transparent); }
+.chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.c-safe { --c: var(--safe); } .c-warn { --c: var(--warn); } .c-bad { --c: var(--bad); } .c-info { --c: var(--info); } .c-dim { --c: var(--faint); }
+.flow { display: inline-flex; align-items: center; gap: 8px; flex-wrap: nowrap; white-space: nowrap; }
+.flow .to { color: var(--faint); font-family: var(--mono); }
+.risk { display: grid; grid-template-columns: 34px minmax(60px, 1fr); gap: 8px; align-items: center; min-width: 120px; }
+.risk span { font: 500 .8rem var(--mono); text-align: right; font-variant-numeric: tabular-nums; }
+.risk i { display: block; height: 6px; border-radius: 9px; background: var(--c); }
+.risk .track { background: var(--bg-3); border-radius: 9px; }
+
+.seg { display: inline-flex; padding: 3px; border-radius: 10px; background: var(--bg-2); border: 1px solid var(--line); gap: 2px; flex-wrap: wrap; }
+.seg button { font: 500 .78rem/1 var(--body); padding: 8px 12px; border-radius: 8px; border: 0; cursor: pointer; background: transparent; color: var(--dim); }
+.seg button[aria-pressed="true"] { background: var(--bg-3); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); }
+
+.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr)); gap: 14px; }
+.chart { padding: 18px 20px; min-width: 0; }
+.chart h3 { font: 600 .95rem var(--body); }
+.chart .sub { font-size: .8rem; color: var(--dim); margin: 2px 0 12px; }
+.chart svg { width: 100%; height: auto; display: block; overflow: visible; }
+.chart svg text { font-family: var(--mono); font-size: 11px; fill: var(--dim); }
+.chart svg .lbl { fill: var(--ink); font-family: var(--body); font-size: 12.5px; }
+.chart svg .val { fill: var(--ink); }
+.chart svg .grid { stroke: var(--line); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font: 400 .74rem var(--mono); color: var(--dim); margin-top: 10px; }
+.legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; background: var(--c); }
+
+.ftools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.ftools input { font: 400 .84rem var(--body); color: var(--ink); background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; min-width: 0; width: 240px; max-width: 100%; }
+.flist { display: grid; gap: 8px; }
+.f { position: relative; display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 6px 16px; padding: 14px 16px 14px 20px; }
+.f::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px; border-radius: 0 3px 3px 0; background: var(--c); }
+.f h3 { font: 600 .92rem/1.35 var(--body); }
+.f .meta { font: 400 .74rem var(--mono); color: var(--faint); overflow-wrap: anywhere; }
+.f .ev { font: 400 .76rem/1.5 var(--mono); color: var(--dim); overflow-wrap: anywhere; }
+.f .fix { font-size: .84rem; color: var(--dim); }
+.f .fix b { color: var(--safe); font-weight: 500; }
+.f > :not(:first-child) { grid-column: 2; }
+.f > :first-child { grid-row: 1 / span 4; }
+@media (max-width: 640px) { .f { grid-template-columns: minmax(0, 1fr); } .f > :not(:first-child), .f > :first-child { grid-column: 1; grid-row: auto; } }
+.more { margin-top: 10px; }
+
+.phases { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr)); gap: 14px; }
+.phase { padding: 18px; display: grid; gap: 10px; align-content: start; }
+.phase h3 { font: 500 1rem var(--display); }
+.phase .why { font-size: .8rem; color: var(--dim); }
+.phase ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.phase li { display: grid; gap: 4px; padding: 10px 12px; border-radius: 10px; background: var(--bg); border: 1px solid var(--line); font-size: .86rem; }
+.phase li .svc { font: 500 .72rem var(--mono); color: var(--gold); }
+.empty { color: var(--dim); font-size: .9rem; padding: 18px; border: 1px dashed var(--line); border-radius: 12px; }
+footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line); font-size: .8rem; color: var(--faint); display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<main>
+  <header class="bar">
+    <div class="mark">
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <g fill="currentColor"><circle cx="5" cy="9" r="1.7"/><circle cx="15" cy="7" r="1.7"/><circle cx="25" cy="5" r="1.7"/><circle cx="7" cy="19" r="1.7"/><circle cx="27" cy="15" r="1.7"/><circle cx="9" cy="29" r="1.7"/><circle cx="19" cy="27" r="1.7"/><circle cx="29" cy="25" r="1.7"/></g>
+        <circle cx="17" cy="17" r="2.2" fill="var(--gold)"/><circle cx="17" cy="17" r="6" fill="none" stroke="var(--gold)" stroke-width="1.4"/>
+      </svg>
+      <div><h1>QuantumShield demo dashboard</h1><p id="meta"></p></div>
+    </div>
+    <div class="right">
+      <a class="back" href="/">QuantumShield site</a>
+      <button class="tbtn" id="theme" type="button" aria-label="Switch colour theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="readout" id="readout"></div>
+  <section id="readiness"></section>
+  <section id="endpoints"></section>
+  <section id="bench"></section>
+  <section id="findings"></section>
+  <section id="certs"></section>
+  <section id="plan"></section>
+  <footer><span>Generated by QuantumShield. All cryptography by OpenSSL; quantum status per NIST FIPS 203/204 and IR 8547.</span><span id="foot"></span></footer>
+</main>
+<script>
+(function () {
+"use strict";
+const D = {"before": {"generated_at": "2026-10-12T16:02:13+00:00", "tls_library": "OpenSSL 3.5.7 9 Jun 2026; ML-KEM available; group control", "services": [{"service": "inventory", "endpoints": ["inventory:443"], "kex": ["secp256r1"], "cert_keys": ["RSA-2048"], "findings": {"critical": 2, "high": 6, "medium": 1, "low": 2, "info": 1}, "score": 212, "hndl": true, "status": "vulnerable", "needs_migration": true}, {"service": "legacy-configs", "endpoints": [], "kex": [], "cert_keys": [], "findings": {"critical": 2, "high": 5, "medium": 2, "low": 2}, "score": 200, "hndl": true, "status": "vulnerable", "needs_migration": true}, {"service": "payments", "endpoints": ["payments:443"], "kex": ["secp256r1"], "cert_keys": ["secp256r1"], "findings": {"high": 4, "low": 1, "info": 1}, "score": 82, "hndl": true, "status": "vulnerable", "needs_migration": true}, {"service": "reports.internal", "endpoints": [], "kex": [], "cert_keys": [], "findings": {"critical": 1, "high": 1, "info": 1}, "score": 60, "hndl": true, "status": "vulnerable", "needs_migration": true}, {"service": "orders", "endpoints": ["orders:443"], "kex": ["x25519"], "cert_keys": ["RSA-2048"], "findings": {"high": 2, "info": 1}, "score": 40, "hndl": true, "status": "vulnerable", "needs_migration": true}, {"service": "legacy-pki", "endpoints": [], "kex": [], "cert_keys": [], "findings": {"medium": 3, "low": 5}, "score": 34, "hndl": false, "status": "review", "needs_migration": true}], "endpoints": [{"target": "orders:443", "name": "orders", "reachable": true, "error": null, "protocols": {"TLSv1.0": false, "TLSv1.1": false, "TLSv1.2": true, "TLSv1.3": true}, "negotiated_version": "TLSv1.3", "negotiated_cipher": "TLS_AES_256_GCM_SHA384", "negotiated_group": "x25519", "negotiated_sigalg": "rsa_pss_rsae_sha256", "handshake_ms": 3.21, "groups_supported": ["X25519", "secp256r1"], "groups_probed": true, "tls12_ciphers": ["ECDHE-RSA-AES128-GCM-SHA256", "ECDHE-RSA-AES256-GCM-SHA384"], "certificate_chain": ["5d3a1bf4064a786b4f52a6d9cf76d5b58a40fafe38d882b3b1b58d1792ec55b2"], "peer_requires_client_cert": false, "pqc_groups": [], "group_status": "quantum-broken"}, {"target": "payments:443", "name": "payments", "reachable": true, "error": null, "protocols": {"TLSv1.0": false, "TLSv1.1": false, "TLSv1.2": true, "TLSv1.3": false}, "negotiated_version": "TLSv1.2", "negotiated_cipher": "ECDHE-ECDSA-AES128-GCM-SHA256", "negotiated_group": "secp256r1", "negotiated_sigalg": "ecdsa_secp256r1_sha256", "handshake_ms": 5.9, "groups_supported": [], "groups_probed": false, "tls12_ciphers": ["ECDHE-ECDSA-AES128-GCM-SHA256", "ECDHE-ECDSA-AES256-SHA"], "certificate_chain": ["db8ce0cf4f4c293bffb0e591e37b2d0c921a149437393e230c56ea71b999026d"], "peer_requires_client_cert": false, "pqc_groups": [], "group_status": "quantum-broken"}, {"target": "inventory:443", "name": "inventory", "reachable": true, "error": null, "protocols": {"TLSv1.0": true, "TLSv1.1": true, "TLSv1.2": true, "TLSv1.3": false}, "negotiated_version": "TLSv1.2", "negotiated_cipher": "ECDHE-RSA-AES128-GCM-SHA256", "negotiated_group": "secp256r1", "negotiated_sigalg": "rsa_pss_rsae_sha256", "handshake_ms": 5.73, "groups_supported": [], "groups_probed": false, "tls12_ciphers": ["ECDHE-RSA-AES128-GCM-SHA256", "AES128-GCM-SHA256", "AES256-SHA"], "certificate_chain": ["31e523e607ed6c610e7379e4ea7556d5541c85c623ccfa27ab46d81909b1aef9"], "peer_requires_client_cert": false, "pqc_groups": [], "group_status": "quantum-broken"}], "certificates": [{"fingerprint_sha256": "5d3a1bf4064a786b4f52a6d9cf76d5b58a40fafe38d882b3b1b58d1792ec55b2", "subject": "CN=orders,O=QuantumShield", "issuer": "CN=Acme Legacy CA,O=QuantumShield", "serial": "1c8387192cdfd4e5f8656c316a9099164a146932", "not_before": "2026-10-12T16:02:00+00:00", "not_after": "2029-01-14T16:02:00+00:00", "public_key_algorithm": "RSA", "public_key_size": 2048, "public_key_detail": "RSA-2048", "signature_algorithm": "RSA", "signature_hash": "SHA-256", "subject_alt_names": ["DNS:orders", "DNS:localhost", "URI:spiffe://quantumshield.local/orders", "IP:127.0.0.1"], "self_signed": false, "is_ca": false, "sources": ["tls://orders:443", "file://pki/legacy/orders.crt"], "key_status": "quantum-broken", "sig_status": "quantum-broken"}, {"fingerprint_sha256": "db8ce0cf4f4c293bffb0e591e37b2d0c921a149437393e230c56ea71b999026d", "subject": "CN=payments,O=QuantumShield", "issuer": "CN=Acme Legacy CA,O=QuantumShield", "serial": "1c8387192cdfd4e5f8656c316a9099164a146933", "not_before": "2026-10-12T16:02:01+00:00", "not_after": "2027-10-12T16:02:01+00:00", "public_key_algorithm": "ECDSA", "public_key_size": 256, "public_key_detail": "secp256r1", "signature_algorithm": "RSA", "signature_hash": "SHA-256", "subject_alt_names": ["DNS:payments", "DNS:localhost", "URI:spiffe://quantumshield.local/payments", "IP:127.0.0.1"], "self_signed": false, "is_ca": false, "sources": ["tls://payments:443", "file://pki/legacy/payments.crt"], "key_status": "quantum-broken", "sig_status": "quantum-broken"}, {"fingerprint_sha256": "31e523e607ed6c610e7379e4ea7556d5541c85c623ccfa27ab46d81909b1aef9", "subject": "CN=inventory,O=QuantumShield", "issuer": "CN=Acme Legacy CA,O=QuantumShield", "serial": "1c8387192cdfd4e5f8656c316a9099164a146934", "not_before": "2026-10-12T16:02:02+00:00", "not_after": "2029-01-14T16:02:02+00:00", "public_key_algorithm": "RSA", "public_key_size": 2048, "public_key_detail": "RSA-2048", "signature_algorithm": "RSA", "signature_hash": "SHA-256", "subject_alt_names": ["DNS:inventory", "DNS:localhost", "URI:spiffe://quantumshield.local/inventory", "IP:127.0.0.1"], "self_signed": false, "is_ca": false, "sources": ["tls://inventory:443", "file://pki/legacy/inventory.crt"], "key_status": "quantum-broken", "sig_status": "quantum-broken"}, {"fingerprint_sha256": "a6e27d189bdb99166f10cd10ad982c338f130ec8026765e3708547b91bd1482b", "subject": "CN=Acme Legacy CA,O=QuantumShield", "issuer": "CN=Acme Legacy CA,O=QuantumShield", "serial": "12cf715578b99e0aa55d9196abc507e031534023", "not_before": "2026-10-12T16:01:59+00:00", "not_after": "2036-10-09T16:01:59+00:00", "public_key_algorithm": "RSA", "public_key_size": 2048, "public_key_detail": "RSA-2048", "signature_algorithm": "RSA", "signature_hash": "SHA-256", "subject_alt_names": [], "self_signed": true, "is_ca": true, "sources": ["file://pki/legacy/ca.crt"], "key_status": "quantum-broken", "sig_status": "quantum-broken"}], "configs": [{"path": "services/orders/nginx.conf", "kind": "nginx", "service": "orders", "items": 4}, {"path": "services/payments/nginx.conf", "kind": "nginx", "service": "payments", "items": 4}, {"path": "services/inventory/nginx.conf", "kind": "nginx", "service": "inventory", "items": 4}, {"path": "legacy-configs/apache-ssl.conf", "kind": "apache", "service": "reports.internal", "items": 3}, {"path": "legacy-configs/billing_client.py", "kind": "source", "service": "legacy-configs", "items": 2}, {"path": "legacy-configs/haproxy.cfg", "kind": "haproxy", "service": "legacy-configs", "items": 4}, {"path": "legacy-configs/openssl.cnf", "kind": "openssl", "service": "legacy-configs", "items": 3}, {"path": "legacy-configs/sshd_config", "kind": "sshd", "service": "legacy-configs", "items": 5}, {"path": "pki/legacy/ca.crt", "kind": "pem", "service": "legacy-pki", "items": 0}, {"path": "pki/legacy/ca.key", "kind": "pem", "service": "legacy-pki", "items": 1}, {"path": "pki/legacy/inventory.crt", "kind": "pem", "service": "legacy-pki", "items": 0}, {"path": "pki/legacy/inventory.key", "kind": "pem", "service": "legacy-pki", "items": 1}, {"path": "pki/legacy/orders.crt", "kind": "pem", "service": "legacy-pki", "items": 0}, {"path": "pki/legacy/orders.key", "kind": "pem", "service": "legacy-pki", "items": 1}, {"path": "pki/legacy/payments.crt", "kind": "pem", "service": "legacy-pki", "items": 0}, {"path": "pki/legacy/payments.key", "kind": "pem", "service": "legacy-pki", "items": 1}], "findings": [{"rule_id": "QS-CFG-CIPH-003", "title": "Static RSA key-exchange suites allowed", "severity": "critical", "asset": "services/inventory/nginx.conf:14", "service": "inventory", "evidence": "ssl_ciphers AES128-GCM-SHA256:AES256-SHA:ECDHE-RSA-AES128-GCM-SHA256:DES-CBC3-SHA:@SECLEVEL=0", "recommendation": "Restrict to ECDHE suites, e.g. ECDHE+AESGCM:ECDHE+CHACHA20.", "hndl": true, "migration": "remove-rsa-kex"}, {"rule_id": "QS-TLS-KEX-003", "title": "Static RSA key exchange accepted (no forward secrecy)", "severity": "critical", "asset": "inventory:443", "service": "inventory", "evidence": "Accepts AES128-GCM-SHA256, AES256-SHA", "recommendation": "Remove kRSA suites. Anyone who records traffic and later obtains or breaks the RSA key decrypts every session.", "hndl": true, "migration": "remove-rsa-kex"}, {"rule_id": "QS-CFG-CIPH-003", "title": "Static RSA key-exchange suites allowed", "severity": "critical", "asset": "legacy-configs/haproxy.cfg:2", "service": "legacy-configs", "evidence": "ssl-default-bind-ciphers ECDHE-RSA-AES128-GCM-SHA256:AES256-SHA256", "recommendation": "Restrict to ECDHE suites, e.g. ECDHE+AESGCM:ECDHE+CHACHA20.", "hndl": true, "migration": "remove-rsa-kex"}, {"rule_id": "QS-CFG-CIPH-003", "title": "Static RSA key-exchange suites allowed", "severity": "critical", "asset": "legacy-configs/openssl.cnf:11", "service": "legacy-configs", "evidence": "CipherString DEFAULT:@SECLEVEL=2", "recommendation": "Restrict to ECDHE suites, e.g. ECDHE+AESGCM:ECDHE+CHACHA20.", "hndl": true, "migration": "remove-rsa-kex"}, {"rule_id": "QS-CFG-CIPH-003", "title": "Static RSA key-exchange suites allowed", "severity": "critical", "asset": "legacy-configs/apache-ssl.conf:5", "service": "reports.internal", "evidence": "SSLCipherSuite HIGH:!aNULL:!MD5", "recommendation": "Restrict to ECDHE suites, e.g. ECDHE+AESGCM:ECDHE+CHACHA20.", "hndl": true, "migration": "remove-rsa-kex"}, {"rule_id": "QS-CFG-KEX-001", "title": "Only classical key-exchange groups configured", "severity": "high", "asset": "services/inventory/nginx.conf:13", "service": "inventory", "evidence": "ssl_ecdh_curve prime256v1:secp384r1", "recommendation": "Add X25519MLKEM768 first, keeping X25519 for older clients.", "hndl": true, "migration": "set-hybrid-groups"}, {"rule_id": "QS-CFG-PROTO-001", "title": "TLS 1.3 not enabled", "severity": "high", "asset": "services/inventory/nginx.conf:12", "service": "inventory", "evidence": "ssl_protocols TLSv1 TLSv1.1 TLSv1.2", "recommendation": "Enable TLSv1.3; hybrid ML-KEM requires it.", "hndl": true, "migration": "enable-tls13"}, {"rule_id": "QS-CFG-PROTO-002", "title": "Legacy TLS versions enabled", "severity": "high", "asset": "services/inventory/nginx.conf:12", "service": "inventory", "evidence": "ssl_protocols TLSv1 TLSv1.1 TLSv1.2", "recommendation": "Allow only TLS 1.2 and 1.3.", "hndl": false, "migration": "disable-legacy-tls"}, {"rule_id": "QS-TLS-KEX-001", "title": "Key exchange is not quantum-safe (harvest-now-decrypt-later)", "severity": "high", "asset": "inventory:443", "service": "inventory", "evidence": "Negotiated secp256r1; no hybrid ML-KEM group accepted", "recommendation": "Enable X25519MLKEM768 (OpenSSL 3.5+, BoringSSL, Go 1.24+) or front the service with the QuantumShield hybrid proxy.", "hndl": true, "migration": "set-hybrid-groups"}, {"rule_id": "QS-TLS-PROTO-001", "title": "TLS 1.3 not supported", "severity": "high", "asset": "inventory:443", "service": "inventory", "evidence": "Highest protocol: TLSv1.2", "recommendation": "Hybrid ML-KEM key exchange is only defined for TLS 1.3. Upgrade the TLS stack or deploy the QuantumShield proxy.", "hndl": true, "migration": "enable-tls13"}, {"rule_id": "QS-TLS-PROTO-002", "title": "Legacy TLS versions accepted", "severity": "high", "asset": "inventory:443", "service": "inventory", "evidence": "TLSv1.0, TLSv1.1", "recommendation": "Disable TLS 1.0 and 1.1.", "hndl": false, "migration": "disable-legacy-tls"}, {"rule_id": "QS-CFG-KEX-001", "title": "Only classical key-exchange groups configured", "severity": "high", "asset": "legacy-configs/haproxy.cfg:6", "service": "legacy-configs", "evidence": "curves P-256:X25519", "recommendation": "Add X25519MLKEM768 first, keeping X25519 for older clients.", "hndl": true, "migration": "set-hybrid-groups"}, {"rule_id": "QS-CFG-KEX-001", "title": "Only classical key-exchange groups configured", "severity": "high", "asset": "legacy-configs/openssl.cnf:12", "service": "legacy-configs", "evidence": "Groups X25519:secp256r1:secp384r1", "recommendation": "Add X25519MLKEM768 first, keeping X25519 for older clients.", "hndl": true, "migration": "set-hybrid-groups"}, {"rule_id": "QS-SSH-CIPH-001", "title": "SSH allows insecure ciphers", "severity": "high", "asset": "legacy-configs/sshd_config:6", "service": "legacy-configs", "evidence": "Ciphers aes128-ctr,aes256-gcm@openssh.com,3des-cbc", "recommendation": "Use chacha20-poly1305 and aes256-gcm.", "hndl": false, "migration": "remove-weak-ciphers"}, {"rule_id": "QS-SSH-KEX-001", "title": "SSH key exchange is not quantum-safe", "severity": "high", "asset": "legacy-configs/sshd_config:5", "service": "legacy-configs", "evidence": "KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,diffie-hellman-group14-sha1", "recommendation": "Put mlkem768x25519-sha256 (OpenSSH 9.9+) and sntrup761x25519-sha512 first.", "hndl": true, "migration": "ssh-hybrid-kex"}, {"rule_id": "QS-SSH-KEX-002", "title": "SSH allows broken key exchange", "severity": "high", "asset": "legacy-configs/sshd_config:5", "service": "legacy-configs", "evidence": "KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,diffie-hellman-group14-sha1", "recommendation": "Remove SHA-1 / 1024-bit Diffie-Hellman groups.", "hndl": false, "migration": "ssh-hybrid-kex"}, {"rule_id": "QS-CFG-KEX-001", "title": "Only classical key-exchange groups configured", "severity": "high", "asset": "services/orders/nginx.conf:13", "service": "orders", "evidence": "ssl_ecdh_curve X25519:prime256v1", "recommendation": "Add X25519MLKEM768 first, keeping X25519 for older clients.", "hndl": true, "migration": "set-hybrid-groups"}, {"rule_id": "QS-TLS-KEX-001", "title": "Key exchange is not quantum-safe (harvest-now-decrypt-later)", "severity": "high", "asset": "orders:443", "service": "orders", "evidence": "Negotiated x25519; no hybrid ML-KEM group accepted", "recommendation": "Enable X25519MLKEM768 (OpenSSL 3.5+, BoringSSL, Go 1.24+) or front the service with the QuantumShield hybrid proxy.", "hndl": true, "migration": "set-hybrid-groups"}, {"rule_id": "QS-CFG-KEX-001", "title": "Only classical key-exchange groups configured", "severity": "high", "asset": "services/payments/nginx.conf:13", "service": "payments", "evidence": "ssl_ecdh_curve prime256v1", "recommendation": "Add X25519MLKEM768 first, keeping X25519 for older clients.", "hndl": true, "migration": "set-hybrid-groups"}, {"rule_id": "QS-CFG-PROTO-001", "title": "TLS 1.3 not enabled", "severity": "high", "asset": "services/payments/nginx.conf:12", "service": "payments", "evidence": "ssl_protocols TLSv1.2", "recommendation": "Enable TLSv1.3; hybrid ML-KEM requires it.", "hndl": true, "migration": "enable-tls13"}, {"rule_id": "QS-TLS-KEX-001", "title": "Key exchange is not quantum-safe (harvest-now-decrypt-later)", "severity": "high", "asset": "payments:443", "service": "payments", "evidence": "Negotiated secp256r1; no hybrid ML-KEM group accepted", "recommendation": "Enable X25519MLKEM768 (OpenSSL 3.5+, BoringSSL, Go 1.24+) or front the service with the QuantumShield hybrid proxy.", "hndl": true, "migration": "set-hybrid-groups"}, {"rule_id": "QS-TLS-PROTO-001", "title": "TLS 1.3 not supported", "severity": "high", "asset": "payments:443", "service": "payments", "evidence": "Highest protocol: TLSv1.2", "recommendation": "Hybrid ML-KEM key exchange is only defined for TLS 1.3. Upgrade the TLS stack or deploy the QuantumShield proxy.", "hndl": true, "migration": "enable-tls13"}, {"rule_id": "QS-CFG-PROTO-002", "title": "Legacy TLS versions enabled", "severity": "high", "asset": "legacy-configs/apache-ssl.conf:4", "service": "reports.internal", "evidence": "SSLProtocol all -SSLv3", "recommendation": "Allow only TLS 1.2 and 1.3.", "hndl": false, "migration": "disable-legacy-tls"}, {"rule_id": "QS-CERT-SIG-001", "title": "Certificate key is quantum-vulnerable", "severity": "medium", "asset": "cert:31e523e607ed6c61 (CN=inventory,O=QuantumShield)", "service": "inventory, legacy-pki", "evidence": "RSA-2048 public key, signed with RSA/SHA-256", "recommendation": "Plan re-issuance with ML-DSA-65 (or a composite ML-DSA + ECDSA certificate). Authentication is not exposed to harvest-now-decrypt-later, so this follows key exchange in priority.", "hndl": false, "migration": "reissue-mldsa"}, {"rule_id": "QS-CODE-001", "title": "Hard-coded quantum-vulnerable algorithm in source", "severity": "medium", "asset": "legacy-configs/billing_client.py:8", "service": "legacy-configs", "evidence": "code return rsa.generate_private_key(public_exponent=65537, key_size=2048)", "recommendation": "Route RSA through a crypto-agility layer (config-selected algorithm) so it can be swapped for ML-KEM / ML-DSA.", "hndl": false, "migration": "refactor-code"}, {"rule_id": "QS-CODE-002", "title": "Broken hash function used in source", "severity": "medium", "asset": "legacy-configs/billing_client.py:12", "service": "legacy-configs", "evidence": "code return hashlib.md5(data).hexdigest()", "recommendation": "Use SHA-256 or stronger (fine for non-security checksums, but verify).", "hndl": false, "migration": "refactor-code"}, {"rule_id": "QS-CERT-SIG-001", "title": "Certificate key is quantum-vulnerable", "severity": "medium", "asset": "cert:a6e27d189bdb9916 (CN=Acme Legacy CA,O=QuantumShield)", "service": "legacy-pki", "evidence": "RSA-2048 public key, signed with RSA/SHA-256", "recommendation": "Plan re-issuance with ML-DSA-65 (or a composite ML-DSA + ECDSA certificate). Authentication is not exposed to harvest-now-decrypt-later, so this follows key exchange in priority.", "hndl": false, "migration": "reissue-mldsa"}, {"rule_id": "QS-CERT-SIG-001", "title": "Certificate key is quantum-vulnerable", "severity": "medium", "asset": "cert:5d3a1bf4064a786b (CN=orders,O=QuantumShield)", "service": "legacy-pki, orders", "evidence": "RSA-2048 public key, signed with RSA/SHA-256", "recommendation": "Plan re-issuance with ML-DSA-65 (or a composite ML-DSA + ECDSA certificate). Authentication is not exposed to harvest-now-decrypt-later, so this follows key exchange in priority.", "hndl": false, "migration": "reissue-mldsa"}, {"rule_id": "QS-CERT-SIG-001", "title": "Certificate key is quantum-vulnerable", "severity": "medium", "asset": "cert:db8ce0cf4f4c293b (CN=payments,O=QuantumShield)", "service": "legacy-pki, payments", "evidence": "secp256r1 public key, signed with RSA/SHA-256", "recommendation": "Plan re-issuance with ML-DSA-65 (or a composite ML-DSA + ECDSA certificate). Authentication is not exposed to harvest-now-decrypt-later, so this follows key exchange in priority.", "hndl": false, "migration": "reissue-mldsa"}, {"rule_id": "QS-TLS-CIPH-002", "title": "128-bit symmetric cipher preferred", "severity": "low", "asset": "inventory:443", "service": "inventory", "evidence": "Negotiated ECDHE-RSA-AES128-GCM-SHA256 (Grover's algorithm halves its strength)", "recommendation": "Prefer AES-256-GCM or ChaCha20-Poly1305 for long-lived secrets.", "hndl": false, "migration": "prefer-aes256"}, {"rule_id": "QS-CERT-ROT-001", "title": "Long-lived certificate", "severity": "low", "asset": "cert:31e523e607ed6c61 (CN=inventory,O=QuantumShield)", "service": "inventory, legacy-pki", "evidence": "Valid for 825 days", "recommendation": "Use short-lived workload certificates so rotation and algorithm changes are routine.", "hndl": false, "migration": "rotate-cert"}, {"rule_id": "QS-SSH-HK-001", "title": "SSH host key is quantum-vulnerable", "severity": "low", "asset": "legacy-configs/sshd_config:3", "service": "legacy-configs", "evidence": "HostKey /etc/ssh/ssh_host_rsa_key", "recommendation": "Track OpenSSH's ML-DSA host-key support; keep keys rotatable.", "hndl": false, "migration": "ssh-hostkey"}, {"rule_id": "QS-SSH-HK-001", "title": "SSH host key is quantum-vulnerable", "severity": "low", "asset": "legacy-configs/sshd_config:4", "service": "legacy-configs", "evidence": "HostKey /etc/ssh/ssh_host_ecdsa_key", "recommendation": "Track OpenSSH's ML-DSA host-key support; keep keys rotatable.", "hndl": false, "migration": "ssh-hostkey"}, {"rule_id": "QS-KEY-001", "title": "Quantum-vulnerable private key on disk", "severity": "low", "asset": "pki/legacy/ca.key:1", "service": "legacy-pki", "evidence": "private-key RSA-2048", "recommendation": "Replace with ML-DSA keys when the certificate is re-issued; keep keys out of source trees.", "hndl": false, "migration": "reissue-mldsa"}, {"rule_id": "QS-KEY-001", "title": "Quantum-vulnerable private key on disk", "severity": "low", "asset": "pki/legacy/inventory.key:1", "service": "legacy-pki", "evidence": "private-key RSA-2048", "recommendation": "Replace with ML-DSA keys when the certificate is re-issued; keep keys out of source trees.", "hndl": false, "migration": "reissue-mldsa"}, {"rule_id": "QS-KEY-001", "title": "Quantum-vulnerable private key on disk", "severity": "low", "asset": "pki/legacy/orders.key:1", "service": "legacy-pki", "evidence": "private-key RSA-2048", "recommendation": "Replace with ML-DSA keys when the certificate is re-issued; keep keys out of source trees.", "hndl": false, "migration": "reissue-mldsa"}, {"rule_id": "QS-KEY-001", "title": "Quantum-vulnerable private key on disk", "severity": "low", "asset": "pki/legacy/payments.key:1", "service": "legacy-pki", "evidence": "private-key ECDSA", "recommendation": "Replace with ML-DSA keys when the certificate is re-issued; keep keys out of source trees.", "hndl": false, "migration": "reissue-mldsa"}, {"rule_id": "QS-CERT-ROT-001", "title": "Long-lived certificate", "severity": "low", "asset": "cert:5d3a1bf4064a786b (CN=orders,O=QuantumShield)", "service": "legacy-pki, orders", "evidence": "Valid for 825 days", "recommendation": "Use short-lived workload certificates so rotation and algorithm changes are routine.", "hndl": false, "migration": "rotate-cert"}, {"rule_id": "QS-TLS-CIPH-002", "title": "128-bit symmetric cipher preferred", "severity": "low", "asset": "payments:443", "service": "payments", "evidence": "Negotiated ECDHE-ECDSA-AES128-GCM-SHA256 (Grover's algorithm halves its strength)", "recommendation": "Prefer AES-256-GCM or ChaCha20-Poly1305 for long-lived secrets.", "hndl": false, "migration": "prefer-aes256"}, {"rule_id": "QS-ZT-001", "title": "No workload identity required (no mutual TLS)", "severity": "info", "asset": "inventory:443", "service": "inventory", "evidence": "The endpoint accepts anonymous clients", "recommendation": "For service-to-service traffic, require mTLS with short-lived workload certificates (the QuantumShield proxy does this).", "hndl": false, "migration": "deploy-pqc-proxy"}, {"rule_id": "QS-ZT-001", "title": "No workload identity required (no mutual TLS)", "severity": "info", "asset": "orders:443", "service": "orders", "evidence": "The endpoint accepts anonymous clients", "recommendation": "For service-to-service traffic, require mTLS with short-lived workload certificates (the QuantumShield proxy does this).", "hndl": false, "migration": "deploy-pqc-proxy"}, {"rule_id": "QS-ZT-001", "title": "No workload identity required (no mutual TLS)", "severity": "info", "asset": "payments:443", "service": "payments", "evidence": "The endpoint accepts anonymous clients", "recommendation": "For service-to-service traffic, require mTLS with short-lived workload certificates (the QuantumShield proxy does this).", "hndl": false, "migration": "deploy-pqc-proxy"}, {"rule_id": "QS-CFG-KEX-000", "title": "Key-exchange groups left to library defaults", "severity": "info", "asset": "legacy-configs/apache-ssl.conf", "service": "reports.internal", "evidence": "No ssl_ecdh_curve / Groups directive", "recommendation": "Defaults are hybrid only with OpenSSL 3.5+. Pin X25519MLKEM768:X25519 explicitly.", "hndl": false, "migration": "set-hybrid-groups"}]}, "after": {"generated_at": "2026-10-12T16:02:52+00:00", "tls_library": "OpenSSL 3.5.7 9 Jun 2026; ML-KEM available; group control", "services": [{"service": "orders", "endpoints": ["orders:8443"], "kex": ["X25519MLKEM768"], "cert_keys": ["ML-DSA-65"], "findings": {"info": 1}, "score": 0, "hndl": false, "status": "quantum-safe", "needs_migration": false}, {"service": "payments", "endpoints": ["payments:8443"], "kex": ["X25519MLKEM768"], "cert_keys": ["ML-DSA-65"], "findings": {}, "score": 0, "hndl": false, "status": "quantum-safe", "needs_migration": false}, {"service": "inventory", "endpoints": ["inventory:8443"], "kex": ["X25519MLKEM768"], "cert_keys": ["ML-DSA-65"], "findings": {}, "score": 0, "hndl": false, "status": "quantum-safe", "needs_migration": false}], "endpoints": [{"target": "orders:8443", "name": "orders", "reachable": true, "error": null, "protocols": {"TLSv1.0": false, "TLSv1.1": false, "TLSv1.2": false, "TLSv1.3": true}, "negotiated_version": "TLSv1.3", "negotiated_cipher": "TLS_AES_256_GCM_SHA384", "negotiated_group": "X25519MLKEM768", "negotiated_sigalg": "mldsa65", "handshake_ms": 6.08, "groups_supported": ["X25519MLKEM768", "SecP256r1MLKEM768", "SecP384r1MLKEM1024", "X25519", "secp256r1", "secp384r1"], "groups_probed": true, "tls12_ciphers": [], "certificate_chain": ["88fa3abaa05b316731ce8c2ca9032f8f2744406cbb8786ecf15ffdba3ef74fd5", "1f03e7494cf1abc84fd1d78f8ab4ae52fdc8887c05ef2a29ee64324afef5cf4b"], "peer_requires_client_cert": false, "pqc_groups": ["X25519MLKEM768", "SecP256r1MLKEM768", "SecP384r1MLKEM1024"], "group_status": "hybrid"}, {"target": "payments:8443", "name": "payments", "reachable": true, "error": null, "protocols": {"TLSv1.0": false, "TLSv1.1": false, "TLSv1.2": false, "TLSv1.3": true}, "negotiated_version": "TLSv1.3", "negotiated_cipher": "TLS_AES_256_GCM_SHA384", "negotiated_group": "X25519MLKEM768", "negotiated_sigalg": "mldsa65", "handshake_ms": 5.98, "groups_supported": ["X25519MLKEM768", "SecP256r1MLKEM768", "SecP384r1MLKEM1024"], "groups_probed": true, "tls12_ciphers": [], "certificate_chain": ["d5a87536bf867d7c020de5f5b34bb8d33af09b5a8f898e607b98fc91a5095b23", "1f03e7494cf1abc84fd1d78f8ab4ae52fdc8887c05ef2a29ee64324afef5cf4b"], "peer_requires_client_cert": true, "pqc_groups": ["X25519MLKEM768", "SecP256r1MLKEM768", "SecP384r1MLKEM1024"], "group_status": "hybrid"}, {"target": "inventory:8443", "name": "inventory", "reachable": true, "error": null, "protocols": {"TLSv1.0": false, "TLSv1.1": false, "TLSv1.2": false, "TLSv1.3": true}, "negotiated_version": "TLSv1.3", "negotiated_cipher": "TLS_AES_256_GCM_SHA384", "negotiated_group": "X25519MLKEM768", "negotiated_sigalg": "mldsa65", "handshake_ms": 7.41, "groups_supported": ["X25519MLKEM768", "SecP256r1MLKEM768", "SecP384r1MLKEM1024"], "groups_probed": true, "tls12_ciphers": [], "certificate_chain": ["fab520ebe62a8c2e6404be4f3bf942b7e0f69bf3d89883bad403ea659207b7b3", "1f03e7494cf1abc84fd1d78f8ab4ae52fdc8887c05ef2a29ee64324afef5cf4b"], "peer_requires_client_cert": true, "pqc_groups": ["X25519MLKEM768", "SecP256r1MLKEM768", "SecP384r1MLKEM1024"], "group_status": "hybrid"}], "certificates": [{"fingerprint_sha256": "fab520ebe62a8c2e6404be4f3bf942b7e0f69bf3d89883bad403ea659207b7b3", "subject": "CN=inventory,O=QuantumShield", "issuer": "CN=QuantumShield Root CA,O=QuantumShield", "serial": "1e3df50b71b2af86bf4dbafe5cf98492da4071fe", "not_before": "2026-10-12T16:02:19+00:00", "not_after": "2026-11-11T16:02:19+00:00", "public_key_algorithm": "ML-DSA-65", "public_key_size": null, "public_key_detail": "ML-DSA-65", "signature_algorithm": "ML-DSA-65", "signature_hash": null, "subject_alt_names": ["DNS:inventory", "DNS:localhost", "URI:spiffe://quantumshield.local/inventory", "IP:127.0.0.1"], "self_signed": false, "is_ca": false, "sources": ["tls://inventory:8443"], "key_status": "quantum-resistant", "sig_status": "quantum-resistant"}, {"fingerprint_sha256": "1f03e7494cf1abc84fd1d78f8ab4ae52fdc8887c05ef2a29ee64324afef5cf4b", "subject": "CN=QuantumShield Root CA,O=QuantumShield", "issuer": "CN=QuantumShield Root CA,O=QuantumShield", "serial": "4fe394f5765a2e5d7d03e34284b06545b5fc45be", "not_before": "2026-10-12T16:02:18+00:00", "not_after": "2036-10-09T16:02:18+00:00", "public_key_algorithm": "ML-DSA-65", "public_key_size": null, "public_key_detail": "ML-DSA-65", "signature_algorithm": "ML-DSA-65", "signature_hash": null, "subject_alt_names": [], "self_signed": true, "is_ca": true, "sources": ["tls://inventory:8443", "tls://payments:8443", "tls://orders:8443"], "key_status": "quantum-resistant", "sig_status": "quantum-resistant"}, {"fingerprint_sha256": "d5a87536bf867d7c020de5f5b34bb8d33af09b5a8f898e607b98fc91a5095b23", "subject": "CN=payments,O=QuantumShield", "issuer": "CN=QuantumShield Root CA,O=QuantumShield", "serial": "1e3df50b71b2af86bf4dbafe5cf98492da407201", "not_before": "2026-10-12T16:02:48+00:00", "not_after": "2026-11-11T16:02:48+00:00", "public_key_algorithm": "ML-DSA-65", "public_key_size": null, "public_key_detail": "ML-DSA-65", "signature_algorithm": "ML-DSA-65", "signature_hash": null, "subject_alt_names": ["DNS:payments", "DNS:localhost", "URI:spiffe://quantumshield.local/payments", "IP:127.0.0.1"], "self_signed": false, "is_ca": false, "sources": ["tls://payments:8443"], "key_status": "quantum-resistant", "sig_status": "quantum-resistant"}, {"fingerprint_sha256": "88fa3abaa05b316731ce8c2ca9032f8f2744406cbb8786ecf15ffdba3ef74fd5", "subject": "CN=orders,O=QuantumShield", "issuer": "CN=QuantumShield Root CA,O=QuantumShield", "serial": "1e3df50b71b2af86bf4dbafe5cf98492da4071fc", "not_before": "2026-10-12T16:02:19+00:00", "not_after": "2026-11-11T16:02:19+00:00", "public_key_algorithm": "ML-DSA-65", "public_key_size": null, "public_key_detail": "ML-DSA-65", "signature_algorithm": "ML-DSA-65", "signature_hash": null, "subject_alt_names": ["DNS:orders", "DNS:localhost", "URI:spiffe://quantumshield.local/orders", "IP:127.0.0.1"], "self_signed": false, "is_ca": false, "sources": ["tls://orders:8443"], "key_status": "quantum-resistant", "sig_status": "quantum-resistant"}], "configs": [], "findings": [{"rule_id": "QS-ZT-001", "title": "No workload identity required (no mutual TLS)", "severity": "info", "asset": "orders:8443", "service": "orders", "evidence": "The endpoint accepts anonymous clients", "recommendation": "For service-to-service traffic, require mTLS with short-lived workload certificates (the QuantumShield proxy does this).", "hndl": false, "migration": "deploy-pqc-proxy"}]}, "bench": {"runtime": "OpenSSL 3.5.7 9 Jun 2026; ML-KEM available; group control", "local": [{"scenario": "classical-rsa", "label": "ECDHE P-256 + RSA-2048 (legacy)", "group": "secp256r1", "cert_alg": "rsa2048", "iterations": 200, "mutual_tls": true, "negotiated_group": "secp256r1", "wall_ms_median": 2.132, "wall_ms_p95": 3.016, "client_cpu_ms": 1.098, "server_cpu_ms": 1.003, "bytes_client_to_server": 2430, "bytes_server_to_client": 2483, "bytes_total": 4913, "round_trips": 2}, {"scenario": "classical-ecdsa", "label": "X25519 + ECDSA P-256", "group": "X25519", "cert_alg": "ecdsa-p256", "iterations": 200, "mutual_tls": true, "negotiated_group": "x25519", "wall_ms_median": 1.592, "wall_ms_p95": 2.378, "client_cpu_ms": 0.817, "server_cpu_ms": 0.759, "bytes_client_to_server": 1162, "bytes_server_to_client": 1482, "bytes_total": 2644, "round_trips": 2}, {"scenario": "hybrid-ecdsa", "label": "X25519MLKEM768 + ECDSA P-256", "group": "X25519MLKEM768", "cert_alg": "ecdsa-p256", "iterations": 200, "mutual_tls": true, "negotiated_group": "X25519MLKEM768", "wall_ms_median": 1.871, "wall_ms_p95": 2.799, "client_cpu_ms": 1.004, "server_cpu_ms": 0.86, "bytes_client_to_server": 2339, "bytes_server_to_client": 2569, "bytes_total": 4908, "round_trips": 2}, {"scenario": "hybrid-mldsa", "label": "X25519MLKEM768 + ML-DSA-65", "group": "X25519MLKEM768", "cert_alg": "mldsa65", "iterations": 200, "mutual_tls": true, "negotiated_group": "X25519MLKEM768", "wall_ms_median": 5.234, "wall_ms_p95": 8.766, "client_cpu_ms": 2.536, "server_cpu_ms": 2.311, "bytes_client_to_server": 15842, "bytes_server_to_client": 16049, "bytes_total": 31891, "round_trips": 2}, {"scenario": "pqc-only", "label": "ML-KEM-768 + ML-DSA-65 (pure PQC)", "group": "MLKEM768", "cert_alg": "mldsa65", "iterations": 200, "mutual_tls": true, "negotiated_group": "MLKEM768", "wall_ms_median": 4.427, "wall_ms_p95": 6.996, "client_cpu_ms": 2.23, "server_cpu_ms": 1.868, "bytes_client_to_server": 15810, "bytes_server_to_client": 16017, "bytes_total": 31827, "round_trips": 2}, {"scenario": "hybrid-high", "label": "SecP384r1MLKEM1024 + ML-DSA-87 (CNSA 2.0 level)", "group": "SecP384r1MLKEM1024", "cert_alg": "mldsa87", "iterations": 200, "mutual_tls": true, "negotiated_group": "SecP384r1MLKEM1024", "wall_ms_median": 7.876, "wall_ms_p95": 12.971, "client_cpu_ms": 3.79, "server_cpu_ms": 3.486, "bytes_client_to_server": 21531, "bytes_server_to_client": 21828, "bytes_total": 43359, "round_trips": 2}], "network": [{"name": "orders nginx (classical)", "address": "orders:443", "iterations": 200, "negotiated_group": "x25519", "connect_ms_median": 2.447, "connect_ms_p95": 3.064, "tcp_ms_median": 0.805, "tls_ms_median": 1.586, "client_cpu_ms": 1.411, "server_cpu_ms_per_conn": null, "bytes_client_to_server": 1602, "bytes_server_to_client": 1510, "bytes_total": 3112, "errors": 0}, {"name": "payments nginx (classical)", "address": "payments:443", "iterations": 200, "negotiated_group": "secp256r1", "connect_ms_median": 2.154, "connect_ms_p95": 2.86, "tcp_ms_median": 0.54, "tls_ms_median": 1.619, "client_cpu_ms": 1.287, "server_cpu_ms_per_conn": null, "bytes_client_to_server": 1650, "bytes_server_to_client": 1262, "bytes_total": 2912, "errors": 0}, {"name": "proxy classical: X25519 + ECDSA", "address": "payments:7443", "iterations": 200, "negotiated_group": "x25519", "connect_ms_median": 3.66, "connect_ms_p95": 4.905, "tcp_ms_median": 0.54, "tls_ms_median": 3.042, "client_cpu_ms": 1.446, "server_cpu_ms_per_conn": 3.506, "bytes_client_to_server": 1217, "bytes_server_to_client": 1478, "bytes_total": 2695, "errors": 0}, {"name": "proxy hybrid: X25519MLKEM768 + ECDSA", "address": "payments:7444", "iterations": 200, "negotiated_group": "X25519MLKEM768", "connect_ms_median": 3.645, "connect_ms_p95": 4.656, "tcp_ms_median": 0.499, "tls_ms_median": 3.131, "client_cpu_ms": 1.399, "server_cpu_ms_per_conn": 3.478, "bytes_client_to_server": 2167, "bytes_server_to_client": 2566, "bytes_total": 4733, "errors": 0}, {"name": "proxy hybrid: X25519MLKEM768 + ML-DSA-65", "address": "payments:8443", "iterations": 200, "negotiated_group": "X25519MLKEM768", "connect_ms_median": 6.324, "connect_ms_p95": 9.944, "tcp_ms_median": 0.482, "tls_ms_median": 5.835, "client_cpu_ms": 2.533, "server_cpu_ms_per_conn": 5.351, "bytes_client_to_server": 10561, "bytes_server_to_client": 16040, "bytes_total": 26601, "errors": 0}]}, "plan": {"generated_at": "2026-10-12T16:02:13+00:00", "services": [{"service": "inventory", "status": "vulnerable", "score": 212, "steps": [{"action": "remove-rsa-kex", "evidence": ["services/inventory/nginx.conf:14: ssl_ciphers AES128-GCM-SHA256:AES256-SHA:ECDHE-RSA-AES128-GCM-SHA256:DES-CBC3-SHA:@SECLEVEL=0", "inventory:443: Accepts AES128-GCM-SHA256, AES256-SHA"], "severity": "critical", "phase": 1, "description": "Remove static-RSA key-exchange cipher suites"}, {"action": "set-hybrid-groups", "evidence": ["services/inventory/nginx.conf:13: ssl_ecdh_curve prime256v1:secp384r1", "inventory:443: Negotiated secp256r1; no hybrid ML-KEM group accepted"], "severity": "high", "phase": 1, "description": "Offer hybrid ML-KEM key exchange (X25519MLKEM768) first"}, {"action": "enable-tls13", "evidence": ["services/inventory/nginx.conf:12: ssl_protocols TLSv1 TLSv1.1 TLSv1.2", "inventory:443: Highest protocol: TLSv1.2"], "severity": "high", "phase": 1, "description": "Enable TLS 1.3 (required for hybrid ML-KEM)"}, {"action": "disable-legacy-tls", "evidence": ["services/inventory/nginx.conf:12: ssl_protocols TLSv1 TLSv1.1 TLSv1.2", "inventory:443: TLSv1.0, TLSv1.1"], "severity": "high", "phase": 2, "description": "Disable TLS 1.0 / 1.1"}, {"action": "deploy-pqc-proxy", "evidence": ["inventory:443: The endpoint accepts anonymous clients"], "severity": "info", "phase": 2, "description": "Front the service with a QuantumShield hybrid-PQC mTLS proxy"}, {"action": "reissue-mldsa", "evidence": ["cert:31e523e607ed6c61 (CN=inventory,O=QuantumShield): RSA-2048 public key, signed with RSA/SHA-256"], "severity": "medium", "phase": 3, "description": "Re-issue certificates with ML-DSA-65 (or composite) keys"}, {"action": "rotate-cert", "evidence": ["cert:31e523e607ed6c61 (CN=inventory,O=QuantumShield): Valid for 825 days"], "severity": "low", "phase": 3, "description": "Move to short-lived, centrally issued certificates"}, {"action": "prefer-aes256", "evidence": ["inventory:443: Negotiated ECDHE-RSA-AES128-GCM-SHA256 (Grover's algorithm halves its strength)"], "severity": "low", "phase": 4, "description": "Prefer 256-bit symmetric ciphers"}]}, {"service": "legacy-configs", "status": "vulnerable", "score": 200, "steps": [{"action": "remove-rsa-kex", "evidence": ["legacy-configs/haproxy.cfg:2: ssl-default-bind-ciphers ECDHE-RSA-AES128-GCM-SHA256:AES256-SHA256", "legacy-configs/openssl.cnf:11: CipherString DEFAULT:@SECLEVEL=2"], "severity": "critical", "phase": 1, "description": "Remove static-RSA key-exchange cipher suites"}, {"action": "set-hybrid-groups", "evidence": ["legacy-configs/haproxy.cfg:6: curves P-256:X25519", "legacy-configs/openssl.cnf:12: Groups X25519:secp256r1:secp384r1"], "severity": "high", "phase": 1, "description": "Offer hybrid ML-KEM key exchange (X25519MLKEM768) first"}, {"action": "ssh-hybrid-kex", "evidence": ["legacy-configs/sshd_config:5: KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,diffie-hellman-group14-sha1"], "severity": "high", "phase": 1, "description": "Use mlkem768x25519-sha256 / sntrup761x25519 SSH key exchange"}, {"action": "remove-weak-ciphers", "evidence": ["legacy-configs/sshd_config:6: Ciphers aes128-ctr,aes256-gcm@openssh.com,3des-cbc"], "severity": "high", "phase": 2, "description": "Remove insecure ciphers"}, {"action": "refactor-code", "evidence": ["legacy-configs/billing_client.py:8: code return rsa.generate_private_key(public_exponent=65537, key_size=2048)", "legacy-configs/billing_client.py:12: code return hashlib.md5(data).hexdigest()"], "severity": "medium", "phase": 3, "description": "Route hard-coded crypto through a configurable (agile) layer"}, {"action": "ssh-hostkey", "evidence": ["legacy-configs/sshd_config:3: HostKey /etc/ssh/ssh_host_rsa_key", "legacy-configs/sshd_config:4: HostKey /etc/ssh/ssh_host_ecdsa_key"], "severity": "low", "phase": 4, "description": "Plan SSH host-key migration"}]}, {"service": "payments", "status": "vulnerable", "score": 82, "steps": [{"action": "set-hybrid-groups", "evidence": ["services/payments/nginx.conf:13: ssl_ecdh_curve prime256v1", "payments:443: Negotiated secp256r1; no hybrid ML-KEM group accepted"], "severity": "high", "phase": 1, "description": "Offer hybrid ML-KEM key exchange (X25519MLKEM768) first"}, {"action": "enable-tls13", "evidence": ["services/payments/nginx.conf:12: ssl_protocols TLSv1.2", "payments:443: Highest protocol: TLSv1.2"], "severity": "high", "phase": 1, "description": "Enable TLS 1.3 (required for hybrid ML-KEM)"}, {"action": "deploy-pqc-proxy", "evidence": ["payments:443: The endpoint accepts anonymous clients"], "severity": "info", "phase": 2, "description": "Front the service with a QuantumShield hybrid-PQC mTLS proxy"}, {"action": "reissue-mldsa", "evidence": ["cert:db8ce0cf4f4c293b (CN=payments,O=QuantumShield): secp256r1 public key, signed with RSA/SHA-256"], "severity": "medium", "phase": 3, "description": "Re-issue certificates with ML-DSA-65 (or composite) keys"}, {"action": "prefer-aes256", "evidence": ["payments:443: Negotiated ECDHE-ECDSA-AES128-GCM-SHA256 (Grover's algorithm halves its strength)"], "severity": "low", "phase": 4, "description": "Prefer 256-bit symmetric ciphers"}]}, {"service": "reports.internal", "status": "vulnerable", "score": 60, "steps": [{"action": "remove-rsa-kex", "evidence": ["legacy-configs/apache-ssl.conf:5: SSLCipherSuite HIGH:!aNULL:!MD5"], "severity": "critical", "phase": 1, "description": "Remove static-RSA key-exchange cipher suites"}, {"action": "disable-legacy-tls", "evidence": ["legacy-configs/apache-ssl.conf:4: SSLProtocol all -SSLv3"], "severity": "high", "phase": 2, "description": "Disable TLS 1.0 / 1.1"}]}, {"service": "orders", "status": "vulnerable", "score": 40, "steps": [{"action": "set-hybrid-groups", "evidence": ["services/orders/nginx.conf:13: ssl_ecdh_curve X25519:prime256v1", "orders:443: Negotiated x25519; no hybrid ML-KEM group accepted"], "severity": "high", "phase": 1, "description": "Offer hybrid ML-KEM key exchange (X25519MLKEM768) first"}, {"action": "deploy-pqc-proxy", "evidence": ["orders:443: The endpoint accepts anonymous clients"], "severity": "info", "phase": 2, "description": "Front the service with a QuantumShield hybrid-PQC mTLS proxy"}, {"action": "reissue-mldsa", "evidence": ["cert:5d3a1bf4064a786b (CN=orders,O=QuantumShield): RSA-2048 public key, signed with RSA/SHA-256"], "severity": "medium", "phase": 3, "description": "Re-issue certificates with ML-DSA-65 (or composite) keys"}, {"action": "rotate-cert", "evidence": ["cert:5d3a1bf4064a786b (CN=orders,O=QuantumShield): Valid for 825 days"], "severity": "low", "phase": 3, "description": "Move to short-lived, centrally issued certificates"}]}, {"service": "legacy-pki", "status": "review", "score": 34, "steps": [{"action": "reissue-mldsa", "evidence": ["cert:31e523e607ed6c61 (CN=inventory,O=QuantumShield): RSA-2048 public key, signed with RSA/SHA-256", "cert:a6e27d189bdb9916 (CN=Acme Legacy CA,O=QuantumShield): RSA-2048 public key, signed with RSA/SHA-256", "cert:5d3a1bf4064a786b (CN=orders,O=QuantumShield): RSA-2048 public key, signed with RSA/SHA-256", "cert:db8ce0cf4f4c293b (CN=payments,O=QuantumShield): secp256r1 public key, signed with RSA/SHA-256", "pki/legacy/ca.key:1: private-key RSA-2048"], "severity": "medium", "phase": 3, "description": "Re-issue certificates with ML-DSA-65 (or composite) keys"}, {"action": "rotate-cert", "evidence": ["cert:31e523e607ed6c61 (CN=inventory,O=QuantumShield): Valid for 825 days", "cert:5d3a1bf4064a786b (CN=orders,O=QuantumShield): Valid for 825 days"], "severity": "low", "phase": 3, "description": "Move to short-lived, centrally issued certificates"}]}], "patches": [{"service": "orders", "file": "services/orders/nginx.conf", "written_to": "out/migration/patched/orders-nginx.conf"}, {"service": "payments", "file": "services/payments/nginx.conf", "written_to": "out/migration/patched/payments-nginx.conf"}, {"service": "inventory", "file": "services/inventory/nginx.conf", "written_to": "out/migration/patched/inventory-nginx.conf"}, {"service": "reports.internal", "file": "legacy-configs/apache-ssl.conf", "written_to": "out/migration/patched/reports.internal-apache-ssl.conf"}, {"service": "legacy-configs", "file": "legacy-configs/haproxy.cfg", "written_to": "out/migration/patched/legacy-configs-haproxy.cfg"}, {"service": "legacy-configs", "file": "legacy-configs/openssl.cnf", "written_to": "out/migration/patched/legacy-configs-openssl.cnf"}, {"service": "legacy-configs", "file": "legacy-configs/sshd_config", "written_to": "out/migration/patched/legacy-configs-sshd_config"}], "proxies": [{"name": "orders-pqc", "mode": "ingress", "listen": "0.0.0.0:8443", "upstream": "orders:443", "upstream_tls": true, "policy": "strict", "cert": "pki/orders.crt", "key": "pki/orders.key", "ca": "pki/ca.crt", "require_client_cert": true}, {"name": "payments-pqc", "mode": "ingress", "listen": "0.0.0.0:8444", "upstream": "payments:443", "upstream_tls": true, "policy": "strict", "cert": "pki/payments.crt", "key": "pki/payments.key", "ca": "pki/ca.crt", "require_client_cert": true}, {"name": "inventory-pqc", "mode": "ingress", "listen": "0.0.0.0:8445", "upstream": "inventory:443", "upstream_tls": true, "policy": "strict", "cert": "pki/inventory.crt", "key": "pki/inventory.key", "ca": "pki/ca.crt", "require_client_cert": true}]}, "phases": {"1": "Phase 1: stop harvest-now-decrypt-later (key exchange)", "2": "Phase 2: harden transport and add workload identity", "3": "Phase 3: post-quantum authentication and agility", "4": "Phase 4: clean-up"}};
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
+const fmt = (n, d = 0) => n == null ? "-" : Number(n).toLocaleString("en-US", {minimumFractionDigits: d, maximumFractionDigits: d});
+const SEV = ["critical", "high", "medium", "low", "info"];
+const SEV_C = {critical: "var(--bad)", high: "color-mix(in srgb, var(--bad) 62%, var(--warn))", medium: "var(--warn)", low: "var(--info)", info: "var(--faint)"};
+const SEV_CHIP = {critical: "c-bad", high: "c-bad", medium: "c-warn", low: "c-info", info: "c-dim"};
+const ST_CHIP = {"quantum-safe": "c-safe", partial: "c-warn", vulnerable: "c-bad", review: "c-info"};
+const Q_CHIP = {"quantum-broken": "c-bad", insecure: "c-bad", "quantum-weakened": "c-warn", "quantum-resistant": "c-safe", hybrid: "c-safe"};
+const chip = (text, cls) => `<span class="chip ${cls || "c-dim"}">${esc(text)}</span>`;
+const B = D.before, A = D.after, cur = A || B;
+
+/* theme */
+try { const t = localStorage.getItem("qs-theme"); if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+$("#theme").addEventListener("click", () => {
+  const now = document.documentElement.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+  const next = now === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  try { localStorage.setItem("qs-theme", next); } catch (e) {}
+});
+
+if (!cur) { $("#readout").outerHTML = '<p class="empty" style="margin-top:24px">No inventory was given to the dashboard.</p>'; return; }
+$("#meta").textContent = [`scanned ${String(cur.generated_at || "").replace("T", " ").slice(0, 16)} UTC`, cur.tls_library].filter(Boolean).join("  ·  ");
+
+/* read-out */
+function stats(v) {
+  if (!v) return null;
+  const sev = {}; v.findings.forEach((f) => { sev[f.severity] = (sev[f.severity] || 0) + 1; });
+  return {
+    pq: v.endpoints.filter((e) => e.group_status === "hybrid" || e.group_status === "quantum-resistant").length,
+    eps: v.endpoints.length,
+    ch: (sev.critical || 0) + (sev.high || 0),
+    broken: v.certificates.filter((c) => c.key_status === "quantum-broken" && !c.is_ca).length,
+    leaves: v.certificates.filter((c) => !c.is_ca).length,
+    safe: v.services.filter((s) => s.status === "quantum-safe").length, svcs: v.services.length,
+    scope: `${v.endpoints.length} endpoint${v.endpoints.length === 1 ? "" : "s"}, ${v.configs.length} config file${v.configs.length === 1 ? "" : "s"}`,
+  };
+}
+const sb = stats(B), sa = stats(A);
+function cell(k, f, s) {
+  const after = sa ? f(sa) : null, before = sb ? f(sb) : null;
+  const v = (sa && sb) ? `<span class="was">${before}</span><span class="arr">→</span><span>${after}</span>` : `<span>${after ?? before}</span>`;
+  return `<div><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`;
+}
+$("#readout").innerHTML = [
+  cell("Hybrid key exchange", (s) => `${s.pq}/${s.eps}`, "endpoints negotiating ML-KEM"),
+  cell("Critical + high", (s) => s.ch, sa && sb ? `findings · before: ${esc(sb.scope)}; after: ${esc(sa.scope)}` : "findings"),
+  cell("Broken cert keys", (s) => `${s.broken}/${s.leaves}`, "leaf certificates with RSA or EC keys"),
+  cell("Quantum-safe services", (s) => `${s.safe}/${s.svcs}`, "services with nothing left to migrate"),
+].join("");
+
+/* readiness */
+(function () {
+  const bm = new Map((B ? B.services : []).map((s) => [s.service, s]));
+  const am = new Map((A ? A.services : []).map((s) => [s.service, s]));
+  const names = [...new Set([...(A ? A.services : []).map((s) => s.service), ...(B ? B.services : []).map((s) => s.service)])];
+  const max = Math.max(1, ...[...bm.values(), ...am.values()].map((s) => s.score));
+  const risk = (s) => s ? `<div class="risk"><span>${s.score}</span><div class="track"><i style="width:${Math.max(2, 100 * s.score / max)}%;--c:${s.score ? (s.status === "vulnerable" ? "var(--bad)" : "var(--warn)") : "var(--safe)"}"></i></div></div>` : '<span class="muted">-</span>';
+  const st = (s) => s ? chip(s.status, ST_CHIP[s.status]) : '<span class="muted">not re-scanned</span>';
+  const pair = (b, a) => (A && B) ? `<span class="flow">${b}<span class="to">→</span>${a}</span>` : (a || b);
+  const kx = (s) => s ? `<code>${esc(s.kex.join(", ") || "-")}</code>` : "-";
+  const ck = (s) => s ? `<code>${esc(s.cert_keys.join(", ") || "-")}</code>` : "-";
+  const rows = names.map((n) => {
+    const b = bm.get(n), a = am.get(n);
+    return `<tr><td><b>${esc(n)}</b></td><td>${pair(st(b), A ? st(a) : "")}</td><td>${(A && B) ? `<span class="flow">${risk(b)}<span class="to">→</span>${risk(a)}</span>` : risk(a || b)}</td>
+      <td>${pair(kx(b), A ? kx(a) : "")}</td><td>${pair(ck(b), A ? ck(a) : "")}</td></tr>`;
+  }).join("");
+  $("#readiness").innerHTML = `<div class="sh"><h2>Migration readiness</h2><p>Risk weighs harvest-now-decrypt-later exposure first.</p></div>
+    <div class="card scroll"><table><thead><tr><th>Service</th><th>Status</th><th>Risk score</th><th>Key exchange</th><th>Certificate key</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+})();
+
+/* endpoints */
+(function () {
+  if (!cur.endpoints.length) return;
+  const certs = new Map([...(B ? B.certificates : []), ...(A ? A.certificates : [])].map((c) => [c.fingerprint_sha256, c]));
+  function table(v) {
+    return `<div class="card scroll"><table><thead><tr><th>Service</th><th>Endpoint</th><th>Protocols</th><th>Negotiated group</th><th>PQC groups offered</th><th>Certificate</th><th>mTLS</th></tr></thead><tbody>${
+      v.endpoints.map((e) => {
+        const leaf = certs.get((e.certificate_chain || [])[0]);
+        const protos = Object.entries(e.protocols || {}).filter(([, ok]) => ok).map(([p]) => p.replace("TLSv", ""));
+        return `<tr><td><b>${esc(e.name)}</b></td><td><code>${esc(e.target)}</code></td>
+          <td>${e.reachable ? protos.map((p) => chip(p, p === "1.3" ? "c-safe" : (p === "1.2" ? "c-dim" : "c-bad"))).join(" ") : chip("unreachable", "c-bad")}</td>
+          <td>${e.negotiated_group ? chip(e.negotiated_group, Q_CHIP[e.group_status] || "c-dim") : "-"}</td>
+          <td class="mono">${esc(e.pqc_groups.join(", ") || "none")}</td>
+          <td>${leaf ? chip(leaf.public_key_detail || leaf.public_key_algorithm, Q_CHIP[leaf.key_status]) : "-"}</td>
+          <td>${e.peer_requires_client_cert ? chip("required", "c-safe") : '<span class="muted">no</span>'}</td></tr>`;
+      }).join("")}</tbody></table></div>`;
+  }
+  const el = $("#endpoints");
+  const head = (sel) => `<div class="sh"><h2>TLS endpoints</h2>${A && B ? `<div class="seg" role="group" aria-label="Scan"><button type="button" data-v="before" aria-pressed="${sel === "before"}">Before</button><button type="button" data-v="after" aria-pressed="${sel === "after"}">After</button></div>` : ""}</div>`;
+  const show = (sel) => { el.innerHTML = head(sel) + table(sel === "before" ? B : cur); };
+  el.addEventListener("click", (e) => { const b = e.target.closest("button[data-v]"); if (b) show(b.dataset.v); });
+  show(A ? "after" : "before");
+})();
+
+/* benchmarks */
+(function () {
+  const bench = D.bench;
+  if (!bench || !((bench.local || []).length || (bench.network || []).length)) return;
+  const PQ = new Set(["X25519MLKEM768", "SecP256r1MLKEM768", "SecP384r1MLKEM1024", "MLKEM512", "MLKEM768", "MLKEM1024"]);
+  let W = 560;
+  const PADR = 78, specs = [];
+  function niceMax(v) { const p = Math.pow(10, Math.floor(Math.log10(v || 1))); return Math.ceil(v / p * 2) / 2 * p; }
+  function axis(max, unit, h) {
+    const steps = [0.5, 1, 2, 2.5, 5, 10, 20, 25, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000];
+    const step = steps.find((s) => max / s <= 5) || max / 5;
+    let out = "";
+    for (let v = 0; v <= max + 1e-9; v += step) {
+      const x = v / max * (W - PADR);
+      out += `<line class="grid" x1="${x}" x2="${x}" y1="0" y2="${h}"/><text x="${x}" y="${h + 14}" text-anchor="${v ? "middle" : "start"}">${fmt(v, step < 1 ? 1 : 0)}</text>`;
+    }
+    return out + `<text x="${W - PADR}" y="${h + 28}" text-anchor="end">${unit}</text>`;
+  }
+  function chart(title, sub, rows, unit, series, legend) {
+    specs.push([rows, unit, series]);
+    return `<div class="card chart"><h3>${title}</h3><p class="sub">${sub}</p><svg data-chart="${specs.length - 1}" role="img" aria-label="${esc(title)}"></svg><div class="legend">${legend}</div></div>`;
+  }
+  function draw(svg) {
+    const [rows, unit, series] = specs[+svg.dataset.chart];
+    W = Math.max(300, Math.round(svg.clientWidth || 560));
+    const max = niceMax(Math.max(...rows.flatMap((r) => series.map((s) => s.get(r)))));
+    const sx = (v) => v / max * (W - PADR);
+    const rowH = 18 + series.length * 11 + 14;
+    const h = rows.length * rowH;
+    const body = rows.map((r, i) => {
+      const y = i * rowH;
+      return `<text class="lbl" x="0" y="${y + 13}">${esc(r._label)}</text>` + series.map((s, k) => {
+        const v = s.get(r), yy = y + 18 + k * 11;
+        return `<rect x="0" y="${yy}" width="${Math.max(1, sx(v))}" height="8" rx="2" fill="${s.color(r)}"/><text class="val" x="${sx(v) + 6}" y="${yy + 8}">${s.fmt(v)}</text>`;
+      }).join("");
+    }).join("");
+    svg.setAttribute("viewBox", `0 0 ${W} ${h + 34}`);
+    svg.innerHTML = axis(max, unit, h) + body;
+  }
+  const L = (bench.local || []).map((r) => ({...r, _label: r.label || r.scenario}));
+  const N = (bench.network || []).map((r) => ({...r, _label: r.name}));
+  const pqc = (r) => PQ.has(r.negotiated_group || r.group);
+  const ms = (v) => `${fmt(v, 2)} ms`, kb = (v) => `${fmt(v / 1000, 1)} KB`;
+  let h = `<div class="sh"><h2>Performance: classical against hybrid post-quantum</h2><p>${esc(bench.runtime || "")}</p></div><div class="charts">`;
+  if (L.length) {
+    h += chart("Handshake time and CPU", `In-process mutual-TLS handshake, median of ${fmt(L[0].iterations)}.`, L, "milliseconds",
+      [{get: (r) => r.wall_ms_median, color: (r) => pqc(r) ? "var(--gold)" : "var(--faint)", fmt: ms},
+       {get: (r) => r.client_cpu_ms + r.server_cpu_ms, color: () => "var(--info)", fmt: ms}],
+      '<span style="--c:var(--gold)">wall, post-quantum key exchange</span><span style="--c:var(--faint)">wall, classical</span><span style="--c:var(--info)">CPU, client + server</span>');
+    h += chart("Bytes per handshake", "Both directions. ML-DSA certificates dominate.", L, "bytes",
+      [{get: (r) => r.bytes_total, color: (r) => pqc(r) ? "var(--gold)" : "var(--faint)", fmt: kb}],
+      '<span style="--c:var(--gold)">post-quantum key exchange</span><span style="--c:var(--faint)">classical</span>');
+  }
+  if (N.length) {
+    h += chart("Connect time over the network", "TCP + TLS between containers, median and p95.", N, "milliseconds",
+      [{get: (r) => r.connect_ms_median, color: (r) => pqc(r) ? "var(--safe)" : "var(--faint)", fmt: ms},
+       {get: (r) => r.connect_ms_p95, color: () => "color-mix(in srgb, var(--dim) 45%, var(--bg-3))", fmt: (v) => `p95 ${fmt(v, 2)}`}],
+      '<span style="--c:var(--safe)">median, hybrid</span><span style="--c:var(--faint)">median, classical</span><span style="--c:color-mix(in srgb, var(--dim) 45%, var(--bg-3))">p95</span>');
+  }
+  h += "</div>";
+  if (L.length) {
+    h += `<div class="card scroll" style="margin-top:14px"><table><thead><tr><th>Scenario</th><th>Group</th><th>Certificates</th><th class="n">Wall ms</th><th class="n">Client CPU ms</th><th class="n">Server CPU ms</th><th class="n">C→S bytes</th><th class="n">S→C bytes</th><th class="n">Total</th></tr></thead><tbody>${
+      L.map((r) => `<tr><td>${esc(r._label)}</td><td>${chip(r.negotiated_group || r.group, pqc(r) ? "c-safe" : "c-bad")}</td><td class="mono">${esc(r.cert_alg)}</td><td class="n">${fmt(r.wall_ms_median, 3)}</td><td class="n">${fmt(r.client_cpu_ms, 3)}</td><td class="n">${fmt(r.server_cpu_ms, 3)}</td><td class="n">${fmt(r.bytes_client_to_server)}</td><td class="n">${fmt(r.bytes_server_to_client)}</td><td class="n">${fmt(r.bytes_total)}</td></tr>`).join("")}</tbody></table></div>`;
+  }
+  if (N.length) {
+    h += `<div class="card scroll" style="margin-top:14px"><table><thead><tr><th>Path</th><th>Group</th><th class="n">Connect p50</th><th class="n">p95</th><th class="n">TLS ms</th><th class="n">Client CPU ms</th><th class="n">Proxy CPU ms/conn</th><th class="n">Bytes</th><th class="n">Errors</th></tr></thead><tbody>${
+      N.map((r) => `<tr><td>${esc(r._label)}</td><td>${chip(r.negotiated_group || "-", pqc(r) ? "c-safe" : "c-bad")}</td><td class="n">${fmt(r.connect_ms_median, 3)}</td><td class="n">${fmt(r.connect_ms_p95, 3)}</td><td class="n">${fmt(r.tls_ms_median, 3)}</td><td class="n">${fmt(r.client_cpu_ms, 3)}</td><td class="n">${r.server_cpu_ms_per_conn == null ? "-" : fmt(r.server_cpu_ms_per_conn, 3)}</td><td class="n">${fmt(r.bytes_total)}</td><td class="n">${fmt(r.errors)}</td></tr>`).join("")}</tbody></table></div>`;
+  }
+  $("#bench").innerHTML = h;
+  const drawAll = () => document.querySelectorAll("svg[data-chart]").forEach(draw);
+  drawAll();
+  let lastW = innerWidth, rt = null;
+  addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { if (innerWidth !== lastW) { lastW = innerWidth; drawAll(); } }, 150); });
+})();
+
+/* findings */
+(function () {
+  const all = [...(B ? B.findings.map((f) => ({...f, _scan: "before"})) : []), ...(A ? A.findings.map((f) => ({...f, _scan: "after"})) : [])];
+  if (!all.length) return;
+  const el = $("#findings");
+  let scan = A ? "after" : "before", sev = "all", q = "", limit = 30;
+  function render() {
+    const base = all.filter((f) => f._scan === scan);
+    const counts = {}; base.forEach((f) => { counts[f.severity] = (counts[f.severity] || 0) + 1; });
+    const F = base.filter((f) => (sev === "all" || f.severity === sev) && (!q || [f.title, f.rule_id, f.asset, f.service, f.evidence].join(" ").toLowerCase().includes(q)))
+      .sort((a, b) => SEV.indexOf(a.severity) - SEV.indexOf(b.severity));
+    const scanSeg = A && B ? `<div class="seg" role="group" aria-label="Scan"><button type="button" data-scan="before" aria-pressed="${scan === "before"}">Before (${B.findings.length})</button><button type="button" data-scan="after" aria-pressed="${scan === "after"}">After (${A.findings.length})</button></div>` : "";
+    const sevSeg = `<div class="seg" role="group" aria-label="Severity"><button type="button" data-sev="all" aria-pressed="${sev === "all"}">All</button>${SEV.filter((s) => counts[s]).map((s) => `<button type="button" data-sev="${s}" aria-pressed="${sev === s}">${s} ${counts[s]}</button>`).join("")}</div>`;
+    const list = F.length ? `<div class="flist">${F.slice(0, limit).map((f) => `<article class="card f" style="--c:${SEV_C[f.severity]}">
+        <div>${chip(f.severity, SEV_CHIP[f.severity])}</div>
+        <h3>${esc(f.title)}</h3>
+        <div class="meta">${esc(f.rule_id)} · ${esc(f.service || "-")} · ${esc(f.asset)}${f.hndl ? " · harvest-now-decrypt-later" : ""}</div>
+        ${f.evidence ? `<div class="ev">${esc(f.evidence)}</div>` : ""}
+        ${f.recommendation ? `<p class="fix"><b>Fix</b> ${esc(f.recommendation)}</p>` : ""}
+      </article>`).join("")}</div>${F.length > limit ? `<div class="more"><button type="button" class="back" data-more>Show all ${F.length}</button></div>` : ""}` : '<p class="empty">No findings match.</p>';
+    el.innerHTML = `<div class="sh"><h2>Findings</h2><div class="ftools">${scanSeg}${sevSeg}<input type="search" id="fq" placeholder="Filter by rule, service, text" aria-label="Filter findings" value="${esc(q)}"></div></div>${list}`;
+  }
+  el.addEventListener("click", (e) => {
+    const b = e.target.closest("button");
+    if (!b) return;
+    if (b.dataset.scan) { scan = b.dataset.scan; sev = "all"; }
+    if (b.dataset.sev) sev = b.dataset.sev;
+    if (b.hasAttribute("data-more")) limit = 1e9;
+    render();
+  });
+  el.addEventListener("input", (e) => {
+    if (e.target.id !== "fq") return;
+    q = e.target.value.trim().toLowerCase();
+    const pos = e.target.selectionStart;
+    render();
+    const i = $("#fq"); i.focus(); i.setSelectionRange(pos, pos);
+  });
+  render();
+})();
+
+/* certificates */
+(function () {
+  const seen = new Map();
+  [...(B ? B.certificates : []), ...(A ? A.certificates : [])].forEach((c) => seen.set(c.fingerprint_sha256, c));
+  if (!seen.size) return;
+  const now = Date.now();
+  const rows = [...seen.values()].sort((a, b) => (a.is_ca - b.is_ca) || a.subject.localeCompare(b.subject)).map((c) => {
+    const days = Math.round((Date.parse(c.not_after) - now) / 864e5);
+    return `<tr><td><b>${esc(c.subject)}</b>${c.is_ca ? ' <span class="muted mono">CA</span>' : ""}</td>
+      <td>${chip(c.public_key_detail || c.public_key_algorithm, Q_CHIP[c.key_status])}</td>
+      <td>${chip(c.signature_algorithm + (c.signature_hash ? "/" + c.signature_hash : ""), Q_CHIP[c.sig_status])}</td>
+      <td class="n">${isNaN(days) ? "-" : days < 0 ? `<span style="color:var(--bad)">expired</span>` : `${fmt(days)} days`}</td>
+      <td class="mono muted">${esc((c.sources || []).join(", "))}</td></tr>`;
+  }).join("");
+  $("#certs").innerHTML = `<div class="sh"><h2>Certificates</h2><p>${seen.size} unique, by SHA-256 fingerprint.</p></div>
+    <div class="card scroll"><table><thead><tr><th>Subject</th><th>Key</th><th>Signature</th><th class="n">Valid for</th><th>Seen at</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+})();
+
+/* plan */
+(function () {
+  const plan = D.plan;
+  if (!plan || !plan.services || !plan.services.length) return;
+  const NAMES = D.phases || {};
+  const phases = {};
+  plan.services.forEach((s) => s.steps.forEach((st) => { (phases[st.phase] = phases[st.phase] || []).push({...st, service: s.service}); }));
+  const cols = Object.keys(phases).sort().map((p) => `<div class="card phase"><h3>Phase ${esc(p)}</h3><p class="why">${esc(String(NAMES[p] || "").replace(/^Phase \d+: (.)/, (m, c) => c.toUpperCase()))}</p><ul>${
+    phases[p].map((st) => `<li><span class="svc">${esc(st.service)}</span><span>${esc(st.description)}</span><span>${chip(st.severity, SEV_CHIP[st.severity])}</span></li>`).join("")}</ul></div>`).join("");
+  $("#plan").innerHTML = `<div class="sh"><h2>Migration plan</h2><p>${plan.services.length} services, generated ${esc(String(plan.generated_at || "").slice(0, 10))}</p></div><div class="phases">${cols}</div>`;
+})();
+$("#foot").textContent = cur.tls_library || "";
+})();
+</script>
+</body>
+</html>

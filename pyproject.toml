@@ -21,6 +21,9 @@ qs = "quantumshield.cli:main"
 [tool.setuptools]
 packages = ["quantumshield"]
 
+[tool.setuptools.package-data]
+quantumshield = ["dashboard.html"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 filterwarnings = ["ignore:ssl.TLSVersion:DeprecationWarning"]

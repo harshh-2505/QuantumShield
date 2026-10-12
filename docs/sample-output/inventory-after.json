@@ -1,0 +1,205 @@
+{
+  "generated_at": "2026-10-12T16:02:52+00:00",
+  "endpoints": [
+    {
+      "target": "orders:8443",
+      "name": "orders",
+      "reachable": true,
+      "error": null,
+      "protocols": {
+        "TLSv1.0": false,
+        "TLSv1.1": false,
+        "TLSv1.2": false,
+        "TLSv1.3": true
+      },
+      "negotiated_version": "TLSv1.3",
+      "negotiated_cipher": "TLS_AES_256_GCM_SHA384",
+      "negotiated_group": "X25519MLKEM768",
+      "negotiated_sigalg": "mldsa65",
+      "handshake_ms": 6.08,
+      "groups_supported": [
+        "X25519MLKEM768",
+        "SecP256r1MLKEM768",
+        "SecP384r1MLKEM1024",
+        "X25519",
+        "secp256r1",
+        "secp384r1"
+      ],
+      "groups_probed": true,
+      "tls12_ciphers": [],
+      "certificate_chain": [
+        "88fa3abaa05b316731ce8c2ca9032f8f2744406cbb8786ecf15ffdba3ef74fd5",
+        "1f03e7494cf1abc84fd1d78f8ab4ae52fdc8887c05ef2a29ee64324afef5cf4b"
+      ],
+      "peer_requires_client_cert": false
+    },
+    {
+      "target": "payments:8443",
+      "name": "payments",
+      "reachable": true,
+      "error": null,
+      "protocols": {
+        "TLSv1.0": false,
+        "TLSv1.1": false,
+        "TLSv1.2": false,
+        "TLSv1.3": true
+      },
+      "negotiated_version": "TLSv1.3",
+      "negotiated_cipher": "TLS_AES_256_GCM_SHA384",
+      "negotiated_group": "X25519MLKEM768",
+      "negotiated_sigalg": "mldsa65",
+      "handshake_ms": 5.98,
+      "groups_supported": [
+        "X25519MLKEM768",
+        "SecP256r1MLKEM768",
+        "SecP384r1MLKEM1024"
+      ],
+      "groups_probed": true,
+      "tls12_ciphers": [],
+      "certificate_chain": [
+        "d5a87536bf867d7c020de5f5b34bb8d33af09b5a8f898e607b98fc91a5095b23",
+        "1f03e7494cf1abc84fd1d78f8ab4ae52fdc8887c05ef2a29ee64324afef5cf4b"
+      ],
+      "peer_requires_client_cert": true
+    },
+    {
+      "target": "inventory:8443",
+      "name": "inventory",
+      "reachable": true,
+      "error": null,
+      "protocols": {
+        "TLSv1.0": false,
+        "TLSv1.1": false,
+        "TLSv1.2": false,
+        "TLSv1.3": true
+      },
+      "negotiated_version": "TLSv1.3",
+      "negotiated_cipher": "TLS_AES_256_GCM_SHA384",
+      "negotiated_group": "X25519MLKEM768",
+      "negotiated_sigalg": "mldsa65",
+      "handshake_ms": 7.41,
+      "groups_supported": [
+        "X25519MLKEM768",
+        "SecP256r1MLKEM768",
+        "SecP384r1MLKEM1024"
+      ],
+      "groups_probed": true,
+      "tls12_ciphers": [],
+      "certificate_chain": [
+        "fab520ebe62a8c2e6404be4f3bf942b7e0f69bf3d89883bad403ea659207b7b3",
+        "1f03e7494cf1abc84fd1d78f8ab4ae52fdc8887c05ef2a29ee64324afef5cf4b"
+      ],
+      "peer_requires_client_cert": true
+    }
+  ],
+  "configs": [],
+  "certificates": {
+    "fab520ebe62a8c2e6404be4f3bf942b7e0f69bf3d89883bad403ea659207b7b3": {
+      "fingerprint_sha256": "fab520ebe62a8c2e6404be4f3bf942b7e0f69bf3d89883bad403ea659207b7b3",
+      "subject": "CN=inventory,O=QuantumShield",
+      "issuer": "CN=QuantumShield Root CA,O=QuantumShield",
+      "serial": "1e3df50b71b2af86bf4dbafe5cf98492da4071fe",
+      "not_before": "2026-10-12T16:02:19+00:00",
+      "not_after": "2026-11-11T16:02:19+00:00",
+      "public_key_algorithm": "ML-DSA-65",
+      "public_key_size": null,
+      "public_key_detail": "ML-DSA-65",
+      "signature_algorithm": "ML-DSA-65",
+      "signature_hash": null,
+      "subject_alt_names": [
+        "DNS:inventory",
+        "DNS:localhost",
+        "URI:spiffe://quantumshield.local/inventory",
+        "IP:127.0.0.1"
+      ],
+      "self_signed": false,
+      "is_ca": false,
+      "sources": [
+        "tls://inventory:8443"
+      ]
+    },
+    "1f03e7494cf1abc84fd1d78f8ab4ae52fdc8887c05ef2a29ee64324afef5cf4b": {
+      "fingerprint_sha256": "1f03e7494cf1abc84fd1d78f8ab4ae52fdc8887c05ef2a29ee64324afef5cf4b",
+      "subject": "CN=QuantumShield Root CA,O=QuantumShield",
+      "issuer": "CN=QuantumShield Root CA,O=QuantumShield",
+      "serial": "4fe394f5765a2e5d7d03e34284b06545b5fc45be",
+      "not_before": "2026-10-12T16:02:18+00:00",
+      "not_after": "2036-10-09T16:02:18+00:00",
+      "public_key_algorithm": "ML-DSA-65",
+      "public_key_size": null,
+      "public_key_detail": "ML-DSA-65",
+      "signature_algorithm": "ML-DSA-65",
+      "signature_hash": null,
+      "subject_alt_names": [],
+      "self_signed": true,
+      "is_ca": true,
+      "sources": [
+        "tls://inventory:8443",
+        "tls://payments:8443",
+        "tls://orders:8443"
+      ]
+    },
+    "d5a87536bf867d7c020de5f5b34bb8d33af09b5a8f898e607b98fc91a5095b23": {
+      "fingerprint_sha256": "d5a87536bf867d7c020de5f5b34bb8d33af09b5a8f898e607b98fc91a5095b23",
+      "subject": "CN=payments,O=QuantumShield",
+      "issuer": "CN=QuantumShield Root CA,O=QuantumShield",
+      "serial": "1e3df50b71b2af86bf4dbafe5cf98492da407201",
+      "not_before": "2026-10-12T16:02:48+00:00",
+      "not_after": "2026-11-11T16:02:48+00:00",
+      "public_key_algorithm": "ML-DSA-65",
+      "public_key_size": null,
+      "public_key_detail": "ML-DSA-65",
+      "signature_algorithm": "ML-DSA-65",
+      "signature_hash": null,
+      "subject_alt_names": [
+        "DNS:payments",
+        "DNS:localhost",
+        "URI:spiffe://quantumshield.local/payments",
+        "IP:127.0.0.1"
+      ],
+      "self_signed": false,
+      "is_ca": false,
+      "sources": [
+        "tls://payments:8443"
+      ]
+    },
+    "88fa3abaa05b316731ce8c2ca9032f8f2744406cbb8786ecf15ffdba3ef74fd5": {
+      "fingerprint_sha256": "88fa3abaa05b316731ce8c2ca9032f8f2744406cbb8786ecf15ffdba3ef74fd5",
+      "subject": "CN=orders,O=QuantumShield",
+      "issuer": "CN=QuantumShield Root CA,O=QuantumShield",
+      "serial": "1e3df50b71b2af86bf4dbafe5cf98492da4071fc",
+      "not_before": "2026-10-12T16:02:19+00:00",
+      "not_after": "2026-11-11T16:02:19+00:00",
+      "public_key_algorithm": "ML-DSA-65",
+      "public_key_size": null,
+      "public_key_detail": "ML-DSA-65",
+      "signature_algorithm": "ML-DSA-65",
+      "signature_hash": null,
+      "subject_alt_names": [
+        "DNS:orders",
+        "DNS:localhost",
+        "URI:spiffe://quantumshield.local/orders",
+        "IP:127.0.0.1"
+      ],
+      "self_signed": false,
+      "is_ca": false,
+      "sources": [
+        "tls://orders:8443"
+      ]
+    }
+  },
+  "findings": [
+    {
+      "rule_id": "QS-ZT-001",
+      "title": "No workload identity required (no mutual TLS)",
+      "severity": "info",
+      "asset": "orders:8443",
+      "service": "orders",
+      "evidence": "The endpoint accepts anonymous clients",
+      "recommendation": "For service-to-service traffic, require mTLS with short-lived workload certificates (the QuantumShield proxy does this).",
+      "hndl": false,
+      "migration": "deploy-pqc-proxy"
+    }
+  ],
+  "tls_library": "OpenSSL 3.5.7 9 Jun 2026; ML-KEM available; group control"
+}

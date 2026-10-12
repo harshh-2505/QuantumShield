@@ -94,6 +94,8 @@ note "Post-quantum PKI: ML-DSA-65 CA and 30-day workload certificates with SPIFF
 note "Benchmark-only ECDSA PKI (classical baseline through the same proxy)"
 "${QS[@]}" pki init --dir pki/bench-ecdsa --alg ecdsa-p256 --name "Bench ECDSA CA" >/dev/null
 "${QS[@]}" pki issue payments bench-client --dir pki/bench-ecdsa --alg ecdsa-p256 >/dev/null
+# Sidecars run as an unprivileged user (uid 10001): hand it the workload keys (still 0600).
+"${COMPOSE[@]}" run --rm -T --entrypoint chown qs -R 10001:10001 /demo/pki/pqc /demo/pki/bench-ecdsa
 
 note "Moving each service's legacy TLS listener to loopback and routing its outbound calls via the sidecar"
 for s in orders payments inventory; do
@@ -152,6 +154,7 @@ note "b) A valid certificate with an identity that is not allowed:"
   --cert pki/pqc/intruder.crt --key pki/pqc/intruder.key 2>&1 | sed 's/^/  /' || true
 note "c) Key rotation: re-issue payments' certificate; the sidecar reloads it without a restart:"
 "${QS[@]}" pki issue payments --dir pki/pqc --alg mldsa65 --days 30 | sed 's/^/  /'
+"${COMPOSE[@]}" run --rm -T --entrypoint chown qs 10001:10001 /demo/pki/pqc/payments.key /demo/pki/pqc/payments.crt
 sleep 1.5
 "${QS[@]}" get https://orders:8443/api/payments/ | sed 's/^/  /'
 "${COMPOSE[@]}" logs --no-log-prefix payments-pqc | grep context-reloaded | tail -1 | sed 's/^/  /' || true

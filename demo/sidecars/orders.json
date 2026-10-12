@@ -22,7 +22,10 @@
       "cert": "/pki/pqc/orders.crt",
       "key": "/pki/pqc/orders.key",
       "ca": "/pki/pqc/ca.crt",
-      "allowed_ids": ["spiffe://quantumshield.local/payments"]
+      "allowed_ids": [
+        "spiffe://quantumshield.local/payments"
+      ],
+      "sigalgs": "mldsa65:mldsa87"
     },
     {
       "name": "orders-to-inventory",
@@ -34,7 +37,10 @@
       "cert": "/pki/pqc/orders.crt",
       "key": "/pki/pqc/orders.key",
       "ca": "/pki/pqc/ca.crt",
-      "allowed_ids": ["spiffe://quantumshield.local/inventory"]
+      "allowed_ids": [
+        "spiffe://quantumshield.local/inventory"
+      ],
+      "sigalgs": "mldsa65:mldsa87"
     }
   ]
 }

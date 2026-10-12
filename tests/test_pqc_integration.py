@@ -7,6 +7,7 @@ Skipped unless the runtime has ML-KEM (OpenSSL 3.5+) and group control
 
 import asyncio
 import json
+import shutil
 import socket
 import ssl
 import threading
@@ -60,6 +61,16 @@ class Harness:
         return p
 
     def close(self):
+        async def shutdown():
+            for p in self.proxies:
+                if p.server:
+                    p.server.close()
+            tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
+            for t in tasks:
+                t.cancel()
+            await asyncio.gather(*tasks, return_exceptions=True)
+
+        self.call(shutdown())
         self.loop.call_soon_threadsafe(self.loop.stop)
 
 
@@ -185,3 +196,99 @@ def test_bench_local_smoke():
     assert hybrid.negotiated_group == "X25519MLKEM768"
     assert hybrid.bytes_total > classical.bytes_total
     json.dumps(bench.to_json(res, None))
+
+
+# --------------------------------------------------------------------------- hardening
+
+def _refused(ctx, port) -> bool:
+    try:
+        return _roundtrip(ctx, port)[2] == b""
+    except (ssl.SSLError, ConnectionError, socket.timeout):
+        return True
+
+
+def _wait(pred, timeout=5.0) -> bool:
+    end = time.monotonic() + timeout
+    while time.monotonic() < end:
+        if pred():
+            return True
+        time.sleep(0.05)
+    return pred()
+
+
+@pytest.fixture
+def own_pki(pki, tmp_path):
+    """A private copy of the PKI for tests that corrupt or rotate files."""
+    d = tmp_path / "pki"
+    shutil.copytree(pki, d)
+    (d / "revoked.json").unlink(missing_ok=True)
+    return d
+
+
+def test_pq_only_sigalgs_refuse_classical_client_cert(pki, harness):
+    certs.issue(pki, "ecclient", "ecdsa-p256")
+    up = harness.echo()
+    port = _free_port()
+    harness.proxy(_ingress(pki, port, up, sigalgs="mldsa65:mldsa87"))
+    assert _roundtrip(_client(pki), port)[2] == b"echo:hello"
+    assert _refused(_client(pki, "ecclient"), port)
+    # Without the restriction the same ECDSA certificate (same CA) is accepted.
+    port2 = _free_port()
+    harness.proxy(_ingress(pki, port2, up))
+    assert _roundtrip(_client(pki, "ecclient"), port2)[2] == b"echo:hello"
+
+
+def test_unreadable_revocation_list_fails_closed(own_pki, harness):
+    up = harness.echo()
+    port = _free_port()
+    p = harness.proxy(_ingress(own_pki, port, up))
+    assert _roundtrip(_client(own_pki), port)[2] == b"echo:hello"
+    (own_pki / "revoked.json").write_text("{not json")
+    time.sleep(1.1)
+    assert _refused(_client(own_pki), port)
+    assert p.stats.rejected_revoked == 1
+    (own_pki / "revoked.json").write_text("[]")
+    time.sleep(1.1)
+    assert _roundtrip(_client(own_pki), port)[2] == b"echo:hello"
+
+
+def test_broken_rotation_keeps_serving_old_certificate(own_pki, harness):
+    up = harness.echo()
+    port = _free_port()
+    p = harness.proxy(_ingress(own_pki, port, up))
+    good = (own_pki / "server.crt").read_bytes()
+    # Half-finished rotation: the certificate no longer matches the key.
+    (own_pki / "server.crt").write_bytes((own_pki / "client.crt").read_bytes())
+    time.sleep(1.1)
+    assert _roundtrip(_client(own_pki), port)[2] == b"echo:hello"
+    assert p.stats.reload_failures >= 1
+    (own_pki / "server.crt").write_bytes(good)
+    time.sleep(1.1)
+    assert _roundtrip(_client(own_pki), port)[2] == b"echo:hello"
+
+
+def test_connection_cap_and_idle_timeout(pki, harness):
+    up = harness.echo()
+    port = _free_port()
+    p = harness.proxy(_ingress(pki, port, up, max_connections=1, idle_timeout=1))
+    ctx = _client(pki)
+    raw = socket.create_connection(("127.0.0.1", port), timeout=5)
+    held = ctx.wrap_socket(raw, server_hostname="server")
+    held.sendall(b"hold")
+    held.settimeout(3)
+    assert held.recv(1024) == b"echo:hold"
+    assert _refused(ctx, port)
+    assert p.stats.rejected_overload == 1
+    # The held connection goes quiet and is closed by the idle timeout, freeing the slot.
+    assert _wait(lambda: p.stats.idle_timeouts == 1 and p.stats.active == 0)
+    held.close()
+    assert _roundtrip(ctx, port)[2] == b"echo:hello"
+
+
+def test_start_rejects_unsafe_config(pki, harness):
+    from quantumshield.proxy import ConfigError
+    with pytest.raises(ConfigError):
+        harness.proxy(ProxyConfig(
+            name="t-bad-egress", mode="egress", listen=f"127.0.0.1:{_free_port()}",
+            upstream="127.0.0.1:1", cert=str(pki / "client.crt"),
+            key=str(pki / "client.key")))

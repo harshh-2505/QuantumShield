@@ -1,6 +1,6 @@
 # QuantumShield cryptographic inventory
 
-Generated: 2026-10-12T13:46:42+00:00  
+Generated: 2026-10-12T16:02:52+00:00  
 Scanner TLS runtime: OpenSSL 3.5.7 9 Jun 2026; ML-KEM available; group control
 
 ## Migration readiness

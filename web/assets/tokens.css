@@ -1,0 +1,54 @@
+/* QuantumShield design tokens.
+ * Layout concept: an instrument read-out laid over a lattice. Dark-first ("cryostat"),
+ * champagne gold for the brand, semantic colours reserved for quantum status.
+ */
+@font-face { font-family: "Unbounded"; src: url("fonts/unbounded-var.woff2") format("woff2");
+  font-weight: 200 900; font-display: swap; }
+@font-face { font-family: "IBM Plex Sans"; src: url("fonts/plex-sans-400.woff2") format("woff2");
+  font-weight: 400; font-display: swap; }
+@font-face { font-family: "IBM Plex Sans"; src: url("fonts/plex-sans-400i.woff2") format("woff2");
+  font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: "IBM Plex Sans"; src: url("fonts/plex-sans-500.woff2") format("woff2");
+  font-weight: 500; font-display: swap; }
+@font-face { font-family: "IBM Plex Sans"; src: url("fonts/plex-sans-600.woff2") format("woff2");
+  font-weight: 600; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("fonts/plex-mono-400.woff2") format("woff2");
+  font-weight: 400; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("fonts/plex-mono-500.woff2") format("woff2");
+  font-weight: 500; font-display: swap; }
+
+:root {
+  --bg: #090d16;       /* cryostat vacuum */
+  --bg-2: #0f1522;     /* instrument deck */
+  --bg-3: #161e2f;     /* raised / hover */
+  --line: #222b3e;
+  --ink: #e9edf5;
+  --dim: #8c95ab;
+  --faint: #5a6378;
+  --gold: #e6c27a;     /* brand: gold-plated cryostat stages */
+  --gold-ink: #1a1408;
+  --safe: #5fd8bc;     /* hybrid / quantum-safe */
+  --warn: #ffa04d;     /* partial / medium */
+  --bad: #ff5c72;      /* broken / vulnerable / high */
+  --info: #92a4ff;     /* review / weakened / low */
+  --display: "Unbounded", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f3f5f9; --bg-2: #ffffff; --bg-3: #eaeef5; --line: #d8dee9;
+    --ink: #0d1321; --dim: #556079; --faint: #8790a5;
+    --gold: #8f6413; --gold-ink: #ffffff;
+    --safe: #0b8a6c; --warn: #c25e0a; --bad: #d02d48; --info: #3f55d4;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f3f5f9; --bg-2: #ffffff; --bg-3: #eaeef5; --line: #d8dee9;
+  --ink: #0d1321; --dim: #556079; --faint: #8790a5;
+  --gold: #8f6413; --gold-ink: #ffffff;
+  --safe: #0b8a6c; --warn: #c25e0a; --bad: #d02d48; --info: #3f55d4;
+  color-scheme: light;
+}

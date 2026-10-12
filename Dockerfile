@@ -7,6 +7,9 @@ COPY pyproject.toml README.md ./
 COPY quantumshield ./quantumshield
 COPY tests ./tests
 COPY demo ./demo
-RUN pip install --no-cache-dir ".[test]"
+RUN pip install --no-cache-dir ".[test]" \
+    && useradd --system --uid 10001 --no-create-home --shell /usr/sbin/nologin qs
+# Run as an unprivileged user; the demo's tool container overrides this to write files.
+USER 10001
 ENTRYPOINT ["quantumshield"]
 CMD ["info"]

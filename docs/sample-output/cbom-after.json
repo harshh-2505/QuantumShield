@@ -1,10 +1,10 @@
 {
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:9740e1c7-0953-4892-90e5-a563aeff6d08",
+  "serialNumber": "urn:uuid:829dabd5-7533-4b94-ac4c-67bd2640c269",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-10-12T13:46:42+00:00",
+    "timestamp": "2026-10-12T16:02:52+00:00",
     "tools": {
       "components": [
         {
@@ -239,15 +239,15 @@
     },
     {
       "type": "cryptographic-asset",
-      "bom-ref": "crypto/certificate/973e8804dc4f3005",
-      "name": "CN=orders,O=QuantumShield",
+      "bom-ref": "crypto/certificate/1f03e7494cf1abc8",
+      "name": "CN=QuantumShield Root CA,O=QuantumShield",
       "cryptoProperties": {
         "assetType": "certificate",
         "certificateProperties": {
-          "subjectName": "CN=orders,O=QuantumShield",
+          "subjectName": "CN=QuantumShield Root CA,O=QuantumShield",
           "issuerName": "CN=QuantumShield Root CA,O=QuantumShield",
-          "notValidBefore": "2026-10-12T13:46:08+00:00",
-          "notValidAfter": "2026-11-11T13:46:08+00:00",
+          "notValidBefore": "2026-10-12T16:02:18+00:00",
+          "notValidAfter": "2036-10-09T16:02:18+00:00",
           "signatureAlgorithmRef": "crypto/algorithm/ML-DSA-65",
           "subjectPublicKeyRef": "crypto/algorithm/ML-DSA-65",
           "certificateFormat": "X.509",
@@ -257,7 +257,47 @@
       "properties": [
         {
           "name": "quantumshield:fingerprint-sha256",
-          "value": "973e8804dc4f3005b1c3606d467f1342c5d000cc02da4a34253f9f68ec72b231"
+          "value": "1f03e7494cf1abc84fd1d78f8ab4ae52fdc8887c05ef2a29ee64324afef5cf4b"
+        },
+        {
+          "name": "quantumshield:public-key",
+          "value": "ML-DSA-65"
+        },
+        {
+          "name": "quantumshield:source",
+          "value": "tls://inventory:8443"
+        },
+        {
+          "name": "quantumshield:source",
+          "value": "tls://payments:8443"
+        },
+        {
+          "name": "quantumshield:source",
+          "value": "tls://orders:8443"
+        }
+      ]
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/certificate/88fa3abaa05b3167",
+      "name": "CN=orders,O=QuantumShield",
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "certificateProperties": {
+          "subjectName": "CN=orders,O=QuantumShield",
+          "issuerName": "CN=QuantumShield Root CA,O=QuantumShield",
+          "notValidBefore": "2026-10-12T16:02:19+00:00",
+          "notValidAfter": "2026-11-11T16:02:19+00:00",
+          "signatureAlgorithmRef": "crypto/algorithm/ML-DSA-65",
+          "subjectPublicKeyRef": "crypto/algorithm/ML-DSA-65",
+          "certificateFormat": "X.509",
+          "certificateExtension": "crt"
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:fingerprint-sha256",
+          "value": "88fa3abaa05b316731ce8c2ca9032f8f2744406cbb8786ecf15ffdba3ef74fd5"
         },
         {
           "name": "quantumshield:public-key",
@@ -287,103 +327,15 @@
     },
     {
       "type": "cryptographic-asset",
-      "bom-ref": "crypto/certificate/a7607576c60e670b",
-      "name": "CN=inventory,O=QuantumShield",
-      "cryptoProperties": {
-        "assetType": "certificate",
-        "certificateProperties": {
-          "subjectName": "CN=inventory,O=QuantumShield",
-          "issuerName": "CN=QuantumShield Root CA,O=QuantumShield",
-          "notValidBefore": "2026-10-12T13:46:08+00:00",
-          "notValidAfter": "2026-11-11T13:46:08+00:00",
-          "signatureAlgorithmRef": "crypto/algorithm/ML-DSA-65",
-          "subjectPublicKeyRef": "crypto/algorithm/ML-DSA-65",
-          "certificateFormat": "X.509",
-          "certificateExtension": "crt"
-        }
-      },
-      "properties": [
-        {
-          "name": "quantumshield:fingerprint-sha256",
-          "value": "a7607576c60e670bf58cc69985ab7f0231216b3de250411abf9480970b8c2d11"
-        },
-        {
-          "name": "quantumshield:public-key",
-          "value": "ML-DSA-65"
-        },
-        {
-          "name": "quantumshield:san",
-          "value": "DNS:inventory"
-        },
-        {
-          "name": "quantumshield:san",
-          "value": "DNS:localhost"
-        },
-        {
-          "name": "quantumshield:san",
-          "value": "URI:spiffe://quantumshield.local/inventory"
-        },
-        {
-          "name": "quantumshield:san",
-          "value": "IP:127.0.0.1"
-        },
-        {
-          "name": "quantumshield:source",
-          "value": "tls://inventory:8443"
-        }
-      ]
-    },
-    {
-      "type": "cryptographic-asset",
-      "bom-ref": "crypto/certificate/ae3e7795f5f9f39b",
-      "name": "CN=QuantumShield Root CA,O=QuantumShield",
-      "cryptoProperties": {
-        "assetType": "certificate",
-        "certificateProperties": {
-          "subjectName": "CN=QuantumShield Root CA,O=QuantumShield",
-          "issuerName": "CN=QuantumShield Root CA,O=QuantumShield",
-          "notValidBefore": "2026-10-12T13:46:07+00:00",
-          "notValidAfter": "2036-10-09T13:46:07+00:00",
-          "signatureAlgorithmRef": "crypto/algorithm/ML-DSA-65",
-          "subjectPublicKeyRef": "crypto/algorithm/ML-DSA-65",
-          "certificateFormat": "X.509",
-          "certificateExtension": "crt"
-        }
-      },
-      "properties": [
-        {
-          "name": "quantumshield:fingerprint-sha256",
-          "value": "ae3e7795f5f9f39baf8f6b8d4c5bc17c7c2476e2384e321c3b33a8725b1109ec"
-        },
-        {
-          "name": "quantumshield:public-key",
-          "value": "ML-DSA-65"
-        },
-        {
-          "name": "quantumshield:source",
-          "value": "tls://inventory:8443"
-        },
-        {
-          "name": "quantumshield:source",
-          "value": "tls://payments:8443"
-        },
-        {
-          "name": "quantumshield:source",
-          "value": "tls://orders:8443"
-        }
-      ]
-    },
-    {
-      "type": "cryptographic-asset",
-      "bom-ref": "crypto/certificate/b69b177182e34e74",
+      "bom-ref": "crypto/certificate/d5a87536bf867d7c",
       "name": "CN=payments,O=QuantumShield",
       "cryptoProperties": {
         "assetType": "certificate",
         "certificateProperties": {
           "subjectName": "CN=payments,O=QuantumShield",
           "issuerName": "CN=QuantumShield Root CA,O=QuantumShield",
-          "notValidBefore": "2026-10-12T13:46:38+00:00",
-          "notValidAfter": "2026-11-11T13:46:38+00:00",
+          "notValidBefore": "2026-10-12T16:02:48+00:00",
+          "notValidAfter": "2026-11-11T16:02:48+00:00",
           "signatureAlgorithmRef": "crypto/algorithm/ML-DSA-65",
           "subjectPublicKeyRef": "crypto/algorithm/ML-DSA-65",
           "certificateFormat": "X.509",
@@ -393,7 +345,7 @@
       "properties": [
         {
           "name": "quantumshield:fingerprint-sha256",
-          "value": "b69b177182e34e74e2beb43cd4ce39c6ff6afff4838ece3c23c8b88f95c34c33"
+          "value": "d5a87536bf867d7c020de5f5b34bb8d33af09b5a8f898e607b98fc91a5095b23"
         },
         {
           "name": "quantumshield:public-key",
@@ -418,6 +370,54 @@
         {
           "name": "quantumshield:source",
           "value": "tls://payments:8443"
+        }
+      ]
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/certificate/fab520ebe62a8c2e",
+      "name": "CN=inventory,O=QuantumShield",
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "certificateProperties": {
+          "subjectName": "CN=inventory,O=QuantumShield",
+          "issuerName": "CN=QuantumShield Root CA,O=QuantumShield",
+          "notValidBefore": "2026-10-12T16:02:19+00:00",
+          "notValidAfter": "2026-11-11T16:02:19+00:00",
+          "signatureAlgorithmRef": "crypto/algorithm/ML-DSA-65",
+          "subjectPublicKeyRef": "crypto/algorithm/ML-DSA-65",
+          "certificateFormat": "X.509",
+          "certificateExtension": "crt"
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:fingerprint-sha256",
+          "value": "fab520ebe62a8c2e6404be4f3bf942b7e0f69bf3d89883bad403ea659207b7b3"
+        },
+        {
+          "name": "quantumshield:public-key",
+          "value": "ML-DSA-65"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "DNS:inventory"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "DNS:localhost"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "URI:spiffe://quantumshield.local/inventory"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "IP:127.0.0.1"
+        },
+        {
+          "name": "quantumshield:source",
+          "value": "tls://inventory:8443"
         }
       ]
     },
@@ -573,25 +573,25 @@
   ],
   "dependencies": [
     {
-      "ref": "crypto/certificate/973e8804dc4f3005",
+      "ref": "crypto/certificate/1f03e7494cf1abc8",
       "dependsOn": [
         "crypto/algorithm/ML-DSA-65"
       ]
     },
     {
-      "ref": "crypto/certificate/a7607576c60e670b",
+      "ref": "crypto/certificate/88fa3abaa05b3167",
       "dependsOn": [
         "crypto/algorithm/ML-DSA-65"
       ]
     },
     {
-      "ref": "crypto/certificate/ae3e7795f5f9f39b",
+      "ref": "crypto/certificate/d5a87536bf867d7c",
       "dependsOn": [
         "crypto/algorithm/ML-DSA-65"
       ]
     },
     {
-      "ref": "crypto/certificate/b69b177182e34e74",
+      "ref": "crypto/certificate/fab520ebe62a8c2e",
       "dependsOn": [
         "crypto/algorithm/ML-DSA-65"
       ]
@@ -603,8 +603,8 @@
         "crypto/algorithm/SecP256r1MLKEM768",
         "crypto/algorithm/SecP384r1MLKEM1024",
         "crypto/algorithm/X25519MLKEM768",
-        "crypto/certificate/a7607576c60e670b",
-        "crypto/certificate/ae3e7795f5f9f39b"
+        "crypto/certificate/1f03e7494cf1abc8",
+        "crypto/certificate/fab520ebe62a8c2e"
       ]
     },
     {
@@ -617,8 +617,8 @@
         "crypto/algorithm/SecP384r1MLKEM1024",
         "crypto/algorithm/X25519",
         "crypto/algorithm/X25519MLKEM768",
-        "crypto/certificate/973e8804dc4f3005",
-        "crypto/certificate/ae3e7795f5f9f39b"
+        "crypto/certificate/1f03e7494cf1abc8",
+        "crypto/certificate/88fa3abaa05b3167"
       ]
     },
     {
@@ -628,8 +628,8 @@
         "crypto/algorithm/SecP256r1MLKEM768",
         "crypto/algorithm/SecP384r1MLKEM1024",
         "crypto/algorithm/X25519MLKEM768",
-        "crypto/certificate/ae3e7795f5f9f39b",
-        "crypto/certificate/b69b177182e34e74"
+        "crypto/certificate/1f03e7494cf1abc8",
+        "crypto/certificate/d5a87536bf867d7c"
       ]
     },
     {

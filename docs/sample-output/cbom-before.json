@@ -1,10 +1,10 @@
 {
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:ca56d167-6387-4aee-95ba-40fabea2a140",
+  "serialNumber": "urn:uuid:2d419bdb-dbe0-4bb9-b65b-c995bc340272",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-10-12T13:46:00+00:00",
+    "timestamp": "2026-10-12T16:02:13+00:00",
     "tools": {
       "components": [
         {
@@ -758,99 +758,15 @@
     },
     {
       "type": "cryptographic-asset",
-      "bom-ref": "crypto/certificate/687c3c41bbb9873a",
-      "name": "CN=Acme Legacy CA,O=QuantumShield",
-      "cryptoProperties": {
-        "assetType": "certificate",
-        "certificateProperties": {
-          "subjectName": "CN=Acme Legacy CA,O=QuantumShield",
-          "issuerName": "CN=Acme Legacy CA,O=QuantumShield",
-          "notValidBefore": "2026-10-12T13:45:48+00:00",
-          "notValidAfter": "2036-10-09T13:45:48+00:00",
-          "signatureAlgorithmRef": "crypto/algorithm/RSA",
-          "subjectPublicKeyRef": "crypto/algorithm/RSA",
-          "certificateFormat": "X.509",
-          "certificateExtension": "crt"
-        }
-      },
-      "properties": [
-        {
-          "name": "quantumshield:fingerprint-sha256",
-          "value": "687c3c41bbb9873af175006d901795d3933feb11e47ce4fb71919a8abc98db2f"
-        },
-        {
-          "name": "quantumshield:public-key",
-          "value": "RSA-2048"
-        },
-        {
-          "name": "quantumshield:source",
-          "value": "file://pki/legacy/ca.crt"
-        }
-      ]
-    },
-    {
-      "type": "cryptographic-asset",
-      "bom-ref": "crypto/certificate/68bfdce459df8021",
-      "name": "CN=orders,O=QuantumShield",
-      "cryptoProperties": {
-        "assetType": "certificate",
-        "certificateProperties": {
-          "subjectName": "CN=orders,O=QuantumShield",
-          "issuerName": "CN=Acme Legacy CA,O=QuantumShield",
-          "notValidBefore": "2026-10-12T13:45:49+00:00",
-          "notValidAfter": "2029-01-14T13:45:49+00:00",
-          "signatureAlgorithmRef": "crypto/algorithm/RSA",
-          "subjectPublicKeyRef": "crypto/algorithm/RSA",
-          "certificateFormat": "X.509",
-          "certificateExtension": "crt"
-        }
-      },
-      "properties": [
-        {
-          "name": "quantumshield:fingerprint-sha256",
-          "value": "68bfdce459df802140ed882d4d28dbe8be57879a5c6794da71e77eec96f2022c"
-        },
-        {
-          "name": "quantumshield:public-key",
-          "value": "RSA-2048"
-        },
-        {
-          "name": "quantumshield:san",
-          "value": "DNS:orders"
-        },
-        {
-          "name": "quantumshield:san",
-          "value": "DNS:localhost"
-        },
-        {
-          "name": "quantumshield:san",
-          "value": "URI:spiffe://quantumshield.local/orders"
-        },
-        {
-          "name": "quantumshield:san",
-          "value": "IP:127.0.0.1"
-        },
-        {
-          "name": "quantumshield:source",
-          "value": "tls://orders:443"
-        },
-        {
-          "name": "quantumshield:source",
-          "value": "file://pki/legacy/orders.crt"
-        }
-      ]
-    },
-    {
-      "type": "cryptographic-asset",
-      "bom-ref": "crypto/certificate/9525e604be21ac95",
+      "bom-ref": "crypto/certificate/31e523e607ed6c61",
       "name": "CN=inventory,O=QuantumShield",
       "cryptoProperties": {
         "assetType": "certificate",
         "certificateProperties": {
           "subjectName": "CN=inventory,O=QuantumShield",
           "issuerName": "CN=Acme Legacy CA,O=QuantumShield",
-          "notValidBefore": "2026-10-12T13:45:51+00:00",
-          "notValidAfter": "2029-01-14T13:45:51+00:00",
+          "notValidBefore": "2026-10-12T16:02:02+00:00",
+          "notValidAfter": "2029-01-14T16:02:02+00:00",
           "signatureAlgorithmRef": "crypto/algorithm/RSA",
           "subjectPublicKeyRef": "crypto/algorithm/RSA",
           "certificateFormat": "X.509",
@@ -860,7 +776,7 @@
       "properties": [
         {
           "name": "quantumshield:fingerprint-sha256",
-          "value": "9525e604be21ac9511805c8a5d77a0761fe057c40bfd11da818675f870140843"
+          "value": "31e523e607ed6c610e7379e4ea7556d5541c85c623ccfa27ab46d81909b1aef9"
         },
         {
           "name": "quantumshield:public-key",
@@ -894,15 +810,99 @@
     },
     {
       "type": "cryptographic-asset",
-      "bom-ref": "crypto/certificate/ea7279e7018d8155",
+      "bom-ref": "crypto/certificate/5d3a1bf4064a786b",
+      "name": "CN=orders,O=QuantumShield",
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "certificateProperties": {
+          "subjectName": "CN=orders,O=QuantumShield",
+          "issuerName": "CN=Acme Legacy CA,O=QuantumShield",
+          "notValidBefore": "2026-10-12T16:02:00+00:00",
+          "notValidAfter": "2029-01-14T16:02:00+00:00",
+          "signatureAlgorithmRef": "crypto/algorithm/RSA",
+          "subjectPublicKeyRef": "crypto/algorithm/RSA",
+          "certificateFormat": "X.509",
+          "certificateExtension": "crt"
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:fingerprint-sha256",
+          "value": "5d3a1bf4064a786b4f52a6d9cf76d5b58a40fafe38d882b3b1b58d1792ec55b2"
+        },
+        {
+          "name": "quantumshield:public-key",
+          "value": "RSA-2048"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "DNS:orders"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "DNS:localhost"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "URI:spiffe://quantumshield.local/orders"
+        },
+        {
+          "name": "quantumshield:san",
+          "value": "IP:127.0.0.1"
+        },
+        {
+          "name": "quantumshield:source",
+          "value": "tls://orders:443"
+        },
+        {
+          "name": "quantumshield:source",
+          "value": "file://pki/legacy/orders.crt"
+        }
+      ]
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/certificate/a6e27d189bdb9916",
+      "name": "CN=Acme Legacy CA,O=QuantumShield",
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "certificateProperties": {
+          "subjectName": "CN=Acme Legacy CA,O=QuantumShield",
+          "issuerName": "CN=Acme Legacy CA,O=QuantumShield",
+          "notValidBefore": "2026-10-12T16:01:59+00:00",
+          "notValidAfter": "2036-10-09T16:01:59+00:00",
+          "signatureAlgorithmRef": "crypto/algorithm/RSA",
+          "subjectPublicKeyRef": "crypto/algorithm/RSA",
+          "certificateFormat": "X.509",
+          "certificateExtension": "crt"
+        }
+      },
+      "properties": [
+        {
+          "name": "quantumshield:fingerprint-sha256",
+          "value": "a6e27d189bdb99166f10cd10ad982c338f130ec8026765e3708547b91bd1482b"
+        },
+        {
+          "name": "quantumshield:public-key",
+          "value": "RSA-2048"
+        },
+        {
+          "name": "quantumshield:source",
+          "value": "file://pki/legacy/ca.crt"
+        }
+      ]
+    },
+    {
+      "type": "cryptographic-asset",
+      "bom-ref": "crypto/certificate/db8ce0cf4f4c293b",
       "name": "CN=payments,O=QuantumShield",
       "cryptoProperties": {
         "assetType": "certificate",
         "certificateProperties": {
           "subjectName": "CN=payments,O=QuantumShield",
           "issuerName": "CN=Acme Legacy CA,O=QuantumShield",
-          "notValidBefore": "2026-10-12T13:45:50+00:00",
-          "notValidAfter": "2027-10-12T13:45:50+00:00",
+          "notValidBefore": "2026-10-12T16:02:01+00:00",
+          "notValidAfter": "2027-10-12T16:02:01+00:00",
           "signatureAlgorithmRef": "crypto/algorithm/RSA",
           "subjectPublicKeyRef": "crypto/algorithm/ECDSA",
           "certificateFormat": "X.509",
@@ -912,7 +912,7 @@
       "properties": [
         {
           "name": "quantumshield:fingerprint-sha256",
-          "value": "ea7279e7018d8155826504b19fc1a1e603354f41be32f28df8e408f6f2d9ffee"
+          "value": "db8ce0cf4f4c293bffb0e591e37b2d0c921a149437393e230c56ea71b999026d"
         },
         {
           "name": "quantumshield:public-key",
@@ -1239,25 +1239,25 @@
       ]
     },
     {
-      "ref": "crypto/certificate/687c3c41bbb9873a",
+      "ref": "crypto/certificate/31e523e607ed6c61",
       "dependsOn": [
         "crypto/algorithm/RSA"
       ]
     },
     {
-      "ref": "crypto/certificate/68bfdce459df8021",
+      "ref": "crypto/certificate/5d3a1bf4064a786b",
       "dependsOn": [
         "crypto/algorithm/RSA"
       ]
     },
     {
-      "ref": "crypto/certificate/9525e604be21ac95",
+      "ref": "crypto/certificate/a6e27d189bdb9916",
       "dependsOn": [
         "crypto/algorithm/RSA"
       ]
     },
     {
-      "ref": "crypto/certificate/ea7279e7018d8155",
+      "ref": "crypto/certificate/db8ce0cf4f4c293b",
       "dependsOn": [
         "crypto/algorithm/ECDSA",
         "crypto/algorithm/RSA"
@@ -1271,7 +1271,7 @@
         "crypto/algorithm/ECDH-P256",
         "crypto/algorithm/RSA",
         "crypto/algorithm/RSA-KEX",
-        "crypto/certificate/9525e604be21ac95"
+        "crypto/certificate/31e523e607ed6c61"
       ]
     },
     {
@@ -1282,7 +1282,7 @@
         "crypto/algorithm/ECDH-P256",
         "crypto/algorithm/RSA",
         "crypto/algorithm/X25519",
-        "crypto/certificate/68bfdce459df8021"
+        "crypto/certificate/5d3a1bf4064a786b"
       ]
     },
     {
@@ -1292,7 +1292,7 @@
         "crypto/algorithm/AES-256-CBC",
         "crypto/algorithm/ECDH-P256",
         "crypto/algorithm/ECDSA",
-        "crypto/certificate/ea7279e7018d8155"
+        "crypto/certificate/db8ce0cf4f4c293b"
       ]
     },
     {
@@ -1330,10 +1330,10 @@
     {
       "ref": "service/legacy-pki",
       "dependsOn": [
-        "crypto/certificate/687c3c41bbb9873a",
-        "crypto/certificate/68bfdce459df8021",
-        "crypto/certificate/9525e604be21ac95",
-        "crypto/certificate/ea7279e7018d8155",
+        "crypto/certificate/31e523e607ed6c61",
+        "crypto/certificate/5d3a1bf4064a786b",
+        "crypto/certificate/a6e27d189bdb9916",
+        "crypto/certificate/db8ce0cf4f4c293b",
         "crypto/key/pki/legacy/ca.key#1",
         "crypto/key/pki/legacy/inventory.key#1",
         "crypto/key/pki/legacy/orders.key#1",

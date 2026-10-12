@@ -1,6 +1,6 @@
 # QuantumShield cryptographic inventory
 
-Generated: 2026-10-12T13:46:00+00:00  
+Generated: 2026-10-12T16:02:13+00:00  
 Scanner TLS runtime: OpenSSL 3.5.7 9 Jun 2026; ML-KEM available; group control
 
 ## Migration readiness
@@ -26,9 +26,9 @@ Scanner TLS runtime: OpenSSL 3.5.7 9 Jun 2026; ML-KEM available; group control
 
 | Subject | Key | Signature | Expires | Seen at |
 |---|---|---|---|---|
-| CN=inventory,O=QuantumShield | RSA-2048 | RSA/SHA-256 | 2029-01-14 | tls://inventory:443<br>file://pki/legacy/inventory.crt |
 | CN=orders,O=QuantumShield | RSA-2048 | RSA/SHA-256 | 2029-01-14 | tls://orders:443<br>file://pki/legacy/orders.crt |
 | CN=payments,O=QuantumShield | secp256r1 | RSA/SHA-256 | 2027-10-12 | tls://payments:443<br>file://pki/legacy/payments.crt |
+| CN=inventory,O=QuantumShield | RSA-2048 | RSA/SHA-256 | 2029-01-14 | tls://inventory:443<br>file://pki/legacy/inventory.crt |
 | CN=Acme Legacy CA,O=QuantumShield | RSA-2048 | RSA/SHA-256 | 2036-10-09 | file://pki/legacy/ca.crt |
 
 ## Configuration and source files
@@ -100,21 +100,21 @@ Scanner TLS runtime: OpenSSL 3.5.7 9 Jun 2026; ML-KEM available; group control
 | high (HNDL) | QS-TLS-KEX-001 | payments | payments:443 | Key exchange is not quantum-safe (harvest-now-decrypt-later) | Negotiated secp256r1; no hybrid ML-KEM group accepted | Enable X25519MLKEM768 (OpenSSL 3.5+, BoringSSL, Go 1.24+) or front the service with the QuantumShield hybrid proxy. |
 | high (HNDL) | QS-TLS-PROTO-001 | payments | payments:443 | TLS 1.3 not supported | Highest protocol: TLSv1.2 | Hybrid ML-KEM key exchange is only defined for TLS 1.3. Upgrade the TLS stack or deploy the QuantumShield proxy. |
 | high | QS-CFG-PROTO-002 | reports.internal | legacy-configs/apache-ssl.conf:4 | Legacy TLS versions enabled | SSLProtocol all -SSLv3 | Allow only TLS 1.2 and 1.3. |
-| medium | QS-CERT-SIG-001 | inventory, legacy-pki | cert:9525e604be21ac95 (CN=inventory,O=QuantumShield) | Certificate key is quantum-vulnerable | RSA-2048 public key, signed with RSA/SHA-256 | Plan re-issuance with ML-DSA-65 (or a composite ML-DSA + ECDSA certificate). Authentication is not exposed to harvest-now-decrypt-later, so this follows key exchange in priority. |
+| medium | QS-CERT-SIG-001 | inventory, legacy-pki | cert:31e523e607ed6c61 (CN=inventory,O=QuantumShield) | Certificate key is quantum-vulnerable | RSA-2048 public key, signed with RSA/SHA-256 | Plan re-issuance with ML-DSA-65 (or a composite ML-DSA + ECDSA certificate). Authentication is not exposed to harvest-now-decrypt-later, so this follows key exchange in priority. |
 | medium | QS-CODE-001 | legacy-configs | legacy-configs/billing_client.py:8 | Hard-coded quantum-vulnerable algorithm in source | code return rsa.generate_private_key(public_exponent=65537, key_size=2048) | Route RSA through a crypto-agility layer (config-selected algorithm) so it can be swapped for ML-KEM / ML-DSA. |
 | medium | QS-CODE-002 | legacy-configs | legacy-configs/billing_client.py:12 | Broken hash function used in source | code return hashlib.md5(data).hexdigest() | Use SHA-256 or stronger (fine for non-security checksums, but verify). |
-| medium | QS-CERT-SIG-001 | legacy-pki | cert:687c3c41bbb9873a (CN=Acme Legacy CA,O=QuantumShield) | Certificate key is quantum-vulnerable | RSA-2048 public key, signed with RSA/SHA-256 | Plan re-issuance with ML-DSA-65 (or a composite ML-DSA + ECDSA certificate). Authentication is not exposed to harvest-now-decrypt-later, so this follows key exchange in priority. |
-| medium | QS-CERT-SIG-001 | legacy-pki, orders | cert:68bfdce459df8021 (CN=orders,O=QuantumShield) | Certificate key is quantum-vulnerable | RSA-2048 public key, signed with RSA/SHA-256 | Plan re-issuance with ML-DSA-65 (or a composite ML-DSA + ECDSA certificate). Authentication is not exposed to harvest-now-decrypt-later, so this follows key exchange in priority. |
-| medium | QS-CERT-SIG-001 | legacy-pki, payments | cert:ea7279e7018d8155 (CN=payments,O=QuantumShield) | Certificate key is quantum-vulnerable | secp256r1 public key, signed with RSA/SHA-256 | Plan re-issuance with ML-DSA-65 (or a composite ML-DSA + ECDSA certificate). Authentication is not exposed to harvest-now-decrypt-later, so this follows key exchange in priority. |
+| medium | QS-CERT-SIG-001 | legacy-pki | cert:a6e27d189bdb9916 (CN=Acme Legacy CA,O=QuantumShield) | Certificate key is quantum-vulnerable | RSA-2048 public key, signed with RSA/SHA-256 | Plan re-issuance with ML-DSA-65 (or a composite ML-DSA + ECDSA certificate). Authentication is not exposed to harvest-now-decrypt-later, so this follows key exchange in priority. |
+| medium | QS-CERT-SIG-001 | legacy-pki, orders | cert:5d3a1bf4064a786b (CN=orders,O=QuantumShield) | Certificate key is quantum-vulnerable | RSA-2048 public key, signed with RSA/SHA-256 | Plan re-issuance with ML-DSA-65 (or a composite ML-DSA + ECDSA certificate). Authentication is not exposed to harvest-now-decrypt-later, so this follows key exchange in priority. |
+| medium | QS-CERT-SIG-001 | legacy-pki, payments | cert:db8ce0cf4f4c293b (CN=payments,O=QuantumShield) | Certificate key is quantum-vulnerable | secp256r1 public key, signed with RSA/SHA-256 | Plan re-issuance with ML-DSA-65 (or a composite ML-DSA + ECDSA certificate). Authentication is not exposed to harvest-now-decrypt-later, so this follows key exchange in priority. |
 | low | QS-TLS-CIPH-002 | inventory | inventory:443 | 128-bit symmetric cipher preferred | Negotiated ECDHE-RSA-AES128-GCM-SHA256 (Grover's algorithm halves its strength) | Prefer AES-256-GCM or ChaCha20-Poly1305 for long-lived secrets. |
-| low | QS-CERT-ROT-001 | inventory, legacy-pki | cert:9525e604be21ac95 (CN=inventory,O=QuantumShield) | Long-lived certificate | Valid for 825 days | Use short-lived workload certificates so rotation and algorithm changes are routine. |
+| low | QS-CERT-ROT-001 | inventory, legacy-pki | cert:31e523e607ed6c61 (CN=inventory,O=QuantumShield) | Long-lived certificate | Valid for 825 days | Use short-lived workload certificates so rotation and algorithm changes are routine. |
 | low | QS-SSH-HK-001 | legacy-configs | legacy-configs/sshd_config:3 | SSH host key is quantum-vulnerable | HostKey /etc/ssh/ssh_host_rsa_key | Track OpenSSH's ML-DSA host-key support; keep keys rotatable. |
 | low | QS-SSH-HK-001 | legacy-configs | legacy-configs/sshd_config:4 | SSH host key is quantum-vulnerable | HostKey /etc/ssh/ssh_host_ecdsa_key | Track OpenSSH's ML-DSA host-key support; keep keys rotatable. |
 | low | QS-KEY-001 | legacy-pki | pki/legacy/ca.key:1 | Quantum-vulnerable private key on disk | private-key RSA-2048 | Replace with ML-DSA keys when the certificate is re-issued; keep keys out of source trees. |
 | low | QS-KEY-001 | legacy-pki | pki/legacy/inventory.key:1 | Quantum-vulnerable private key on disk | private-key RSA-2048 | Replace with ML-DSA keys when the certificate is re-issued; keep keys out of source trees. |
 | low | QS-KEY-001 | legacy-pki | pki/legacy/orders.key:1 | Quantum-vulnerable private key on disk | private-key RSA-2048 | Replace with ML-DSA keys when the certificate is re-issued; keep keys out of source trees. |
 | low | QS-KEY-001 | legacy-pki | pki/legacy/payments.key:1 | Quantum-vulnerable private key on disk | private-key ECDSA | Replace with ML-DSA keys when the certificate is re-issued; keep keys out of source trees. |
-| low | QS-CERT-ROT-001 | legacy-pki, orders | cert:68bfdce459df8021 (CN=orders,O=QuantumShield) | Long-lived certificate | Valid for 825 days | Use short-lived workload certificates so rotation and algorithm changes are routine. |
+| low | QS-CERT-ROT-001 | legacy-pki, orders | cert:5d3a1bf4064a786b (CN=orders,O=QuantumShield) | Long-lived certificate | Valid for 825 days | Use short-lived workload certificates so rotation and algorithm changes are routine. |
 | low | QS-TLS-CIPH-002 | payments | payments:443 | 128-bit symmetric cipher preferred | Negotiated ECDHE-ECDSA-AES128-GCM-SHA256 (Grover's algorithm halves its strength) | Prefer AES-256-GCM or ChaCha20-Poly1305 for long-lived secrets. |
 | info | QS-ZT-001 | inventory | inventory:443 | No workload identity required (no mutual TLS) | The endpoint accepts anonymous clients | For service-to-service traffic, require mTLS with short-lived workload certificates (the QuantumShield proxy does this). |
 | info | QS-ZT-001 | orders | orders:443 | No workload identity required (no mutual TLS) | The endpoint accepts anonymous clients | For service-to-service traffic, require mTLS with short-lived workload certificates (the QuantumShield proxy does this). |
