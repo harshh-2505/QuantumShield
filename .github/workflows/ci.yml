@@ -10,8 +10,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "${{ matrix.python }}" }
+      # tests/test_web_analyzer.py runs web/assets/analyzer.js under Node (it skips without it)
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
       - run: pip install -e '.[test]'
       - run: pytest -q
+      # the website is generated from docs/sample-output; fail if it was not rebuilt
+      - run: python scripts/build_web.py && git diff --exit-code web/
   pqc:
     runs-on: ubuntu-latest
     steps:

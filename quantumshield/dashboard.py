@@ -43,9 +43,10 @@ def template() -> str:
     return resources.files(__package__).joinpath("dashboard.html").read_text(encoding="utf-8")
 
 
-WEB_HEAD = ('<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">\n'
-            '<link rel="stylesheet" href="/assets/tokens.css">')
-WEB_NAV = '<a class="back" href="/">QuantumShield site</a>'
+# Relative links, so the site works from any host or sub-path (web/ is its root).
+WEB_HEAD = ('<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">\n'
+            '<link rel="stylesheet" href="assets/tokens.css">')
+WEB_NAV = '<a class="back" href="./">QuantumShield site</a>'
 
 
 def render(before: Inventory | None, after: Inventory | None = None, bench: dict | None = None,

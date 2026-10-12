@@ -1,0 +1,9 @@
+# OpenSSH client defaults (web parity fixture)
+Host *.corp.example
+    KexAlgorithms mlkem768x25519-sha256,sntrup761x25519-sha512@openssh.com,curve25519-sha256
+    Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com
+
+Host legacy-switch
+    KexAlgorithms +diffie-hellman-group14-sha1,ecdh-sha2-nistp256
+    HostKeyAlgorithms +ssh-rsa,ecdsa-sha2-nistp256
+    Ciphers aes128-ctr

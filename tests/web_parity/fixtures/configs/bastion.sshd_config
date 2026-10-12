@@ -1,0 +1,11 @@
+# Bastion sshd (web parity fixture)
+Port 22
+HostKey /etc/ssh/ssh_host_dsa_key
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+KexAlgorithms sntrup761x25519-sha512@openssh.com,diffie-hellman-group1-sha1,curve25519-sha256
+Ciphers aes256-gcm@openssh.com,arcfour,3des-cbc
+MACs hmac-sha2-256-etm@openssh.com,hmac-md5
+HostKeyAlgorithms ssh-ed25519,ssh-dss
+PubkeyAcceptedAlgorithms +ssh-rsa
+PermitRootLogin no
